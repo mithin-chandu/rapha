@@ -1,0 +1,512 @@
+/* Web-specific styles for proper scrolling behavior */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Ensure scroll containers work properly on web */
+[data-testid="scroll-view"] {
+  height: 100% !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fix for React Native ScrollView on web */
+.rn-scrollview, .react-native-scrollview {
+  height: 100% !important;
+  overflow-y: auto !important;
+}
+
+/* Web-specific tab navigation improvements */
+@media (min-width: 768px) {
+  /* Tab bar responsive design for web */
+  [role="tablist"] {
+    max-width: 800px !important;
+    margin: 0 auto !important;
+    border-radius: 12px 12px 0 0 !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  /* Tab buttons better spacing on web */
+  [role="tab"] {
+    min-width: 120px !important;
+    padding: 12px 16px !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  [role="tab"]:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Tab icons and labels better alignment */
+  [role="tab"] > div {
+    gap: 6px !important;
+  }
+}
+
+/* Main container responsive layout */
+@media (min-width: 1024px) {
+  #root {
+    max-width: 1200px;
+    margin: 0 auto;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Enhanced button interactions for web */
+button, [role="button"] {
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+}
+
+button:hover, [role="button"]:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+button:active, [role="button"]:active {
+  transform: translateY(0) !important;
+}
+
+/* Input field improvements for web */
+input, textarea {
+  outline: none !important;
+  transition: all 0.2s ease !important;
+}
+
+input:focus, textarea:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  border-color: #3b82f6 !important;
+}
+
+/* Webkit scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive navigation container */
+.navigation-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Content area adjustments */
+.content-area {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Mobile-first responsive design */
+@media (max-width: 767px) {
+  [role="tablist"] {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+  }
+}
+
+/* Tablet and desktop adjustments */
+@media (min-width: 768px) and (max-width: 1023px) {
+  #root {
+    padding: 0 20px;
+  }
+}
+
+/* Ensure tabs are always visible and properly styled */
+[role="tablist"] {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: flex !important;
+  position: relative !important;
+}
+
+[role="tab"] {
+  visibility: visible !important;
+  opacity: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 60px !important;
+}
+
+/* Tab icon and text alignment */
+[role="tab"] > div {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px !important;
+}
+
+/* Ensure proper tab spacing on all screen sizes */
+@media (min-width: 320px) {
+  [role="tab"] {
+    min-width: 80px !important;
+    padding: 8px 12px !important;
+  }
+}
+
+@media (min-width: 480px) {
+  [role="tab"] {
+    min-width: 100px !important;
+    padding: 10px 16px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  [role="tab"] {
+    min-width: 120px !important;
+    padding: 12px 20px !important;
+  }
+}
+
+/* Smooth tab transitions */
+[role="tab"], [role="tab"] * {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Focus and active states for better UX */
+[role="tab"]:focus {
+  outline: 2px solid #3b82f6 !important;
+  outline-offset: -2px !important;
+}
+
+[role="tab"][aria-selected="true"] {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  color: #3b82f6 !important;
+}
+
+/* Prevent tab content from being cut off */
+[role="tabpanel"] {
+  overflow: visible !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* Ensure smooth animations */
+* {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Registration Form Web Optimizations */
+@media screen and (min-width: 768px) {
+  /* Center form content on larger screens */
+  [data-web-form="registration"] {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+  
+  /* Improve form row layout on web */
+  [data-web-row="form-row"] {
+    display: flex;
+    gap: 1rem;
+  }
+  
+  [data-web-row="form-row"] > * {
+    flex: 1;
+    min-width: 200px;
+  }
+  
+  /* Enhanced card styling */
+  [data-web-card="elevated"] {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    background: white;
+    backdrop-filter: blur(10px);
+  }
+  
+  /* Better input focus states */
+  input:focus,
+  textarea:focus {
+    outline: 2px solid #007AFF;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+  }
+  
+  /* Form validation styling */
+  [data-error="true"] {
+    border-color: #FF3B30 !important;
+    background-color: rgba(255, 59, 48, 0.05) !important;
+  }
+  
+  [data-error="true"]:focus {
+    outline-color: #FF3B30 !important;
+    box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.1) !important;
+  }
+  
+  /* Registration form specific layout */
+  .registration-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  .registration-hero {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  .registration-form {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Mobile optimizations */
+@media screen and (max-width: 767px) {
+  [data-web-form="registration"] {
+    padding: 0 1rem;
+  }
+  
+  [data-web-row="form-row"] {
+    flex-direction: column;
+  }
+  
+  /* Touch-friendly buttons */
+  button {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  /* Better mobile form fields */
+  input,
+  textarea {
+    min-height: 48px;
+    font-size: 16px; /* Prevent zoom on iOS */
+  }
+  
+  .registration-container {
+    padding: 1rem;
+  }
+  
+  .registration-form {
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 0 0.5rem;
+  }
+}
+
+/* Form field enhancements */
+.form-field {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  outline: none;
+}
+
+.form-field.error input,
+.form-field.error textarea {
+  border-color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.05);
+}
+
+.form-field.error input:focus,
+.form-field.error textarea:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-error {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+.form-helper {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Button enhancements */
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  font-size: 16px;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid #3b82f6;
+  color: #3b82f6;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  font-size: 16px;
+}
+
+.btn-outline:hover {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+}
+
+/* Registration Form Scrolling Improvements */
+.registration-scroll-container {
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.registration-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.registration-scroll-container::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.registration-scroll-container::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.registration-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Fix for registration form content */
+.registration-content {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 100px;
+}
+
+/* Auto-adjustable form layout */
+@media screen and (min-width: 768px) {
+  .registration-scroll-container {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .registration-content {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .registration-content {
+    padding: 1rem;
+  }
+}
+
+/* Ensure form elements are properly spaced for scrolling */
+.form-section {
+  margin-bottom: 2rem;
+}
+
+.form-section:last-child {
+  margin-bottom: 4rem;
+}
+
+/* Smooth focus scrolling */
+input:focus,
+textarea:focus,
+select:focus {
+  scroll-margin-top: 100px;
+}
+
+/* Auto-adjust container height */
+.auto-adjust-container {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-y: auto !important;
+  flex-grow: 1 !important;
+}
