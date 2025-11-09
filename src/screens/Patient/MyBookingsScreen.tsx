@@ -20,7 +20,7 @@ interface MyBookingsScreenProps {
 }
 
 type ActiveTab = 'search' | 'ehr' | 'appointments' | 'categories';
-type ProviderType = 'all' | 'hospitals';
+type ProviderType = 'all' | 'topRated' | 'highRated' | 'goodRated';
 type FilterCategory = 'all' | 'cardiology' | 'neurology' | 'orthopedics' | 'pediatrics' | 'dermatology' | 'gastroenterology' | 'radiology' | 'pathology';
 
 export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, navigation }) => {
@@ -37,21 +37,28 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const [selectedEHR, setSelectedEHR] = useState<EHRRecord | null>(null);
   const [ehrModalVisible, setEhrModalVisible] = useState(false);
   
+  // Utility function to ensure doctor name is displayed correctly
+  const formatDoctorName = (name: string) => {
+    // If name already starts with "Dr.", return as is
+    // Otherwise, add "Dr." prefix
+    return name.startsWith('Dr.') ? name : `Dr. ${name}`;
+  };
+  
   // Animation references
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
 
-  // Categories data
+  // Categories data (includes icon + color for improved UI)
   const categories = [
-    { key: 'cardiology' as FilterCategory, label: 'Cardiology' },
-    { key: 'neurology' as FilterCategory, label: 'Neurology' },
-    { key: 'orthopedics' as FilterCategory, label: 'Orthopedics' },
-    { key: 'pediatrics' as FilterCategory, label: 'Pediatrics' },
-    { key: 'dermatology' as FilterCategory, label: 'Dermatology' },
-    { key: 'gastroenterology' as FilterCategory, label: 'Gastroenterology' },
-    { key: 'radiology' as FilterCategory, label: 'Radiology' },
-    { key: 'pathology' as FilterCategory, label: 'Pathology' },
+    { key: 'cardiology' as FilterCategory, label: 'Cardiology', icon: 'heart-outline', color: '#ef4444', bgColor: '#fee2e2' },
+    { key: 'neurology' as FilterCategory, label: 'Neurology', icon: 'pulse-outline', color: '#7c3aed', bgColor: '#ede9fe' },
+    { key: 'orthopedics' as FilterCategory, label: 'Orthopedics', icon: 'bandage-outline', color: '#059669', bgColor: '#d1fae5' },
+    { key: 'pediatrics' as FilterCategory, label: 'Pediatrics', icon: 'happy-outline', color: '#f59e0b', bgColor: '#fef3c7' },
+    { key: 'dermatology' as FilterCategory, label: 'Dermatology', icon: 'color-palette-outline', color: '#f97316', bgColor: '#fff7ed' },
+    { key: 'gastroenterology' as FilterCategory, label: 'Gastroenterology', icon: 'restaurant-outline', color: '#0ea5a4', bgColor: '#ecfeff' },
+    { key: 'radiology' as FilterCategory, label: 'Radiology', icon: 'eye-outline', color: '#2563eb', bgColor: '#e0f2fe' },
+    { key: 'pathology' as FilterCategory, label: 'Pathology', icon: 'flask-outline', color: '#a855f7', bgColor: '#f3e8ff' },
   ];
 
   const loadBookings = async () => {
@@ -133,8 +140,20 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const getFilteredProviders = () => {
     let allProviders: any[] = [];
 
-    if (selectedProvider === 'all' || selectedProvider === 'hospitals') {
-      allProviders = [...allProviders, ...hospitals.map(h => ({ ...h, type: 'hospital' }))];
+    // Always include hospitals, but filter by rating
+    const hospitalsWithType = hospitals.map(h => ({ ...h, type: 'hospital' }));
+    
+    if (selectedProvider === 'all') {
+      allProviders = [...allProviders, ...hospitalsWithType];
+    } else if (selectedProvider === 'topRated') {
+      // Rating 4.5 and above
+      allProviders = [...allProviders, ...hospitalsWithType.filter(h => h.rating >= 4.5)];
+    } else if (selectedProvider === 'highRated') {
+      // Rating 4.0 - 4.4
+      allProviders = [...allProviders, ...hospitalsWithType.filter(h => h.rating >= 4.0 && h.rating < 4.5)];
+    } else if (selectedProvider === 'goodRated') {
+      // Rating 3.5 - 3.9
+      allProviders = [...allProviders, ...hospitalsWithType.filter(h => h.rating >= 3.5 && h.rating < 4.0)];
     }
 
     // Apply search filter
@@ -347,8 +366,10 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
         <View style={styles.filterRow}>
           {/* Provider Type Filters */}
           {[
-            { key: 'all', label: 'All', icon: 'apps' },
-            { key: 'hospitals', label: 'Hospitals', icon: 'medical' }
+            { key: 'all', label: 'All Hospitals', icon: 'apps' },
+            { key: 'topRated', label: '4.5+ ⭐', icon: 'star' },
+            { key: 'highRated', label: '4.0-4.4 ⭐', icon: 'star-half' },
+            { key: 'goodRated', label: '3.5-3.9 ⭐', icon: 'star-outline' }
           ].map((filter) => (
             <TouchableOpacity
               key={filter.key}
@@ -448,14 +469,28 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           </View>
 
           {/* Rating Badge */}
-          <View style={styles.compactRating}>
-            <Ionicons name="star" size={12} color="#fbbf24" />
-            <Text style={styles.compactRatingText}>{item.rating}</Text>
+          <View style={[
+            styles.compactRating,
+            {
+              backgroundColor: item.rating >= 4.5 ? '#10b981' : 
+                             item.rating >= 4.0 ? '#f59e0b' : 
+                             item.rating >= 3.5 ? '#ef4444' : '#6b7280'
+            }
+          ]}>
+            <Ionicons name="star" size={12} color="#ffffff" />
+            <Text style={[styles.compactRatingText, { color: '#ffffff' }]}>{item.rating}</Text>
           </View>
 
           {/* Card Content */}
           <View style={styles.compactContent}>
-            <Text style={styles.compactName} numberOfLines={2}>{item.name}</Text>
+            <View style={styles.compactNameRow}>
+              <Text style={styles.compactName} numberOfLines={2}>{item.name}</Text>
+              {item.rating >= 4.5 && (
+                <View style={styles.topRatedBadge}>
+                  <Text style={styles.topRatedBadgeText}>TOP</Text>
+                </View>
+              )}
+            </View>
             <Text style={styles.compactSpecialization} numberOfLines={1}>
               {item.specialization}
             </Text>
@@ -614,27 +649,56 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     </View>
   );
 
-  const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <Ionicons 
-        name={
-          activeTab === 'search' ? 'search-outline' :
-          activeTab === 'ehr' ? 'document-text-outline' : 'calendar-outline'
-        } 
-        size={64} 
-        color={colors.textLight} 
-      />
-      <Text style={styles.emptyTitle}>
-        {activeTab === 'search' ? 'No Results Found' :
-         activeTab === 'ehr' ? 'No EHR Data' : 'No Bookings Yet'}
-      </Text>
-      <Text style={styles.emptySubtitle}>
-        {activeTab === 'search' ? 'Try adjusting your search or filters' :
-         activeTab === 'ehr' ? 'Your electronic health records will appear here' :
-         'Book your first appointment to see it here'}
-      </Text>
-    </View>
-  );
+  const renderEmptyState = () => {
+    const getEmptyStateText = () => {
+      switch (selectedProvider) {
+        case 'topRated':
+          return {
+            title: 'No Top Rated Hospitals Found',
+            subtitle: 'Try searching in other rating categories or adjust your filters'
+          };
+        case 'highRated':
+          return {
+            title: 'No High Rated Hospitals Found',
+            subtitle: 'Hospitals with 4.0-4.4 rating will appear here'
+          };
+        case 'goodRated':
+          return {
+            title: 'No Good Rated Hospitals Found',
+            subtitle: 'Hospitals with 3.5-3.9 rating will appear here'
+          };
+        default:
+          return {
+            title: activeTab === 'search' ? 'No Results Found' :
+                   activeTab === 'ehr' ? 'No EHR Data' : 'No Bookings Yet',
+            subtitle: activeTab === 'search' ? 'Try adjusting your search or filters' :
+                     activeTab === 'ehr' ? 'Your electronic health records will appear here' :
+                     'Book your first appointment to see it here'
+          };
+      }
+    };
+
+    const emptyText = getEmptyStateText();
+    
+    return (
+      <View style={styles.emptyState}>
+        <Ionicons 
+          name={
+            activeTab === 'search' ? 'search-outline' :
+            activeTab === 'ehr' ? 'document-text-outline' : 'calendar-outline'
+          } 
+          size={64} 
+          color={colors.textLight} 
+        />
+        <Text style={styles.emptyTitle}>
+          {emptyText.title}
+        </Text>
+        <Text style={styles.emptySubtitle}>
+          {emptyText.subtitle}
+        </Text>
+      </View>
+    );
+  };
 
   // Enhanced grid layout renderer
   const renderProviderGrid = (providers: any[], title: string, onViewAll: () => void) => {
@@ -674,22 +738,32 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       hospitals: filteredProviders.filter(p => p.type === 'hospital')
     };
 
+    const getSectionTitle = () => {
+      const count = groupedProviders.hospitals.length;
+      switch (selectedProvider) {
+        case 'topRated':
+          return `Top Rated Hospitals (${count})`;
+        case 'highRated':
+          return `High Rated Hospitals (${count})`;
+        case 'goodRated':
+          return `Good Rated Hospitals (${count})`;
+        default:
+          return `All Hospitals (${count})`;
+      }
+    };
+
     return (
       <View style={styles.contentContainer}>
 
         {/* Top Hospitals Section */}
-        {(selectedProvider === 'all' || selectedProvider === 'hospitals') && 
-          renderProviderGrid(
-            groupedProviders.hospitals, 
-            `Top Hospitals`, 
-            () => setSelectedProvider('hospitals')
-          )
-        }
+        {renderProviderGrid(
+          groupedProviders.hospitals, 
+          getSectionTitle(), 
+          () => setSelectedProvider('topRated')
+        )}
 
         {/* Nearby Hospitals Section */}
-        {(selectedProvider === 'all' || selectedProvider === 'hospitals') && 
-          renderNearbyHospitals()
-        }
+        {renderNearbyHospitals()}
 
         {filteredProviders.length === 0 && renderEmptyState()}
       </View>
@@ -710,328 +784,774 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
 
     const getStatusColor = (status: string) => {
       switch (status) {
-        case 'Completed':
-          return colors.success;
-        case 'Follow-up Required':
-          return colors.warning;
-        case 'Active':
-          return colors.info;
+        case 'Normal':
+          return '#16a34a';
+        case 'Abnormal':
+          return '#f59e0b';
+        case 'Critical':
+          return '#dc2626';
+        case 'Pending':
+          return '#6b7280';
         default:
-          return colors.textTertiary;
+          return '#6b7280';
+      }
+    };
+
+    const getVitalStatus = (type: string, value: number) => {
+      switch (type) {
+        case 'bp':
+          return value <= 120 ? { status: 'Normal', color: '#16a34a' } : { status: 'High', color: '#dc2626' };
+        case 'sugar':
+          return value <= 140 ? { status: 'Normal', color: '#16a34a' } : { status: 'High', color: '#dc2626' };
+        default:
+          return { status: 'Stable', color: '#6b7280' };
       }
     };
 
     return (
-      <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
-        {/* EHR Overview Card */}
-        <View style={styles.ehrCard}>
-          <View style={styles.ehrHeader}>
-            <Ionicons name="document-text" size={32} color="#3b82f6" />
-            <Text style={styles.ehrTitle}>Electronic Health Records</Text>
-          </View>
-          <Text style={styles.ehrDescription}>
-            Access your complete medical history, test results, and treatment records.
-          </Text>
-
-          {/* Quick Stats */}
-          <View style={styles.ehrStatsContainer}>
-            <View style={styles.ehrStatCard}>
-              <Text style={styles.ehrStatNumber}>{ehrRecords.length}</Text>
-              <Text style={styles.ehrStatLabel}>Total Records</Text>
-            </View>
-            <View style={styles.ehrStatCard}>
-              <Text style={styles.ehrStatNumber}>{upcomingFollowUps.length}</Text>
-              <Text style={styles.ehrStatLabel}>Follow-ups</Text>
-            </View>
-            <View style={styles.ehrStatCard}>
-              <Text style={styles.ehrStatNumber}>
-                {ehrRecords.filter(r => r.status === 'Active').length}
-              </Text>
-              <Text style={styles.ehrStatLabel}>Active</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Recent Health Summary */}
-        {recentRecords.length > 0 && (
-          <View style={styles.ehrCard}>
-            <Text style={styles.sectionTitle}>Latest Health Summary</Text>
-            <View style={styles.healthSummaryCard}>
-              <View style={styles.summaryHeader}>
-                <Text style={styles.summaryTitle}>Recent Assessment</Text>
-                <Text style={styles.summaryDate}>
-                  {formatDate(recentRecords[0].appointmentDateTime)}
-                </Text>
+      <ScrollView style={styles.ehrContainer} showsVerticalScrollIndicator={false} bounces={true}>
+        
+        {/* Enhanced Header with Gradient */}
+        <LinearGradient
+          colors={['#7c3aed', '#8b5cf6', '#a855f7']}
+          style={styles.ehrHeaderGradient}
+        >
+          <View style={styles.ehrHeaderContent}>
+            <View style={styles.ehrHeaderTop}>
+              <View style={styles.ehrHeaderLeft}>
+                <View style={styles.ehrHeaderIcon}>
+                  <Ionicons name="document-text" size={32} color="#ffffff" />
+                </View>
+                <View style={styles.ehrHeaderInfo}>
+                  <Text style={styles.ehrMainTitle}>Health Records</Text>
+                  <Text style={styles.ehrHeaderSubtitle}>
+                    Your comprehensive medical history
+                  </Text>
+                </View>
               </View>
               
-              <View style={styles.vitalsSummary}>
-                <View style={styles.vitalItem}>
-                  <Text style={styles.vitalLabel}>Blood Pressure</Text>
-                  <Text style={styles.vitalValue}>
-                    {recentRecords[0].patientBasicVitals.bloodPressure.systolic}/
-                    {recentRecords[0].patientBasicVitals.bloodPressure.diastolic}
-                  </Text>
-                  <Text style={[styles.vitalStatus, {
-                    color: recentRecords[0].patientBasicVitals.bloodPressure.systolic <= 120 ? 
-                           colors.success : colors.warning
-                  }]}>
-                    {recentRecords[0].patientBasicVitals.bloodPressure.systolic <= 120 ? 
-                     'Normal' : 'High'}
-                  </Text>
-                </View>
-                
-                <View style={styles.vitalItem}>
-                  <Text style={styles.vitalLabel}>Blood Sugar</Text>
-                  <Text style={styles.vitalValue}>
-                    {recentRecords[0].patientBasicVitals.sugarReading} mg/dL
-                  </Text>
-                  <Text style={[styles.vitalStatus, {
-                    color: recentRecords[0].patientBasicVitals.sugarReading <= 140 ? 
-                           colors.success : colors.warning
-                  }]}>
-                    {recentRecords[0].patientBasicVitals.sugarReading <= 140 ? 'Normal' : 'High'}
-                  </Text>
-                </View>
-                
-                <View style={styles.vitalItem}>
-                  <Text style={styles.vitalLabel}>Weight</Text>
-                  <Text style={styles.vitalValue}>
-                    {recentRecords[0].patientBasicVitals.weight} kg
-                  </Text>
-                  <Text style={styles.vitalStatus}>Stable</Text>
-                </View>
-              </View>
+              <TouchableOpacity style={styles.ehrHeaderAction}>
+                <Ionicons name="download-outline" size={24} color="#ffffff" />
+              </TouchableOpacity>
+            </View>
 
-              <View style={styles.conditionInfo}>
-                <Text style={styles.conditionLabel}>Latest Condition:</Text>
-                <Text style={styles.conditionText} numberOfLines={2}>
-                  {recentRecords[0].healthIssue}
+            {/* Quick Overview Stats */}
+            <View style={styles.ehrQuickStats}>
+              <View style={styles.ehrQuickStatItem}>
+                <View style={styles.ehrQuickStatIcon}>
+                  <Ionicons name="folder-open-outline" size={20} color="#7c3aed" />
+                </View>
+                <Text style={styles.ehrQuickStatNumber}>{ehrRecords.length}</Text>
+                <Text style={styles.ehrQuickStatLabel}>Total Records</Text>
+              </View>
+              
+              <View style={styles.ehrQuickStatItem}>
+                <View style={styles.ehrQuickStatIcon}>
+                  <Ionicons name="calendar-outline" size={20} color="#f59e0b" />
+                </View>
+                <Text style={styles.ehrQuickStatNumber}>{upcomingFollowUps.length}</Text>
+                <Text style={styles.ehrQuickStatLabel}>Follow-ups</Text>
+              </View>
+              
+              <View style={styles.ehrQuickStatItem}>
+                <View style={styles.ehrQuickStatIcon}>
+                  <Ionicons name="pulse-outline" size={20} color="#10b981" />
+                </View>
+                <Text style={styles.ehrQuickStatNumber}>
+                  {ehrRecords.filter(r => r.status === 'Active').length}
                 </Text>
+                <Text style={styles.ehrQuickStatLabel}>Active</Text>
+              </View>
+              
+              <View style={styles.ehrQuickStatItem}>
+                <View style={styles.ehrQuickStatIcon}>
+                  <Ionicons name="shield-checkmark-outline" size={20} color="#0891b2" />
+                </View>
+                <Text style={styles.ehrQuickStatNumber}>
+                  {ehrRecords.filter(r => r.diagnosticReports.some(d => d.status === 'Normal')).length}
+                </Text>
+                <Text style={styles.ehrQuickStatLabel}>Normal</Text>
               </View>
             </View>
           </View>
-        )}
+        </LinearGradient>
 
-        {/* Recent Medical Records */}
-        <View style={styles.ehrCard}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Medical Records</Text>
-            <TouchableOpacity style={styles.viewAllButton}>
-              <Text style={styles.viewAllText}>View All</Text>
-              <Ionicons name="chevron-forward" size={16} color={colors.primary} />
-            </TouchableOpacity>
-          </View>
+        {/* Main Content Area */}
+        <View style={styles.ehrMainContent}>
+          
+          {/* Health Summary Dashboard */}
+          {recentRecords.length > 0 && (
+            <View style={styles.ehrSection}>
+              <View style={styles.ehrSectionHeader}>
+                <View style={styles.ehrSectionHeaderLeft}>
+                  <View style={styles.ehrSectionIcon}>
+                    <Ionicons name="analytics-outline" size={20} color="#7c3aed" />
+                  </View>
+                  <Text style={styles.ehrSectionTitle}>Health Summary</Text>
+                </View>
+                <View style={styles.ehrHealthStatus}>
+                  <View style={styles.ehrHealthIndicator} />
+                  <Text style={styles.ehrHealthStatusText}>Good</Text>
+                </View>
+              </View>
 
-          {recentRecords.length > 0 ? (
-            recentRecords.map((record) => (
-              <TouchableOpacity key={record.id} style={styles.ehrRecordCard} onPress={() => openEHRDetail(record)}>
-                <View style={styles.recordHeader}>
-                  <View style={styles.recordTitleContainer}>
-                    <Text style={styles.recordRaphaId}>{record.raphaId}</Text>
-                    <View style={[styles.recordStatusBadge, { 
-                      backgroundColor: getStatusColor(record.status) + '20' 
-                    }]}>
-                      <Text style={[styles.recordStatusText, { 
-                        color: getStatusColor(record.status) 
-                      }]}>
-                        {record.status}
+              <View style={styles.ehrHealthDashboard}>
+                {/* Latest Assessment Card */}
+                <View style={styles.ehrAssessmentCard}>
+                  <View style={styles.ehrAssessmentHeader}>
+                    <View style={styles.ehrAssessmentLeft}>
+                      <Text style={styles.ehrAssessmentTitle}>Latest Assessment</Text>
+                      <Text style={styles.ehrAssessmentDate}>
+                        {formatDate(recentRecords[0].appointmentDateTime)}
                       </Text>
                     </View>
+                    <View style={styles.ehrAssessmentDoctor}>
+                      <Ionicons name="person-circle-outline" size={20} color="#6b7280" />
+                      <Text style={styles.ehrAssessmentDoctorName}>{formatDoctorName(recentRecords[0].doctorName)}</Text>
+                    </View>
                   </View>
-                  <Text style={styles.recordDate}>
-                    {formatDate(record.appointmentDateTime)}
-                  </Text>
-                </View>
 
-                <Text style={styles.recordPatient}>{record.patientFullName}</Text>
-                <Text style={styles.recordIssue} numberOfLines={2}>
-                  {record.healthIssue}
-                </Text>
-
-                <View style={styles.recordFooter}>
-                  <View style={styles.recordVitals}>
-                    <Text style={styles.recordVitalText}>
-                      BP: {record.patientBasicVitals.bloodPressure.systolic}/
-                      {record.patientBasicVitals.bloodPressure.diastolic}
-                    </Text>
-                    <Text style={styles.recordVitalText}>
-                      Sugar: {record.patientBasicVitals.sugarReading}
-                    </Text>
-                  </View>
-                  <View style={styles.recordMeta}>
-                    <Text style={styles.recordDoctor}>Dr. {record.doctorName.replace('Dr. ', '')}</Text>
-                    <Text style={styles.recordMedCount}>
-                      {record.medicinesPrescription.length} prescription(s)
+                  <View style={styles.ehrAssessmentContent}>
+                    <Text style={styles.ehrAssessmentCondition}>{recentRecords[0].healthIssue}</Text>
+                    <Text style={styles.ehrAssessmentResolution} numberOfLines={2}>
+                      {recentRecords[0].doctorResolution}
                     </Text>
                   </View>
                 </View>
-              </TouchableOpacity>
-            ))
-          ) : (
-            <View style={styles.noRecordsContainer}>
-              <Ionicons name="document-text-outline" size={48} color={colors.textLight} />
-              <Text style={styles.noRecordsText}>No medical records found</Text>
+
+                {/* Vitals Grid */}
+                <View style={styles.ehrVitalsSection}>
+                  <Text style={styles.ehrVitalsTitle}>Current Vitals</Text>
+                  <View style={styles.ehrVitalsGrid}>
+                    <View style={styles.ehrVitalCard}>
+                      <View style={styles.ehrVitalHeader}>
+                        <View style={[styles.ehrVitalIcon, { backgroundColor: '#fee2e2' }]}>
+                          <Ionicons name="heart" size={18} color="#dc2626" />
+                        </View>
+                        <Text style={styles.ehrVitalLabel}>Blood Pressure</Text>
+                      </View>
+                      <Text style={styles.ehrVitalValue}>
+                        {recentRecords[0].patientBasicVitals.bloodPressure.systolic}/
+                        {recentRecords[0].patientBasicVitals.bloodPressure.diastolic}
+                      </Text>
+                      <Text style={styles.ehrVitalUnit}>mmHg</Text>
+                      <View style={[
+                        styles.ehrVitalStatusBadge,
+                        { backgroundColor: getVitalStatus('bp', recentRecords[0].patientBasicVitals.bloodPressure.systolic).color + '20' }
+                      ]}>
+                        <Text style={[
+                          styles.ehrVitalStatusText,
+                          { color: getVitalStatus('bp', recentRecords[0].patientBasicVitals.bloodPressure.systolic).color }
+                        ]}>
+                          {getVitalStatus('bp', recentRecords[0].patientBasicVitals.bloodPressure.systolic).status}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.ehrVitalCard}>
+                      <View style={styles.ehrVitalHeader}>
+                        <View style={[styles.ehrVitalIcon, { backgroundColor: '#fef3c7' }]}>
+                          <Ionicons name="water" size={18} color="#f59e0b" />
+                        </View>
+                        <Text style={styles.ehrVitalLabel}>Blood Sugar</Text>
+                      </View>
+                      <Text style={styles.ehrVitalValue}>
+                        {recentRecords[0].patientBasicVitals.sugarReading}
+                      </Text>
+                      <Text style={styles.ehrVitalUnit}>mg/dL</Text>
+                      <View style={[
+                        styles.ehrVitalStatusBadge,
+                        { backgroundColor: getVitalStatus('sugar', recentRecords[0].patientBasicVitals.sugarReading).color + '20' }
+                      ]}>
+                        <Text style={[
+                          styles.ehrVitalStatusText,
+                          { color: getVitalStatus('sugar', recentRecords[0].patientBasicVitals.sugarReading).color }
+                        ]}>
+                          {getVitalStatus('sugar', recentRecords[0].patientBasicVitals.sugarReading).status}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View style={styles.ehrVitalCard}>
+                      <View style={styles.ehrVitalHeader}>
+                        <View style={[styles.ehrVitalIcon, { backgroundColor: '#dcfce7' }]}>
+                          <Ionicons name="fitness" size={18} color="#16a34a" />
+                        </View>
+                        <Text style={styles.ehrVitalLabel}>Weight</Text>
+                      </View>
+                      <Text style={styles.ehrVitalValue}>
+                        {recentRecords[0].patientBasicVitals.weight}
+                      </Text>
+                      <Text style={styles.ehrVitalUnit}>kg</Text>
+                      <View style={[styles.ehrVitalStatusBadge, { backgroundColor: '#6b728020' }]}>
+                        <Text style={[styles.ehrVitalStatusText, { color: '#6b7280' }]}>
+                          Stable
+                        </Text>
+                      </View>
+                    </View>
+
+                    {recentRecords[0].patientBasicVitals.height && (
+                      <View style={styles.ehrVitalCard}>
+                        <View style={styles.ehrVitalHeader}>
+                          <View style={[styles.ehrVitalIcon, { backgroundColor: '#e0f2fe' }]}>
+                            <Ionicons name="resize" size={18} color="#0891b2" />
+                          </View>
+                          <Text style={styles.ehrVitalLabel}>Height</Text>
+                        </View>
+                        <Text style={styles.ehrVitalValue}>
+                          {recentRecords[0].patientBasicVitals.height}
+                        </Text>
+                        <Text style={styles.ehrVitalUnit}>cm</Text>
+                        <View style={[styles.ehrVitalStatusBadge, { backgroundColor: '#6b728020' }]}>
+                          <Text style={[styles.ehrVitalStatusText, { color: '#6b7280' }]}>
+                            Normal
+                          </Text>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </View>
             </View>
           )}
-        </View>
 
-        {/* Upcoming Follow-ups */}
-        {upcomingFollowUps.length > 0 && (
-          <View style={styles.ehrCard}>
-            <Text style={styles.sectionTitle}>Upcoming Follow-ups</Text>
-            {upcomingFollowUps.slice(0, 3).map((followUp, index) => (
-              <View key={index} style={styles.followUpCard}>
-                <View style={styles.followUpHeader}>
-                  <Text style={styles.followUpPatient}>{followUp.patientName}</Text>
-                  <View style={[styles.priorityBadge, {
-                    backgroundColor: followUp.priority === 'High' ? colors.errorLight :
-                                   followUp.priority === 'Medium' ? colors.warningLight :
-                                   colors.successLight
-                  }]}>
-                    <Text style={[styles.priorityText, {
-                      color: followUp.priority === 'High' ? colors.error :
-                             followUp.priority === 'Medium' ? colors.warning :
-                             colors.success
-                    }]}>
-                      {followUp.priority}
-                    </Text>
-                  </View>
+          {/* Medical Records Section */}
+          <View style={styles.ehrSection}>
+            <View style={styles.ehrSectionHeader}>
+              <View style={styles.ehrSectionHeaderLeft}>
+                <View style={[styles.ehrSectionIcon, { backgroundColor: '#dbeafe' }]}>
+                  <Ionicons name="document-text-outline" size={20} color="#3b82f6" />
                 </View>
-                <Text style={styles.followUpPurpose}>{followUp.purpose}</Text>
-                <Text style={styles.followUpDate}>
-                  {new Date(followUp.followUpDate).toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </Text>
+                <Text style={styles.ehrSectionTitle}>Medical Records</Text>
               </View>
-            ))}
-          </View>
-        )}
-
-        {/* Health Categories */}
-        <View style={styles.ehrCard}>
-          <Text style={styles.sectionTitle}>Health Categories</Text>
-          <View style={styles.ehrCategoriesGrid}>
-            {[
-              { icon: '🩺', name: 'Medical History', available: true },
-              { icon: '🧪', name: 'Test Results', available: true },
-              { icon: '💊', name: 'Prescriptions', available: true },
-              { icon: '💉', name: 'Vaccinations', available: true },
-              { icon: '🫀', name: 'Vitals', available: true },
-              { icon: '📋', name: 'Reports', available: true },
-            ].map((category, index) => (
-              <TouchableOpacity key={index} style={styles.categoryCard}>
-                <Text style={styles.categoryIcon}>{category.icon}</Text>
-                <Text style={styles.categoryName}>{category.name}</Text>
-                {category.available && (
-                  <View style={styles.availableBadge}>
-                    <Ionicons name="checkmark" size={12} color={colors.textWhite} />
-                  </View>
-                )}
+              <TouchableOpacity style={styles.ehrViewAllButton}>
+                <Text style={styles.ehrViewAllText}>View All</Text>
+                <Ionicons name="chevron-forward" size={16} color="#3b82f6" />
               </TouchableOpacity>
-            ))}
+            </View>
+
+            <View style={styles.ehrRecordsContainer}>
+              {recentRecords.length > 0 ? (
+                recentRecords.map((record) => (
+                  <TouchableOpacity 
+                    key={record.id} 
+                    style={styles.ehrRecordCard} 
+                    onPress={() => openEHRDetail(record)}
+                    activeOpacity={0.95}
+                  >
+                    <View style={styles.ehrRecordHeader}>
+                      <View style={styles.ehrRecordLeft}>
+                        <Text style={styles.ehrRecordId}>{record.raphaId}</Text>
+                        <Text style={styles.ehrRecordDate}>
+                          {formatDate(record.appointmentDateTime)}
+                        </Text>
+                      </View>
+                      <View style={[
+                        styles.ehrRecordStatusBadge,
+                        { backgroundColor: getStatusColor(record.status) + '20' }
+                      ]}>
+                        <View style={[
+                          styles.ehrRecordStatusIndicator,
+                          { backgroundColor: getStatusColor(record.status) }
+                        ]} />
+                        <Text style={[
+                          styles.ehrRecordStatusText,
+                          { color: getStatusColor(record.status) }
+                        ]}>
+                          {record.status}
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    <View style={styles.ehrRecordContent}>
+                      <View style={styles.ehrRecordDoctor}>
+                        <Ionicons name="person-circle-outline" size={16} color="#6b7280" />
+                        <Text style={styles.ehrRecordDoctorName}>{formatDoctorName(record.doctorName)}</Text>
+                      </View>
+                      
+                      <Text style={styles.ehrRecordCondition} numberOfLines={1}>
+                        {record.healthIssue}
+                      </Text>
+                      
+                      <View style={styles.ehrRecordMeta}>
+                        <View style={styles.ehrRecordMetaItem}>
+                          <Ionicons name="medical-outline" size={12} color="#9ca3af" />
+                          <Text style={styles.ehrRecordMetaText}>
+                            {record.medicinesPrescription.length} Medicines
+                          </Text>
+                        </View>
+                        
+                        <View style={styles.ehrRecordMetaItem}>
+                          <Ionicons name="document-outline" size={12} color="#9ca3af" />
+                          <Text style={styles.ehrRecordMetaText}>
+                            {record.diagnosticReports.length} Tests
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    
+                    <View style={styles.ehrRecordAction}>
+                      <Ionicons name="chevron-forward" size={16} color="#d1d5db" />
+                    </View>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <View style={styles.ehrEmptyRecords}>
+                  <View style={styles.ehrEmptyIcon}>
+                    <Ionicons name="document-text-outline" size={48} color="#d1d5db" />
+                  </View>
+                  <Text style={styles.ehrEmptyTitle}>No Medical Records</Text>
+                  <Text style={styles.ehrEmptySubtitle}>
+                    Your medical records will appear here after appointments
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
+
+          {/* Upcoming Follow-ups */}
+          {upcomingFollowUps.length > 0 && (
+            <View style={styles.ehrSection}>
+              <View style={styles.ehrSectionHeader}>
+                <View style={styles.ehrSectionHeaderLeft}>
+                  <View style={[styles.ehrSectionIcon, { backgroundColor: '#fef3c7' }]}>
+                    <Ionicons name="calendar-outline" size={20} color="#f59e0b" />
+                  </View>
+                  <Text style={styles.ehrSectionTitle}>Upcoming Follow-ups</Text>
+                </View>
+                <View style={styles.ehrFollowUpCount}>
+                  <Text style={styles.ehrFollowUpCountText}>{upcomingFollowUps.length}</Text>
+                </View>
+              </View>
+              
+              <View style={styles.ehrFollowUpsList}>
+                {upcomingFollowUps.slice(0, 3).map((followUp, index) => (
+                  <View key={index} style={styles.ehrFollowUpCard}>
+                    <View style={styles.ehrFollowUpHeader}>
+                      <View style={styles.ehrFollowUpLeft}>
+                        <Text style={styles.ehrFollowUpPurpose}>{followUp.purpose}</Text>
+                        <Text style={styles.ehrFollowUpDate}>
+                          {new Date(followUp.followUpDate).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </Text>
+                      </View>
+                      
+                      <View style={[
+                        styles.ehrFollowUpPriority,
+                        {
+                          backgroundColor: followUp.priority === 'High' ? '#fee2e2' :
+                                         followUp.priority === 'Medium' ? '#fef3c7' : '#dcfce7'
+                        }
+                      ]}>
+                        <Text style={[
+                          styles.ehrFollowUpPriorityText,
+                          {
+                            color: followUp.priority === 'High' ? '#dc2626' :
+                                   followUp.priority === 'Medium' ? '#f59e0b' : '#16a34a'
+                          }
+                        ]}>
+                          {followUp.priority}
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    <View style={styles.ehrFollowUpActions}>
+                      <TouchableOpacity style={styles.ehrFollowUpActionButton}>
+                        <Ionicons name="calendar-outline" size={14} color="#6b7280" />
+                        <Text style={styles.ehrFollowUpActionText}>Reschedule</Text>
+                      </TouchableOpacity>
+                      
+                      <TouchableOpacity style={[styles.ehrFollowUpActionButton, styles.ehrFollowUpPrimaryButton]}>
+                        <Ionicons name="checkmark-outline" size={14} color="#3b82f6" />
+                        <Text style={[styles.ehrFollowUpActionText, styles.ehrFollowUpPrimaryText]}>Confirm</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Health Categories Grid */}
+          <View style={[styles.ehrSection, { marginBottom: 40 }]}>
+            <View style={styles.ehrSectionHeader}>
+              <View style={styles.ehrSectionHeaderLeft}>
+                <View style={[styles.ehrSectionIcon, { backgroundColor: '#f3f4f6' }]}>
+                  <Ionicons name="grid-outline" size={20} color="#4b5563" />
+                </View>
+                <Text style={styles.ehrSectionTitle}>Health Categories</Text>
+              </View>
+            </View>
+            
+            <View style={styles.ehrCategoriesGrid}>
+              {[
+                { icon: 'heart-outline', name: 'Cardiology', count: 3, color: '#dc2626', bgColor: '#fee2e2' },
+                { icon: 'medical-outline', name: 'General', count: 5, color: '#3b82f6', bgColor: '#dbeafe' },
+                { icon: 'flask-outline', name: 'Lab Tests', count: 8, color: '#059669', bgColor: '#d1fae5' },
+                { icon: 'eye-outline', name: 'Radiology', count: 2, color: '#7c3aed', bgColor: '#ede9fe' },
+                { icon: 'fitness-outline', name: 'Physical', count: 4, color: '#f59e0b', bgColor: '#fef3c7' },
+                { icon: 'bandage-outline', name: 'Surgery', count: 1, color: '#dc2626', bgColor: '#fee2e2' },
+              ].map((category, index) => (
+                <TouchableOpacity key={index} style={styles.ehrCategoryCard}>
+                  <View style={[styles.ehrCategoryIcon, { backgroundColor: category.bgColor }]}>
+                    <Ionicons name={category.icon as any} size={20} color={category.color} />
+                  </View>
+                  <Text style={styles.ehrCategoryName}>{category.name}</Text>
+                  <Text style={styles.ehrCategoryCount}>{category.count} records</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+          
         </View>
       </ScrollView>
     );
   };
 
-  const renderAppointmentsContent = () => (
-    <View style={styles.appointmentsContainer}>
-      <View style={styles.appointmentsHeader}>
-        <Text style={styles.appointmentsTitle}>My Appointments</Text>
-        <Text style={styles.appointmentsSubtitle}>Track your healthcare appointments</Text>
-        
-        <View style={styles.statsContainer}>
-          <View style={[styles.statCard, { backgroundColor: '#fef3c7' }]}>
-            <Text style={[styles.statNumber, { color: '#d97706' }]}>
-              {statusCounts.pending}
-            </Text>
-            <Text style={styles.statLabel}>PENDING</Text>
-          </View>
-          
-          <View style={[styles.statCard, { backgroundColor: '#dcfce7' }]}>
-            <Text style={[styles.statNumber, { color: '#16a34a' }]}>
-              {statusCounts.accepted}
-            </Text>
-            <Text style={styles.statLabel}>ACCEPTED</Text>
-          </View>
-          
-          <View style={[styles.statCard, { backgroundColor: '#dbeafe' }]}>
-            <Text style={[styles.statNumber, { color: '#2563eb' }]}>
-              {statusCounts.completed}
-            </Text>
-            <Text style={styles.statLabel}>COMPLETED</Text>
-          </View>
-          
-          <View style={[styles.statCard, { backgroundColor: '#fee2e2' }]}>
-            <Text style={[styles.statNumber, { color: '#dc2626' }]}>
-              {statusCounts.rejected}
-            </Text>
-            <Text style={styles.statLabel}>REJECTED</Text>
-          </View>
-        </View>
-      </View>
-      
-      <View style={styles.appointmentsList}>
-        {bookings.length === 0 ? (
-          renderEmptyState()
-        ) : (
-          bookings.map((booking) => (
-            <View key={booking.id.toString()}>
-              {renderBookingCard({ item: booking })}
-            </View>
-          ))
-        )}
-      </View>
-    </View>
-  );
+  const renderAppointmentsContent = () => {
+    const upcomingBookings = bookings.filter(b => b.status === 'Accepted' || b.status === 'Pending');
+    const completedBookings = bookings.filter(b => b.status === 'Completed');
+    const recentBookings = bookings.slice(0, 3);
 
-  const renderCategoriesContent = () => (
-    <View style={styles.contentContainer}>
-      <View style={styles.categoriesCard}>
-        <View style={styles.categoriesHeader}>
-          <Ionicons name="filter" size={32} color="#3b82f6" />
-          <Text style={styles.categoriesTitle}>Medical Categories</Text>
-        </View>
-        <Text style={styles.categoriesDescription}>
-          Browse hospitals by medical specialties and categories.
-        </Text>
-        <View style={styles.categoriesGrid}>
-          {categories.map((category, index) => (
-            <TouchableOpacity
-              key={category.key}
-              style={[
-                styles.categoryCard,
-                selectedCategory === category.key && styles.categoryCardActive
-              ]}
-              onPress={() => {
-                setSelectedCategory(category.key);
-                setActiveTab('search'); // Switch back to search tab after selection
-              }}
-            >
-              <Ionicons 
-                name="medical" 
-                size={24} 
-                color={selectedCategory === category.key ? '#2563eb' : '#64748b'} 
-              />
-              <Text style={[
-                styles.categoryCardText,
-                selectedCategory === category.key && styles.categoryCardTextActive
-              ]}>
-                {category.label}
+    return (
+      <ScrollView 
+        style={styles.appointmentsContainer}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+      >
+        {/* Enhanced Header with Gradient */}
+        <LinearGradient
+          colors={['#1e40af', '#3b82f6', '#60a5fa']}
+          style={styles.appointmentsHeaderGradient}
+        >
+          <View style={styles.appointmentsHeaderContent}>
+            <View style={styles.appointmentsHeaderTop}>
+              <View style={styles.appointmentsHeaderLeft}>
+                <Text style={styles.appointmentsMainTitle}>My Appointments</Text>
+                <Text style={styles.appointmentsHeaderSubtitle}>
+                  Manage your healthcare journey
+                </Text>
+              </View>
+              <View style={styles.appointmentsHeaderIcon}>
+                <Ionicons name="calendar" size={32} color="#ffffff" />
+              </View>
+            </View>
+
+            {/* Quick Stats Overview */}
+            <View style={styles.quickStatsContainer}>
+              <View style={styles.quickStatItem}>
+                <View style={styles.quickStatIconContainer}>
+                  <Ionicons name="time-outline" size={20} color="#fbbf24" />
+                </View>
+                <Text style={styles.quickStatNumber}>{statusCounts.pending}</Text>
+                <Text style={styles.quickStatLabel}>Pending</Text>
+              </View>
+              
+              <View style={styles.quickStatItem}>
+                <View style={styles.quickStatIconContainer}>
+                  <Ionicons name="checkmark-circle-outline" size={20} color="#10b981" />
+                </View>
+                <Text style={styles.quickStatNumber}>{statusCounts.accepted}</Text>
+                <Text style={styles.quickStatLabel}>Accepted</Text>
+              </View>
+              
+              <View style={styles.quickStatItem}>
+                <View style={styles.quickStatIconContainer}>
+                  <Ionicons name="medal-outline" size={20} color="#3b82f6" />
+                </View>
+                <Text style={styles.quickStatNumber}>{statusCounts.completed}</Text>
+                <Text style={styles.quickStatLabel}>Completed</Text>
+              </View>
+              
+              <View style={styles.quickStatItem}>
+                <View style={styles.quickStatIconContainer}>
+                  <Ionicons name="close-circle-outline" size={20} color="#ef4444" />
+                </View>
+                <Text style={styles.quickStatNumber}>{statusCounts.rejected}</Text>
+                <Text style={styles.quickStatLabel}>Rejected</Text>
+              </View>
+            </View>
+          </View>
+        </LinearGradient>
+
+        {/* Main Content Area */}
+        <View style={styles.appointmentsMainContent}>
+          
+          {/* Upcoming Appointments Section */}
+          {upcomingBookings.length > 0 && (
+            <View style={styles.appointmentSection}>
+              <View style={styles.sectionHeaderRow}>
+                <View style={styles.sectionHeaderLeft}>
+                  <View style={styles.sectionIconContainer}>
+                    <Ionicons name="calendar-outline" size={20} color="#3b82f6" />
+                  </View>
+                  <Text style={styles.appointmentSectionTitle}>Upcoming Appointments</Text>
+                </View>
+                <View style={styles.sectionBadge}>
+                  <Text style={styles.sectionBadgeText}>{upcomingBookings.length}</Text>
+                </View>
+              </View>
+              
+              <View style={styles.appointmentCards}>
+                {upcomingBookings.slice(0, 3).map((booking) => (
+                  <View key={booking.id} style={styles.enhancedAppointmentCard}>
+                    <View style={styles.appointmentCardHeader}>
+                      <View style={styles.hospitalInfo}>
+                        <Text style={styles.hospitalName}>{booking.hospitalName}</Text>
+                        <Text style={styles.doctorName}>{formatDoctorName(booking.doctorName)}</Text>
+                      </View>
+                      <View style={[
+                        styles.statusBadgeEnhanced,
+                        {
+                          backgroundColor: booking.status === 'Accepted' ? '#dcfce7' : '#fef3c7'
+                        }
+                      ]}>
+                        <View style={[
+                          styles.statusIndicator,
+                          {
+                            backgroundColor: booking.status === 'Accepted' ? '#16a34a' : '#f59e0b'
+                          }
+                        ]} />
+                        <Text style={[
+                          styles.statusTextEnhanced,
+                          {
+                            color: booking.status === 'Accepted' ? '#16a34a' : '#f59e0b'
+                          }
+                        ]}>
+                          {booking.status}
+                        </Text>
+                      </View>
+                    </View>
+                    
+                    <View style={styles.appointmentDetails}>
+                      <View style={styles.appointmentDetailItem}>
+                        <View style={styles.detailIconContainer}>
+                          <Ionicons name="calendar" size={16} color="#6b7280" />
+                        </View>
+                        <Text style={styles.detailText}>{booking.date}</Text>
+                      </View>
+                      
+                      <View style={styles.appointmentDetailItem}>
+                        <View style={styles.detailIconContainer}>
+                          <Ionicons name="time" size={16} color="#6b7280" />
+                        </View>
+                        <Text style={styles.detailText}>{booking.time}</Text>
+                      </View>
+                      
+                      <View style={styles.appointmentDetailItem}>
+                        <View style={styles.detailIconContainer}>
+                          <Ionicons name="medical" size={16} color="#6b7280" />
+                        </View>
+                        <Text style={styles.detailText}>{booking.symptoms}</Text>
+                      </View>
+                    </View>
+                    
+                    <View style={styles.appointmentCardFooter}>
+                      <TouchableOpacity style={styles.actionButtonSecondary}>
+                        <Ionicons name="call-outline" size={16} color="#3b82f6" />
+                        <Text style={styles.actionButtonSecondaryText}>Contact</Text>
+                      </TouchableOpacity>
+                      
+                      <TouchableOpacity style={styles.actionButtonPrimary}>
+                        <Ionicons name="navigate-outline" size={16} color="#ffffff" />
+                        <Text style={styles.actionButtonPrimaryText}>Navigate</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Recent History Section */}
+          {completedBookings.length > 0 && (
+            <View style={styles.appointmentSection}>
+              <View style={styles.sectionHeaderRow}>
+                <View style={styles.sectionHeaderLeft}>
+                  <View style={[styles.sectionIconContainer, { backgroundColor: '#dcfce7' }]}>
+                    <Ionicons name="checkmark-done-outline" size={20} color="#16a34a" />
+                  </View>
+                  <Text style={styles.appointmentSectionTitle}>Recent Visits</Text>
+                </View>
+                <TouchableOpacity style={styles.appointmentViewAllButton}>
+                  <Text style={styles.appointmentViewAllText}>View All</Text>
+                  <Ionicons name="chevron-forward" size={16} color="#3b82f6" />
+                </TouchableOpacity>
+              </View>
+              
+              <View style={styles.historyCards}>
+                {completedBookings.slice(0, 2).map((booking) => (
+                  <View key={booking.id} style={styles.historyCard}>
+                    <View style={styles.historyCardLeft}>
+                      <View style={styles.historyIconContainer}>
+                        <Ionicons name="medical" size={20} color="#16a34a" />
+                      </View>
+                      <View style={styles.historyInfo}>
+                        <Text style={styles.historyHospital}>{booking.hospitalName}</Text>
+                        <Text style={styles.historyDoctor}>{formatDoctorName(booking.doctorName)}</Text>
+                        <Text style={styles.historyDate}>{booking.date} • {booking.time}</Text>
+                      </View>
+                    </View>
+                    
+                    <TouchableOpacity style={styles.historyActionButton}>
+                      <Ionicons name="document-text-outline" size={16} color="#6b7280" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Quick Actions */}
+          <View style={styles.appointmentSection}>
+            <View style={styles.sectionHeaderRow}>
+              <View style={styles.sectionHeaderLeft}>
+                <View style={[styles.sectionIconContainer, { backgroundColor: '#fef3c7' }]}>
+                  <Ionicons name="flash-outline" size={20} color="#f59e0b" />
+                </View>
+                <Text style={styles.appointmentSectionTitle}>Quick Actions</Text>
+              </View>
+            </View>
+            
+            <View style={styles.quickActionsGrid}>
+              <TouchableOpacity style={styles.quickActionCard}>
+                <View style={[styles.quickActionIcon, { backgroundColor: '#dbeafe' }]}>
+                  <Ionicons name="add-circle-outline" size={24} color="#3b82f6" />
+                </View>
+                <Text style={styles.quickActionTitle}>Book New</Text>
+                <Text style={styles.quickActionSubtitle}>Schedule appointment</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.quickActionCard}>
+                <View style={[styles.quickActionIcon, { backgroundColor: '#dcfce7' }]}>
+                  <Ionicons name="repeat-outline" size={24} color="#16a34a" />
+                </View>
+                <Text style={styles.quickActionTitle}>Reschedule</Text>
+                <Text style={styles.quickActionSubtitle}>Change timing</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.quickActionCard}>
+                <View style={[styles.quickActionIcon, { backgroundColor: '#fce7f3' }]}>
+                  <Ionicons name="medical-outline" size={24} color="#ec4899" />
+                </View>
+                <Text style={styles.quickActionTitle}>Prescriptions</Text>
+                <Text style={styles.quickActionSubtitle}>View medicines</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.quickActionCard}>
+                <View style={[styles.quickActionIcon, { backgroundColor: '#e0f2fe' }]}>
+                  <Ionicons name="document-text-outline" size={24} color="#0891b2" />
+                </View>
+                <Text style={styles.quickActionTitle}>Reports</Text>
+                <Text style={styles.quickActionSubtitle}>Lab results</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* All Appointments List */}
+          {bookings.length > 0 && (
+            <View style={[styles.appointmentSection, { marginBottom: 40 }]}>
+              <View style={styles.sectionHeaderRow}>
+                <View style={styles.sectionHeaderLeft}>
+                  <View style={[styles.sectionIconContainer, { backgroundColor: '#f3f4f6' }]}>
+                    <Ionicons name="list-outline" size={20} color="#4b5563" />
+                  </View>
+                  <Text style={styles.appointmentSectionTitle}>All Appointments</Text>
+                </View>
+                <View style={styles.totalCountBadge}>
+                  <Text style={styles.totalCountText}>{bookings.length}</Text>
+                </View>
+              </View>
+              
+              <View style={styles.allAppointmentsList}>
+                {bookings.map((booking) => (
+                  <View key={booking.id.toString()}>
+                    {renderBookingCard({ item: booking })}
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Empty State */}
+          {bookings.length === 0 && (
+            <View style={styles.emptyStateContainer}>
+              <View style={styles.emptyStateIcon}>
+                <Ionicons name="calendar-outline" size={80} color="#d1d5db" />
+              </View>
+              <Text style={styles.emptyStateTitle}>No Appointments Yet</Text>
+              <Text style={styles.emptyStateSubtitle}>
+                Book your first appointment to start tracking your healthcare journey
               </Text>
-            </TouchableOpacity>
-          ))}
+              <TouchableOpacity style={styles.emptyStateButton}>
+                <Ionicons name="add-outline" size={20} color="#ffffff" />
+                <Text style={styles.emptyStateButtonText}>Book Appointment</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          
+        </View>
+      </ScrollView>
+    );
+  };
+
+  const renderCategoriesContent = () => {
+    // Responsive columns based on screen width
+    const columns = screenDimensions.width > 600 ? 4 : 2;
+
+    return (
+      <View style={styles.contentContainer}>
+        <View style={styles.categoriesCard}>
+          <View style={styles.categoriesHeader}>
+            <Ionicons name="layers-outline" size={28} color="#374151" />
+            <Text style={styles.categoriesTitle}>Medical Categories</Text>
+          </View>
+
+          <Text style={styles.categoriesDescription}>
+            Browse hospitals and services by specialty. Tap a category to filter results.
+          </Text>
+
+          <View style={styles.categoriesGrid}>
+            {categories.map((category, index) => (
+              <TouchableOpacity
+                key={category.key}
+                activeOpacity={0.85}
+                style={[
+                  styles.categoryCard,
+                  { width: `${100 / columns - 2}%` },
+                  selectedCategory === category.key && styles.categoryCardActive
+                ]}
+                onPress={() => {
+                  setSelectedCategory(category.key);
+                  setActiveTab('search');
+                }}
+              >
+                <View style={[styles.categoryIconWrap, { backgroundColor: (category as any).bgColor || '#f8fafc' }]}>
+                  <Ionicons name={(category as any).icon as any} size={22} color={(category as any).color || '#2563eb'} />
+                </View>
+
+                <Text style={[
+                  styles.categoryCardText,
+                  selectedCategory === category.key && styles.categoryCardTextActive
+                ]} numberOfLines={1}>
+                  {category.label}
+                </Text>
+
+                <View style={styles.categoryCountBadge}>
+                  <Text style={styles.categoryCountText}>{Math.floor(Math.random() * 6) + 1} records</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   const renderNearbyHospitals = () => {
     const nearbyHospitals = hospitals.slice(1, 9); // Show 8 hospitals like in home screen
@@ -1243,105 +1763,326 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
         </TouchableOpacity>
       )}
 
-      {/* EHR Detail Modal */}
+      {/* Enhanced Professional EHR Detail Modal */}
       <Modal
         visible={ehrModalVisible}
         animationType="slide"
-        presentationStyle="formSheet"
+        presentationStyle="fullScreen"
         onRequestClose={closeEHRModal}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>EHR Details</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={closeEHRModal}>
-              <Text style={styles.closeButtonText}>✕</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.ehrModalContainer}>
+          {/* Enhanced Header with Gradient */}
+          <LinearGradient
+            colors={['#3b82f6', '#2563eb', '#1d4ed8']}
+            style={styles.ehrModalHeader}
+          >
+            <View style={styles.ehrHeaderContent}>
+              <View style={styles.ehrHeaderLeft}>
+                <TouchableOpacity 
+                  style={styles.ehrBackButton} 
+                  onPress={closeEHRModal}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons name="arrow-back" size={24} color="#ffffff" />
+                </TouchableOpacity>
+                <View style={styles.ehrHeaderInfo}>
+                  <Text style={styles.ehrModalTitle}>Medical Record</Text>
+                  <Text style={styles.ehrPatientName}>
+                    {selectedEHR?.patientFullName || 'Patient'}
+                  </Text>
+                </View>
+              </View>
+              
+              <View style={styles.ehrHeaderActions}>
+                <TouchableOpacity style={styles.ehrActionButton} activeOpacity={0.8}>
+                  <Ionicons name="download-outline" size={20} color="#ffffff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.ehrActionButton} activeOpacity={0.8}>
+                  <Ionicons name="share-outline" size={20} color="#ffffff" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            
+            {/* Patient Summary Card */}
+            {selectedEHR && (
+              <View style={styles.ehrPatientSummary}>
+                <View style={styles.ehrSummaryRow}>
+                  <View style={styles.ehrSummaryItem}>
+                    <Ionicons name="person-outline" size={16} color="#93c5fd" />
+                    <Text style={styles.ehrSummaryLabel}>ID: {selectedEHR.raphaId}</Text>
+                  </View>
+                  <View style={styles.ehrSummaryItem}>
+                    <Ionicons name="calendar-outline" size={16} color="#93c5fd" />
+                    <Text style={styles.ehrSummaryLabel}>
+                      {new Date(selectedEHR.appointmentDateTime).toLocaleDateString()}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+          </LinearGradient>
 
           {selectedEHR ? (
-            <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Patient Information</Text>
-                <View style={styles.modalRow}>
-                  <Text style={styles.modalLabel}>Rapha ID:</Text>
-                  <Text style={styles.modalValue}>{selectedEHR.raphaId}</Text>
-                </View>
-                <View style={styles.modalRow}>
-                  <Text style={styles.modalLabel}>Patient Name:</Text>
-                  <Text style={styles.modalValue}>{selectedEHR.patientFullName}</Text>
-                </View>
-                <View style={styles.modalRow}>
-                  <Text style={styles.modalLabel}>Appointment:</Text>
-                  <Text style={styles.modalValue}>{new Date(selectedEHR.appointmentDateTime).toLocaleString()}</Text>
-                </View>
-              </View>
-
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Vitals</Text>
-                <Text style={styles.modalValue}>BP: {selectedEHR.patientBasicVitals.bloodPressure.systolic}/{selectedEHR.patientBasicVitals.bloodPressure.diastolic} mmHg</Text>
-                <Text style={styles.modalValue}>Sugar: {selectedEHR.patientBasicVitals.sugarReading} mg/dL</Text>
-                <Text style={styles.modalValue}>Weight: {selectedEHR.patientBasicVitals.weight} kg</Text>
-                {selectedEHR.patientBasicVitals.height && (
-                  <Text style={styles.modalValue}>Height: {selectedEHR.patientBasicVitals.height} cm</Text>
-                )}
-              </View>
-
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Health Issue</Text>
-                <Text style={styles.modalText}>{selectedEHR.healthIssue}</Text>
-              </View>
-
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Doctor's Resolution</Text>
-                <Text style={styles.modalText}>{selectedEHR.doctorResolution}</Text>
-              </View>
-
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Prescribed Medications</Text>
-                {selectedEHR.medicinesPrescription.map((med) => (
-                  <View key={med.id} style={styles.medicationItem}>
-                    <Text style={styles.medicationName}>{med.medicineName}</Text>
-                    <Text style={styles.medicationDosage}>{med.dosage} — {med.frequency}</Text>
-                    <Text style={styles.medicationInstructions}>{med.instructions}</Text>
+            <ScrollView 
+              style={styles.ehrModalContent} 
+              showsVerticalScrollIndicator={false}
+              bounces={true}
+            >
+              {/* Vitals Dashboard */}
+              <View style={styles.ehrVitalsCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={styles.ehrIconContainer}>
+                      <Ionicons name="heart-outline" size={20} color="#ef4444" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Vital Signs</Text>
                   </View>
-                ))}
-              </View>
-
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Diagnostic Reports</Text>
-                {selectedEHR.diagnosticReports.map((rep) => (
-                  <View key={rep.id} style={styles.diagnosticItem}>
-                    <Text style={styles.diagnosticName}>{rep.testName} — <Text style={styles.diagnosticStatus}>{rep.status}</Text></Text>
-                    <Text style={styles.diagnosticResults}>{rep.results}</Text>
-                    {rep.normalRange && <Text style={styles.diagnosticRange}>Normal: {rep.normalRange}</Text>}
-                    <Text style={styles.diagnosticDate}>Date: {rep.reportDate}</Text>
+                  <View style={styles.ehrStatusBadge}>
+                    <Text style={styles.ehrStatusText}>Normal</Text>
                   </View>
-                ))}
+                </View>
+                
+                <View style={styles.ehrVitalsGrid}>
+                  <View style={styles.ehrVitalCard}>
+                    <View style={styles.ehrVitalHeader}>
+                      <View style={styles.ehrVitalIcon}>
+                        <Ionicons name="pulse-outline" size={24} color="#ef4444" />
+                      </View>
+                    </View>
+                    <Text style={styles.ehrVitalValue}>
+                      {selectedEHR.patientBasicVitals.bloodPressure.systolic}/
+                      {selectedEHR.patientBasicVitals.bloodPressure.diastolic}
+                    </Text>
+                    <Text style={styles.ehrVitalUnit}>mmHg</Text>
+                    <Text style={styles.ehrVitalLabel}>Blood Pressure</Text>
+                  </View>
+                  
+                  <View style={styles.ehrVitalCard}>
+                    <View style={styles.ehrVitalHeader}>
+                      <View style={styles.ehrVitalIcon}>
+                        <Ionicons name="water-outline" size={24} color="#f59e0b" />
+                      </View>
+                    </View>
+                    <Text style={styles.ehrVitalValue}>{selectedEHR.patientBasicVitals.sugarReading}</Text>
+                    <Text style={styles.ehrVitalUnit}>mg/dL</Text>
+                    <Text style={styles.ehrVitalLabel}>Blood Sugar</Text>
+                  </View>
+                  
+                  <View style={styles.ehrVitalCard}>
+                    <View style={styles.ehrVitalHeader}>
+                      <View style={styles.ehrVitalIcon}>
+                        <Ionicons name="fitness-outline" size={24} color="#10b981" />
+                      </View>
+                    </View>
+                    <Text style={styles.ehrVitalValue}>{selectedEHR.patientBasicVitals.weight}</Text>
+                    <Text style={styles.ehrVitalUnit}>kg</Text>
+                    <Text style={styles.ehrVitalLabel}>Weight</Text>
+                  </View>
+                  
+                  {selectedEHR.patientBasicVitals.height && (
+                    <View style={styles.ehrVitalCard}>
+                      <View style={styles.ehrVitalHeader}>
+                        <View style={styles.ehrVitalIcon}>
+                          <Ionicons name="resize-outline" size={24} color="#8b5cf6" />
+                        </View>
+                      </View>
+                      <Text style={styles.ehrVitalValue}>{selectedEHR.patientBasicVitals.height}</Text>
+                      <Text style={styles.ehrVitalUnit}>cm</Text>
+                      <Text style={styles.ehrVitalLabel}>Height</Text>
+                    </View>
+                  )}
+                </View>
               </View>
 
+              {/* Health Issue Card */}
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#fef3c7' }]}>
+                      <Ionicons name="medical-outline" size={20} color="#f59e0b" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Chief Complaint</Text>
+                  </View>
+                </View>
+                <View style={styles.ehrCardContent}>
+                  <Text style={styles.ehrCardText}>{selectedEHR.healthIssue}</Text>
+                </View>
+              </View>
+
+              {/* Doctor's Assessment */}
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#dcfce7' }]}>
+                      <Ionicons name="checkmark-circle-outline" size={20} color="#16a34a" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Clinical Assessment</Text>
+                  </View>
+                </View>
+                <View style={styles.ehrCardContent}>
+                  <Text style={styles.ehrCardText}>{selectedEHR.doctorResolution}</Text>
+                </View>
+              </View>
+
+              {/* Medications */}
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#fce7f3' }]}>
+                      <Ionicons name="medical-outline" size={20} color="#ec4899" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Prescribed Medications</Text>
+                  </View>
+                  <View style={styles.ehrMedCountBadge}>
+                    <Text style={styles.ehrMedCountText}>{selectedEHR.medicinesPrescription.length}</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.ehrCardContent}>
+                  {selectedEHR.medicinesPrescription.map((med, index) => (
+                    <View key={med.id} style={styles.ehrMedicationCard}>
+                      <View style={styles.ehrMedHeader}>
+                        <View style={styles.ehrMedIcon}>
+                          <Ionicons name="medical" size={16} color="#ec4899" />
+                        </View>
+                        <View style={styles.ehrMedInfo}>
+                          <Text style={styles.ehrMedName}>{med.medicineName}</Text>
+                          <Text style={styles.ehrMedDosage}>{med.dosage} • {med.frequency}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.ehrMedInstructions}>
+                        <Text style={styles.ehrMedInstructionText}>{med.instructions}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              {/* Diagnostic Reports */}
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#e0f2fe' }]}>
+                      <Ionicons name="document-text-outline" size={20} color="#0891b2" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Laboratory Results</Text>
+                  </View>
+                  <View style={styles.ehrTestCountBadge}>
+                    <Text style={styles.ehrTestCountText}>{selectedEHR.diagnosticReports.length}</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.ehrCardContent}>
+                  {selectedEHR.diagnosticReports.map((report) => (
+                    <View key={report.id} style={styles.ehrDiagnosticCard}>
+                      <View style={styles.ehrDiagHeader}>
+                        <View style={styles.ehrDiagLeft}>
+                          <Text style={styles.ehrDiagName}>{report.testName}</Text>
+                          <Text style={styles.ehrDiagDate}>{report.reportDate}</Text>
+                        </View>
+                        <View style={[
+                          styles.ehrDiagStatus,
+                          { backgroundColor: report.status === 'Normal' ? '#dcfce7' : 
+                                              report.status === 'Abnormal' ? '#fef3c7' : 
+                                              report.status === 'Critical' ? '#fee2e2' : '#f1f5f9' }
+                        ]}>
+                          <Text style={[
+                            styles.ehrDiagStatusText,
+                            { color: report.status === 'Normal' ? '#16a34a' : 
+                                     report.status === 'Abnormal' ? '#f59e0b' :
+                                     report.status === 'Critical' ? '#dc2626' : '#6b7280' }
+                          ]}>
+                            {report.status}
+                          </Text>
+                        </View>
+                      </View>
+                      
+                      <View style={styles.ehrDiagContent}>
+                        <Text style={styles.ehrDiagResults}>{report.results}</Text>
+                        {report.normalRange && (
+                          <View style={styles.ehrDiagRange}>
+                            <Ionicons name="information-circle-outline" size={14} color="#6b7280" />
+                            <Text style={styles.ehrDiagRangeText}>Normal Range: {report.normalRange}</Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              {/* Surgery Information */}
               {selectedEHR.surgeryDescription && (
-                <View style={styles.modalSection}>
-                  <Text style={styles.modalSectionTitle}>Surgery</Text>
-                  <Text style={styles.modalText}>{selectedEHR.surgeryDescription.surgeryType}</Text>
-                  <Text style={styles.modalText}>{selectedEHR.surgeryDescription.description}</Text>
+                <View style={styles.ehrCard}>
+                  <View style={styles.ehrCardHeader}>
+                    <View style={styles.ehrCardHeaderLeft}>
+                      <View style={[styles.ehrIconContainer, { backgroundColor: '#fef2f2' }]}>
+                        <Ionicons name="cut-outline" size={20} color="#dc2626" />
+                      </View>
+                      <Text style={styles.ehrCardTitle}>Surgical Procedure</Text>
+                    </View>
+                  </View>
+                  <View style={styles.ehrCardContent}>
+                    <View style={styles.ehrSurgeryInfo}>
+                      <Text style={styles.ehrSurgeryType}>{selectedEHR.surgeryDescription.surgeryType}</Text>
+                      <Text style={styles.ehrSurgeryDesc}>{selectedEHR.surgeryDescription.description}</Text>
+                    </View>
+                  </View>
                 </View>
               )}
 
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Final Remarks</Text>
-                <Text style={styles.modalText}>{selectedEHR.finalRemarks}</Text>
+              {/* Final Remarks */}
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#f3f4f6' }]}>
+                      <Ionicons name="clipboard-outline" size={20} color="#4b5563" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Clinical Notes</Text>
+                  </View>
+                </View>
+                <View style={styles.ehrCardContent}>
+                  <Text style={styles.ehrCardText}>{selectedEHR.finalRemarks}</Text>
+                </View>
               </View>
 
-              <View style={[styles.modalSection, { marginBottom: 40 }]}>
-                <Text style={styles.modalSectionTitle}>Attending Physician</Text>
-                <Text style={styles.modalValue}>{selectedEHR.doctorName}</Text>
-                <Text style={styles.modalText}>Record Created: {new Date(selectedEHR.createdAt).toLocaleString()}</Text>
+              {/* Physician Information */}
+              <View style={[styles.ehrCard, { marginBottom: 40 }]}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#ede9fe' }]}>
+                      <Ionicons name="person-circle-outline" size={20} color="#7c3aed" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Attending Physician</Text>
+                  </View>
+                </View>
+                <View style={styles.ehrCardContent}>
+                  <View style={styles.ehrPhysicianInfo}>
+                    <Text style={styles.ehrPhysicianName}>{formatDoctorName(selectedEHR.doctorName)}</Text>
+                    <View style={styles.ehrRecordMeta}>
+                      <Ionicons name="time-outline" size={14} color="#6b7280" />
+                      <Text style={styles.ehrRecordDate}>
+                        Record Created: {new Date(selectedEHR.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
               </View>
 
             </ScrollView>
           ) : (
-            <View style={styles.noRecordsContainer}>
-              <Text style={styles.noRecordsText}>No EHR selected</Text>
+            <View style={styles.ehrNoDataContainer}>
+              <View style={styles.ehrNoDataIcon}>
+                <Ionicons name="document-text-outline" size={64} color="#d1d5db" />
+              </View>
+              <Text style={styles.ehrNoDataTitle}>No Record Selected</Text>
+              <Text style={styles.ehrNoDataSubtitle}>Please select a medical record to view details</Text>
             </View>
           )}
         </View>
@@ -1671,12 +2412,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 8,
   },
+  compactNameRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
   compactName: {
     fontSize: 13,
     fontWeight: '700',
     color: '#0f172a',
     lineHeight: 16,
-    marginBottom: 4,
+    flex: 1,
+    marginRight: 6,
+  },
+  topRatedBadge: {
+    backgroundColor: '#10b981',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
+    alignSelf: 'flex-start',
+  },
+  topRatedBadgeText: {
+    fontSize: 8,
+    fontWeight: '800',
+    color: '#ffffff',
+    letterSpacing: 0.5,
   },
   compactSpecialization: {
     fontSize: 11,
@@ -1868,19 +2629,20 @@ const styles = StyleSheet.create({
   // Section Headers (merged with EHR / enhanced section styles below to avoid duplicate keys)
   
   // Enhanced EHR Content
-  ehrCard: {
-    margin: 16,
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    padding: 24,
-    shadowColor: '#1e293b',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 10,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
-  },
+    ehrCard: {
+      margin: 16,
+      marginBottom: 16,
+      backgroundColor: '#ffffff',
+      borderRadius: 20,
+      padding: 24,
+      shadowColor: '#1e293b',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.12,
+      shadowRadius: 20,
+      elevation: 10,
+      borderWidth: 1,
+      borderColor: '#f1f5f9',
+    },
   ehrHeader: {
     alignItems: 'center',
     marginBottom: 24,
@@ -2207,8 +2969,976 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   
-  // Enhanced Appointments Content
-  appointmentsContainer: {},
+  // Enhanced Professional Appointments Tab Styles
+  appointmentsContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  
+  // Header Section
+  appointmentsHeaderGradient: {
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 30,
+  },
+  appointmentsHeaderContent: {
+    paddingHorizontal: 20,
+  },
+  appointmentsHeaderTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+  },
+  appointmentsHeaderLeft: {
+    flex: 1,
+  },
+  appointmentsMainTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#ffffff',
+    marginBottom: 8,
+  },
+  appointmentsHeaderSubtitle: {
+    fontSize: 16,
+    color: '#bfdbfe',
+    fontWeight: '500',
+  },
+  appointmentsHeaderIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  // Quick Stats
+  quickStatsContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 16,
+    padding: 16,
+    gap: 8,
+  },
+  quickStatItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  quickStatIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  quickStatNumber: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  quickStatLabel: {
+    fontSize: 12,
+    color: '#bfdbfe',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  
+  // Main Content
+  appointmentsMainContent: {
+    flex: 1,
+    paddingTop: 20,
+  },
+  
+  // Section Styles
+  appointmentSection: {
+    marginBottom: 24,
+    paddingHorizontal: 20,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  sectionHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sectionIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#dbeafe',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  appointmentSectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
+  },
+  sectionBadge: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  sectionBadgeText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  
+  // Enhanced Appointment Cards
+  appointmentCards: {
+    gap: 16,
+  },
+  enhancedAppointmentCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  appointmentCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  hospitalInfo: {
+    flex: 1,
+  },
+  hospitalName: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  doctorName: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  statusBadgeEnhanced: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
+  },
+  statusIndicator: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  statusTextEnhanced: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  
+  // Appointment Details
+  appointmentDetails: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    gap: 12,
+  },
+  appointmentDetailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  detailIconContainer: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  detailText: {
+    fontSize: 14,
+    color: '#374151',
+    fontWeight: '500',
+    flex: 1,
+  },
+  
+  // Card Footer Actions
+  appointmentCardFooter: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  actionButtonSecondary: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    gap: 6,
+  },
+  actionButtonSecondaryText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#3b82f6',
+  },
+  actionButtonPrimary: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+    backgroundColor: '#3b82f6',
+    gap: 6,
+  },
+  actionButtonPrimaryText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  
+  // History Cards
+  historyCards: {
+    gap: 12,
+  },
+  historyCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  historyCardLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  historyIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#dcfce7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  historyInfo: {
+    flex: 1,
+  },
+  historyHospital: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 2,
+  },
+  historyDoctor: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginBottom: 2,
+  },
+  historyDate: {
+    fontSize: 12,
+    color: '#9ca3af',
+    fontWeight: '500',
+  },
+  historyActionButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f8fafc',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  // Quick Actions
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  quickActionCard: {
+    flex: 1,
+    minWidth: Platform.OS === 'web' ? 150 : 80,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  quickActionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  quickActionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  quickActionSubtitle: {
+    fontSize: 12,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+  
+  // View All Button (Appointments)
+  appointmentViewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  appointmentViewAllText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#3b82f6',
+  },
+  
+  // Count Badges
+  totalCountBadge: {
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  totalCountText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4b5563',
+  },
+  
+  // All Appointments List
+  allAppointmentsList: {
+    gap: 12,
+  },
+  
+  // Enhanced Empty State
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+    paddingVertical: 80,
+  },
+  emptyStateIcon: {
+    marginBottom: 24,
+    opacity: 0.6,
+  },
+  emptyStateTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#374151',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  emptyStateSubtitle: {
+    fontSize: 16,
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 32,
+  },
+  emptyStateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderRadius: 16,
+    gap: 8,
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  emptyStateButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+
+  // Enhanced Professional EHR Tab Styles
+  ehrContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  
+  // EHR Header Section
+  ehrHeaderGradient: {
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 30,
+  },
+  ehrHeaderContent: {
+    paddingHorizontal: 20,
+  },
+  ehrHeaderTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+  },
+  ehrHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  ehrHeaderIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  ehrHeaderInfo: {
+    flex: 1,
+  },
+  ehrMainTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#ffffff',
+    marginBottom: 8,
+  },
+  ehrHeaderSubtitle: {
+    fontSize: 16,
+    color: '#c4b5fd',
+    fontWeight: '500',
+  },
+  ehrHeaderAction: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  // Quick Stats
+  ehrQuickStats: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 16,
+    padding: 16,
+    gap: 8,
+  },
+  ehrQuickStatItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  ehrQuickStatIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  ehrQuickStatNumber: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  ehrQuickStatLabel: {
+    fontSize: 12,
+    color: '#c4b5fd',
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  
+  // Main Content
+  ehrMainContent: {
+    flex: 1,
+    paddingTop: 20,
+  },
+  
+  // Section Styles
+  ehrSection: {
+    marginBottom: 24,
+    paddingHorizontal: 20,
+  },
+  ehrSectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  ehrSectionHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ehrSectionIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#f3e8ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  ehrSectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
+  },
+  
+  // Health Status Indicator
+  ehrHealthStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  ehrHealthIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#16a34a',
+  },
+  ehrHealthStatusText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#16a34a',
+  },
+  
+  // Health Dashboard
+  ehrHealthDashboard: {
+    gap: 16,
+  },
+  ehrAssessmentCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  ehrAssessmentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  ehrAssessmentLeft: {
+    flex: 1,
+  },
+  ehrAssessmentTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  ehrAssessmentDate: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  ehrAssessmentDoctor: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  ehrAssessmentDoctorName: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  ehrAssessmentContent: {
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 16,
+  },
+  ehrAssessmentCondition: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 8,
+  },
+  ehrAssessmentResolution: {
+    fontSize: 14,
+    color: '#6b7280',
+    lineHeight: 20,
+  },
+  
+  // Vitals Section
+  ehrVitalsSection: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  ehrVitalsTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 16,
+  },
+  ehrVitalsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  ehrVitalCard: {
+    flex: 1,
+    minWidth: Platform.OS === 'web' ? 120 : 80,
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  ehrVitalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  ehrVitalIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  ehrVitalLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6b7280',
+    textTransform: 'uppercase',
+  },
+  ehrVitalValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  ehrVitalUnit: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginBottom: 8,
+  },
+  ehrVitalStatusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  ehrVitalStatusText: {
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  
+  // View All Button
+  ehrViewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  ehrViewAllText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#3b82f6',
+  },
+  
+  // Records Container
+  ehrRecordsContainer: {
+    gap: 12,
+  },
+  ehrRecordCardModal: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  ehrRecordHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  ehrRecordLeft: {
+    flex: 1,
+  },
+  ehrRecordId: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  ehrRecordDate: {
+    fontSize: 12,
+    color: '#9ca3af',
+    fontWeight: '500',
+  },
+  ehrRecordStatusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  ehrRecordStatusIndicator: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  ehrRecordStatusText: {
+    fontSize: 11,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  ehrRecordContent: {
+    flex: 1,
+    marginRight: 12,
+  },
+  ehrRecordDoctor: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
+  ehrRecordDoctorName: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  ehrRecordCondition: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 8,
+  },
+  ehrRecordMeta: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  ehrRecordMetaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  ehrRecordMetaText: {
+    fontSize: 12,
+    color: '#9ca3af',
+  },
+  ehrRecordAction: {
+    padding: 4,
+  },
+  
+  // Empty Records
+  ehrEmptyRecords: {
+    alignItems: 'center',
+    paddingVertical: 40,
+  },
+  ehrEmptyIcon: {
+    marginBottom: 16,
+    opacity: 0.6,
+  },
+  ehrEmptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  ehrEmptySubtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  
+  // Follow-ups Section
+  ehrFollowUpCount: {
+    backgroundColor: '#fef3c7',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  ehrFollowUpCountText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#f59e0b',
+  },
+  ehrFollowUpsList: {
+    gap: 12,
+  },
+  ehrFollowUpCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  ehrFollowUpHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  ehrFollowUpLeft: {
+    flex: 1,
+  },
+  ehrFollowUpPurpose: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  ehrFollowUpDate: {
+    fontSize: 14,
+    color: '#6b7280',
+  },
+  ehrFollowUpPriority: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  ehrFollowUpPriorityText: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  ehrFollowUpActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  ehrFollowUpActionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    gap: 4,
+  },
+  ehrFollowUpPrimaryButton: {
+    backgroundColor: '#f0f9ff',
+    borderColor: '#bfdbfe',
+  },
+  ehrFollowUpActionText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6b7280',
+  },
+  ehrFollowUpPrimaryText: {
+    color: '#3b82f6',
+  },
+  
+  // Categories Grid
+  ehrCategoriesGridModal: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  ehrCategoryCardModal: {
+    flex: 1,
+    minWidth: Platform.OS === 'web' ? 120 : 100,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  ehrCategoryIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  ehrCategoryName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  ehrCategoryCount: {
+    fontSize: 12,
+    color: '#6b7280',
+    textAlign: 'center',
+  },
+
+  // Legacy styles (keeping for backward compatibility)
   appointmentsList: {
     paddingHorizontal: 20,
     paddingTop: 16,
@@ -2445,6 +4175,27 @@ const styles = StyleSheet.create({
   categoryCardTextActive: {
     color: '#2563eb',
   },
+  categoryIconWrap: {
+    width: 56,
+    height: 56,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  categoryCountBadge: {
+    marginTop: 8,
+    backgroundColor: 'transparent',
+  },
+  categoryCountText: {
+    fontSize: 12,
+    color: '#94a3b8',
+    fontWeight: '600',
+  },
   
   // Nearby Hospitals Styles
   nearbySection: {
@@ -2626,7 +4377,345 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  // EHR Detail Modal Styles
+  // Enhanced Professional EHR Modal Styles
+  ehrModalContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  
+  // Header Styles
+  ehrModalHeader: {
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 20,
+  },
+  ehrHeaderContentModal: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  ehrHeaderLeftModal: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  ehrBackButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  ehrHeaderInfoModal: {
+    flex: 1,
+  },
+  ehrModalTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  ehrPatientName: {
+    fontSize: 16,
+    color: '#93c5fd',
+    fontWeight: '500',
+  },
+  ehrHeaderActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  ehrActionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  // Patient Summary
+  ehrPatientSummary: {
+    marginHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 12,
+    padding: 16,
+  },
+  ehrSummaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  ehrSummaryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  ehrSummaryLabel: {
+    fontSize: 14,
+    color: '#dbeafe',
+    fontWeight: '500',
+  },
+  
+  // Content Area
+  ehrModalContent: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  
+  // Card Styles
+  ehrVitalsCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  ehrCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  ehrCardHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ehrIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#fee2e2',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  ehrCardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  ehrStatusBadge: {
+    backgroundColor: '#dcfce7',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  ehrStatusText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#16a34a',
+  },
+  ehrCardContent: {
+    padding: 20,
+  },
+  ehrCardText: {
+    fontSize: 16,
+    color: '#374151',
+    lineHeight: 24,
+  },
+  
+  
+  
+  // Medication Styles
+  ehrMedCountBadge: {
+    backgroundColor: '#fce7f3',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  ehrMedCountText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#ec4899',
+  },
+  ehrMedicationCard: {
+    backgroundColor: '#fefbf7',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ec4899',
+  },
+  ehrMedHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  ehrMedIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#fce7f3',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  ehrMedInfo: {
+    flex: 1,
+  },
+  ehrMedName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  ehrMedDosage: {
+    fontSize: 14,
+    color: '#ec4899',
+    fontWeight: '500',
+  },
+  ehrMedInstructions: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#f3e8ff',
+  },
+  ehrMedInstructionText: {
+    fontSize: 14,
+    color: '#6b7280',
+    lineHeight: 20,
+  },
+  
+  // Diagnostic Report Styles
+  ehrTestCountBadge: {
+    backgroundColor: '#e0f2fe',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  ehrTestCountText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#0891b2',
+  },
+  ehrDiagnosticCard: {
+    backgroundColor: '#f0f9ff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#0891b2',
+  },
+  ehrDiagHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  ehrDiagLeft: {
+    flex: 1,
+  },
+  ehrDiagName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  ehrDiagDate: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  ehrDiagStatus: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
+  },
+  ehrDiagStatusText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  ehrDiagContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 12,
+  },
+  ehrDiagResults: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  ehrDiagRange: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  ehrDiagRangeText: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  
+  // Surgery Styles
+  ehrSurgeryInfo: {
+    backgroundColor: '#fef2f2',
+    borderRadius: 12,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#dc2626',
+  },
+  ehrSurgeryType: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#dc2626',
+    marginBottom: 8,
+  },
+  ehrSurgeryDesc: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+  },
+  
+  // Physician Info
+  ehrPhysicianInfo: {
+    backgroundColor: '#faf5ff',
+    borderRadius: 12,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#7c3aed',
+  },
+  ehrPhysicianName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#7c3aed',
+    marginBottom: 8,
+  },
+  
+  // Empty State
+  ehrNoDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  ehrNoDataIcon: {
+    marginBottom: 24,
+  },
+  ehrNoDataTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  ehrNoDataSubtitle: {
+    fontSize: 16,
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+
+  // Legacy Modal Styles (keeping for compatibility)
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background,

@@ -722,7 +722,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               {
                 key: 'bookings',
                 title: 'Book Apointment',
-                subtitle: 'Schedule with specialists',
+                subtitle: 'Schedule at ease',
                 icon: 'calendar',
                 gradient: ['#3b82f6', '#1d4ed8', '#1e40af'],
                 iconColor: '#ffffff',
@@ -965,7 +965,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                 color: '#1f2937',
                 marginBottom: 2,
               }}>
-                Daily Health Tip
+                Health tip recommendation
               </Text>
               <Text style={{
                 fontSize: 14,
