@@ -522,46 +522,47 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             marginBottom: 32,
             paddingTop: 8,
           }}>
-            {/* Left-aligned Logo and Brand */}
+            {/* Enhanced Logo and Brand */}
             <View style={{
               flexDirection: 'row',
               alignItems: 'center',
               flex: 1,
             }}>
               <View style={{
-                width: 100,
-                height: 100,
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                borderRadius: 28,
+                width: 120,
+                height: 120,
+                backgroundColor: 'rgba(255, 255, 255, 0.25)',
+                borderRadius: 35,
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginRight: 24,
-                borderWidth: 2,
-                borderColor: 'rgba(255, 255, 255, 0.4)',
-                shadowColor: 'rgba(0, 0, 0, 0.3)',
-                shadowOffset: { width: 0, height: 4 },
+                marginRight: 28,
+                borderWidth: 3,
+                borderColor: 'rgba(255, 255, 255, 0.5)',
+                shadowColor: 'rgba(0, 0, 0, 0.4)',
+                shadowOffset: { width: 0, height: 6 },
                 shadowOpacity: 1,
-                shadowRadius: 8,
-                elevation: 8,
+                shadowRadius: 12,
+                elevation: 12,
               }}>
                 <Image 
                   source={require('../../../assets/image.png')} 
                   style={{
-                    width: 80,
-                    height: 80,
+                    width: 95,
+                    height: 95,
                   }}
                   resizeMode="contain"
                 />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{
-                  fontSize: 52,
+                  fontSize: 64,
                   fontWeight: '900',
                   color: '#ffffff',
-                  letterSpacing: 3,
-                  textShadowColor: 'rgba(0, 0, 0, 0.4)',
-                  textShadowOffset: { width: 0, height: 3 },
-                  textShadowRadius: 6,
+                  letterSpacing: 4,
+                  textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                  textShadowOffset: { width: 0, height: 4 },
+                  textShadowRadius: 8,
+                  lineHeight: 70,
                 }}>
                   Rapha
                 </Text>
@@ -651,19 +652,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             </View>
           </View>
 
-          {/* Professional Tagline Section */}
+          {/* Enhanced Professional Tagline Section */}
           <View style={{
             alignItems: 'flex-start',
-            marginBottom: 24,
-            paddingLeft: 100, // Align with logo text
+            marginBottom: 28,
+            paddingLeft: 120, // Align with logo text
           }}>
             <Text style={{
-              fontSize: 18,
-              color: 'rgba(255, 255, 255, 0.9)',
-              fontWeight: '500',
-              lineHeight: 26,
+              fontSize: 20,
+              color: 'rgba(255, 255, 255, 0.95)',
+              fontWeight: '600',
+              lineHeight: 28,
               textAlign: 'left',
-              maxWidth: '80%',
+              maxWidth: '85%',
+              textShadowColor: 'rgba(0, 0, 0, 0.3)',
+              textShadowOffset: { width: 0, height: 2 },
+              textShadowRadius: 4,
             }}>
               Your trusted partner in comprehensive healthcare management
             </Text>

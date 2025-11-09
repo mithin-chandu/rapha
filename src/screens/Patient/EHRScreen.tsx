@@ -327,7 +327,7 @@ const EHRScreen: React.FC = () => {
                         styles.ehrRecordStatusText,
                         { color: getStatusColor(record.status) }
                       ]}>
-                        {record.status}
+                        {record.status === 'Follow-up Required' ? 'FOLLOW-UP REQUIRED' : record.status}
                       </Text>
                     </View>
                   </View>
@@ -479,172 +479,329 @@ const EHRScreen: React.FC = () => {
         
       </View>
 
-      {/* EHR Detail Modal */}
+      {/* Enhanced Professional EHR Detail Modal */}
       <Modal
         visible={modalVisible}
         animationType="slide"
-        presentationStyle="formSheet"
+        presentationStyle="fullScreen"
         onRequestClose={closeModal}
       >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>EHR Details</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={closeModal}>
-              <Text style={styles.closeButtonText}>✕</Text>
-            </TouchableOpacity>
-          </View>
-          
-          {selectedRecord && (
-            <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
-              {/* Patient Information */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Patient Information</Text>
-                <View style={styles.modalRow}>
-                  <Text style={styles.modalLabel}>Rapha ID:</Text>
-                  <Text style={styles.modalValue}>{selectedRecord.raphaId}</Text>
-                </View>
-                <View style={styles.modalRow}>
-                  <Text style={styles.modalLabel}>Patient Name:</Text>
-                  <Text style={styles.modalValue}>{selectedRecord.patientFullName}</Text>
-                </View>
-                <View style={styles.modalRow}>
-                  <Text style={styles.modalLabel}>Appointment:</Text>
-                  <Text style={styles.modalValue}>
-                    {new Date(selectedRecord.appointmentDateTime).toLocaleString()}
+        <View style={styles.ehrModalContainer}>
+          {/* Enhanced Header with Gradient */}
+          <LinearGradient
+            colors={['#3b82f6', '#2563eb', '#1d4ed8']}
+            style={styles.ehrModalHeader}
+          >
+            <View style={styles.ehrHeaderContentModal}>
+              <View style={styles.ehrHeaderLeftModal}>
+                <TouchableOpacity 
+                  style={styles.ehrBackButton} 
+                  onPress={closeModal}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons name="arrow-back" size={24} color="#ffffff" />
+                </TouchableOpacity>
+                <View style={styles.ehrHeaderInfoModal}>
+                  <Text style={styles.ehrModalTitle}>Medical Record</Text>
+                  <Text style={styles.ehrPatientName}>
+                    {selectedRecord?.patientFullName || 'Patient'}
                   </Text>
                 </View>
               </View>
+              
+              <View style={styles.ehrHeaderActions}>
+                <TouchableOpacity style={styles.ehrActionButton} activeOpacity={0.8}>
+                  <Ionicons name="download-outline" size={20} color="#ffffff" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.ehrActionButton} activeOpacity={0.8}>
+                  <Ionicons name="share-outline" size={20} color="#ffffff" />
+                </TouchableOpacity>
+              </View>
+            </View>
+            
+            {/* Patient Summary Card */}
+            {selectedRecord && (
+              <View style={styles.ehrPatientSummary}>
+                <View style={styles.ehrSummaryRow}>
+                  <View style={styles.ehrSummaryItem}>
+                    <Ionicons name="person-outline" size={16} color="#93c5fd" />
+                    <Text style={styles.ehrSummaryLabel}>ID: {selectedRecord.raphaId}</Text>
+                  </View>
+                  <View style={styles.ehrSummaryItem}>
+                    <Ionicons name="calendar-outline" size={16} color="#93c5fd" />
+                    <Text style={styles.ehrSummaryLabel}>
+                      {new Date(selectedRecord.appointmentDateTime).toLocaleDateString()}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+          </LinearGradient>
 
-              {/* Vital Signs */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Vital Signs</Text>
-                <View style={styles.vitalsGrid}>
-                  <View style={styles.vitalCard}>
-                    <Text style={styles.vitalCardTitle}>Blood Pressure</Text>
-                    <Text style={styles.vitalCardValue}>
-                      {selectedRecord.patientBasicVitals.bloodPressure.systolic}/
-                      {selectedRecord.patientBasicVitals.bloodPressure.diastolic} mmHg
-                    </Text>
-                  </View>
-                  <View style={styles.vitalCard}>
-                    <Text style={styles.vitalCardTitle}>Sugar Level</Text>
-                    <Text style={styles.vitalCardValue}>
-                      {selectedRecord.patientBasicVitals.sugarReading} mg/dL
-                    </Text>
-                  </View>
-                  <View style={styles.vitalCard}>
-                    <Text style={styles.vitalCardTitle}>Weight</Text>
-                    <Text style={styles.vitalCardValue}>
-                      {selectedRecord.patientBasicVitals.weight} kg
-                    </Text>
-                  </View>
-                  {selectedRecord.patientBasicVitals.height && (
-                    <View style={styles.vitalCard}>
-                      <Text style={styles.vitalCardTitle}>Height</Text>
-                      <Text style={styles.vitalCardValue}>
-                        {selectedRecord.patientBasicVitals.height} cm
-                      </Text>
+          {selectedRecord ? (
+            <ScrollView 
+              style={styles.ehrModalContent} 
+              showsVerticalScrollIndicator={false}
+              bounces={true}
+            >
+              {/* Vitals Dashboard */}
+              <View style={styles.ehrVitalsCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={styles.ehrIconContainer}>
+                      <Ionicons name="heart-outline" size={20} color="#ef4444" />
                     </View>
-                  )}
+                    <Text style={styles.ehrCardTitle}>Vital Signs</Text>
+                  </View>
+                  <View style={styles.ehrStatusBadge}>
+                    <Text style={styles.ehrStatusText}>Normal</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.ehrCardContent}>
+                  <View style={styles.ehrVitalsGrid}>
+                    <View style={styles.ehrVitalCard}>
+                      <View style={styles.ehrVitalHeader}>
+                        <View style={styles.ehrVitalIcon}>
+                          <Ionicons name="pulse-outline" size={24} color="#ef4444" />
+                        </View>
+                      </View>
+                      <Text style={styles.ehrVitalValue}>
+                        {selectedRecord.patientBasicVitals.bloodPressure.systolic}/
+                        {selectedRecord.patientBasicVitals.bloodPressure.diastolic}
+                      </Text>
+                      <Text style={styles.ehrVitalUnit}>mmHg</Text>
+                      <Text style={styles.ehrVitalLabel}>Blood Pressure</Text>
+                    </View>
+                    
+                    <View style={styles.ehrVitalCard}>
+                      <View style={styles.ehrVitalHeader}>
+                        <View style={styles.ehrVitalIcon}>
+                          <Ionicons name="water-outline" size={24} color="#f59e0b" />
+                        </View>
+                      </View>
+                      <Text style={styles.ehrVitalValue}>{selectedRecord.patientBasicVitals.sugarReading}</Text>
+                      <Text style={styles.ehrVitalUnit}>mg/dL</Text>
+                      <Text style={styles.ehrVitalLabel}>Blood Sugar</Text>
+                    </View>
+                    
+                    <View style={styles.ehrVitalCard}>
+                      <View style={styles.ehrVitalHeader}>
+                        <View style={styles.ehrVitalIcon}>
+                          <Ionicons name="fitness-outline" size={24} color="#10b981" />
+                        </View>
+                      </View>
+                      <Text style={styles.ehrVitalValue}>{selectedRecord.patientBasicVitals.weight}</Text>
+                      <Text style={styles.ehrVitalUnit}>kg</Text>
+                      <Text style={styles.ehrVitalLabel}>Weight</Text>
+                    </View>
+                    
+                    {selectedRecord.patientBasicVitals.height && (
+                      <View style={styles.ehrVitalCard}>
+                        <View style={styles.ehrVitalHeader}>
+                          <View style={styles.ehrVitalIcon}>
+                            <Ionicons name="resize-outline" size={24} color="#8b5cf6" />
+                          </View>
+                        </View>
+                        <Text style={styles.ehrVitalValue}>{selectedRecord.patientBasicVitals.height}</Text>
+                        <Text style={styles.ehrVitalUnit}>cm</Text>
+                        <Text style={styles.ehrVitalLabel}>Height</Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
               </View>
 
-              {/* Health Issue & Resolution */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Health Issue</Text>
-                <Text style={styles.modalText}>{selectedRecord.healthIssue}</Text>
+              {/* Health Issue Card */}
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#fef3c7' }]}>
+                      <Ionicons name="medical-outline" size={20} color="#f59e0b" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Chief Complaint</Text>
+                  </View>
+                </View>
+                <View style={styles.ehrCardContent}>
+                  <Text style={styles.ehrCardText}>{selectedRecord.healthIssue}</Text>
+                </View>
               </View>
 
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Doctor's Resolution</Text>
-                <Text style={styles.modalText}>{selectedRecord.doctorResolution}</Text>
+              {/* Doctor's Assessment */}
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#dcfce7' }]}>
+                      <Ionicons name="checkmark-circle-outline" size={20} color="#16a34a" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Clinical Assessment</Text>
+                  </View>
+                </View>
+                <View style={styles.ehrCardContent}>
+                  <Text style={styles.ehrCardText}>{selectedRecord.doctorResolution}</Text>
+                </View>
               </View>
 
               {/* Medications */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Prescribed Medications</Text>
-                {selectedRecord.medicinesPrescription.map((med, index) => (
-                  <View key={med.id} style={styles.medicationCard}>
-                    <Text style={styles.medicationName}>{med.medicineName}</Text>
-                    <Text style={styles.medicationDosage}>{med.dosage} - {med.frequency}</Text>
-                    <Text style={styles.medicationInstructions}>{med.instructions}</Text>
-                    <Text style={styles.medicationDuration}>Duration: {med.duration}</Text>
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#fce7f3' }]}>
+                      <Ionicons name="medical-outline" size={20} color="#ec4899" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Prescribed Medications</Text>
                   </View>
-                ))}
+                  <View style={styles.ehrMedCountBadge}>
+                    <Text style={styles.ehrMedCountText}>{selectedRecord.medicinesPrescription.length}</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.ehrCardContent}>
+                  {selectedRecord.medicinesPrescription.map((med, index) => (
+                    <View key={med.id} style={styles.ehrMedicationCard}>
+                      <View style={styles.ehrMedHeader}>
+                        <View style={styles.ehrMedIcon}>
+                          <Ionicons name="medical" size={16} color="#ec4899" />
+                        </View>
+                        <View style={styles.ehrMedInfo}>
+                          <Text style={styles.ehrMedName}>{med.medicineName}</Text>
+                          <Text style={styles.ehrMedDosage}>{med.dosage} • {med.frequency}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.ehrMedInstructions}>
+                        <Text style={styles.ehrMedInstructionText}>{med.instructions}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
               </View>
 
               {/* Diagnostic Reports */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Diagnostic Reports</Text>
-                {selectedRecord.diagnosticReports.map((report) => (
-                  <View key={report.id} style={styles.diagnosticCard}>
-                    <View style={styles.diagnosticHeader}>
-                      <Text style={styles.diagnosticName}>{report.testName}</Text>
-                      <View style={[styles.diagnosticStatus, {
-                        backgroundColor: report.status === 'Normal' ? colors.successLight :
-                                       report.status === 'Abnormal' ? colors.warningLight :
-                                       report.status === 'Critical' ? colors.errorLight :
-                                       colors.infoLight
-                      }]}>
-                        <Text style={[styles.diagnosticStatusText, {
-                          color: report.status === 'Normal' ? colors.success :
-                                 report.status === 'Abnormal' ? colors.warning :
-                                 report.status === 'Critical' ? colors.error :
-                                 colors.info
-                        }]}>
-                          {report.status}
-                        </Text>
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#e0f2fe' }]}>
+                      <Ionicons name="document-text-outline" size={20} color="#0891b2" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Laboratory Results</Text>
+                  </View>
+                  <View style={styles.ehrTestCountBadge}>
+                    <Text style={styles.ehrTestCountText}>{selectedRecord.diagnosticReports.length}</Text>
+                  </View>
+                </View>
+                
+                <View style={styles.ehrCardContent}>
+                  {selectedRecord.diagnosticReports.map((report) => (
+                    <View key={report.id} style={styles.ehrDiagnosticCard}>
+                      <View style={styles.ehrDiagHeader}>
+                        <View style={styles.ehrDiagLeft}>
+                          <Text style={styles.ehrDiagName}>{report.testName}</Text>
+                          <Text style={styles.ehrDiagDate}>{report.reportDate}</Text>
+                        </View>
+                        <View style={[
+                          styles.ehrDiagStatus,
+                          { backgroundColor: report.status === 'Normal' ? '#dcfce7' : 
+                                              report.status === 'Abnormal' ? '#fef3c7' : 
+                                              report.status === 'Critical' ? '#fee2e2' : '#f1f5f9' }
+                        ]}>
+                          <Text style={[
+                            styles.ehrDiagStatusText,
+                            { color: report.status === 'Normal' ? '#16a34a' : 
+                                     report.status === 'Abnormal' ? '#f59e0b' :
+                                     report.status === 'Critical' ? '#dc2626' : '#6b7280' }
+                          ]}>
+                            {report.status}
+                          </Text>
+                        </View>
+                      </View>
+                      
+                      <View style={styles.ehrDiagContent}>
+                        <Text style={styles.ehrDiagResults}>{report.results}</Text>
+                        {report.normalRange && (
+                          <View style={styles.ehrDiagRange}>
+                            <Ionicons name="information-circle-outline" size={14} color="#6b7280" />
+                            <Text style={styles.ehrDiagRangeText}>Normal Range: {report.normalRange}</Text>
+                          </View>
+                        )}
                       </View>
                     </View>
-                    <Text style={styles.diagnosticResults}>{report.results}</Text>
-                    {report.normalRange && (
-                      <Text style={styles.diagnosticRange}>Normal Range: {report.normalRange}</Text>
-                    )}
-                    <Text style={styles.diagnosticDate}>Date: {report.reportDate}</Text>
-                  </View>
-                ))}
-                <Text style={styles.doctorRemarks}>
-                  <Text style={styles.doctorRemarksLabel}>Doctor's Remarks: </Text>
-                  {selectedRecord.doctorRemarkOnDiagnostics}
-                </Text>
+                  ))}
+                </View>
               </View>
 
-              {/* Surgery Details (if any) */}
+              {/* Surgery Information */}
               {selectedRecord.surgeryDescription && (
-                <View style={styles.modalSection}>
-                  <Text style={styles.modalSectionTitle}>Surgery Information</Text>
-                  <View style={styles.surgeryCard}>
-                    <Text style={styles.surgeryType}>{selectedRecord.surgeryDescription.surgeryType}</Text>
-                    <Text style={styles.surgeryDescription}>{selectedRecord.surgeryDescription.description}</Text>
-                    <Text style={styles.surgeryReason}>
-                      <Text style={styles.surgeryReasonLabel}>Reason: </Text>
-                      {selectedRecord.surgeryDescription.reasonForSurgery}
-                    </Text>
-                    {selectedRecord.surgeryDescription.postOpStatus && (
-                      <Text style={styles.surgeryStatus}>
-                        <Text style={styles.surgeryStatusLabel}>Post-Op Status: </Text>
-                        {selectedRecord.surgeryDescription.postOpStatus}
-                      </Text>
-                    )}
+                <View style={styles.ehrCard}>
+                  <View style={styles.ehrCardHeader}>
+                    <View style={styles.ehrCardHeaderLeft}>
+                      <View style={[styles.ehrIconContainer, { backgroundColor: '#fef2f2' }]}>
+                        <Ionicons name="cut-outline" size={20} color="#dc2626" />
+                      </View>
+                      <Text style={styles.ehrCardTitle}>Surgical Procedure</Text>
+                    </View>
+                  </View>
+                  <View style={styles.ehrCardContent}>
+                    <View style={styles.ehrSurgeryInfo}>
+                      <Text style={styles.ehrSurgeryType}>{selectedRecord.surgeryDescription.surgeryType}</Text>
+                      <Text style={styles.ehrSurgeryDesc}>{selectedRecord.surgeryDescription.description}</Text>
+                    </View>
                   </View>
                 </View>
               )}
 
               {/* Final Remarks */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Final Remarks</Text>
-                <Text style={styles.finalRemarks}>{selectedRecord.finalRemarks}</Text>
+              <View style={styles.ehrCard}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#f3f4f6' }]}>
+                      <Ionicons name="clipboard-outline" size={20} color="#4b5563" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Clinical Notes</Text>
+                  </View>
+                </View>
+                <View style={styles.ehrCardContent}>
+                  <Text style={styles.ehrCardText}>{selectedRecord.finalRemarks}</Text>
+                </View>
               </View>
 
-              {/* Doctor Information */}
-              <View style={styles.modalSection}>
-                <Text style={styles.modalSectionTitle}>Attending Physician</Text>
-                <Text style={styles.attendingDoctor}>{selectedRecord.doctorName}</Text>
-                <Text style={styles.recordDate}>
-                  Record Created: {new Date(selectedRecord.createdAt).toLocaleString()}
-                </Text>
+              {/* Physician Information */}
+              <View style={[styles.ehrCard, { marginBottom: 40 }]}>
+                <View style={styles.ehrCardHeader}>
+                  <View style={styles.ehrCardHeaderLeft}>
+                    <View style={[styles.ehrIconContainer, { backgroundColor: '#ede9fe' }]}>
+                      <Ionicons name="person-circle-outline" size={20} color="#7c3aed" />
+                    </View>
+                    <Text style={styles.ehrCardTitle}>Attending Physician</Text>
+                  </View>
+                </View>
+                <View style={styles.ehrCardContent}>
+                  <View style={styles.ehrPhysicianInfo}>
+                    <Text style={styles.ehrPhysicianName}>{formatDoctorName(selectedRecord.doctorName)}</Text>
+                    <View style={styles.ehrRecordMeta}>
+                      <Ionicons name="time-outline" size={14} color="#6b7280" />
+                      <Text style={styles.ehrRecordDate}>
+                        Record Created: {new Date(selectedRecord.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
               </View>
+
             </ScrollView>
+          ) : (
+            <View style={styles.ehrNoDataContainer}>
+              <View style={styles.ehrNoDataIcon}>
+                <Ionicons name="document-text-outline" size={64} color="#d1d5db" />
+              </View>
+              <Text style={styles.ehrNoDataTitle}>No Record Selected</Text>
+              <Text style={styles.ehrNoDataSubtitle}>Please select a medical record to view details</Text>
+            </View>
           )}
         </View>
       </Modal>
@@ -954,15 +1111,14 @@ const styles = StyleSheet.create({
   },
   ehrRecordCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 12,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 6,
     borderWidth: 1,
     borderColor: '#f1f5f9',
   },
@@ -970,29 +1126,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: 16,
   },
   ehrRecordLeft: {
     flex: 1,
   },
   ehrRecordId: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '800',
     color: '#1f2937',
     marginBottom: 4,
   },
   ehrRecordDate: {
-    fontSize: 12,
-    color: '#9ca3af',
+    fontSize: 13,
+    color: '#6b7280',
     fontWeight: '500',
   },
   ehrRecordStatusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 6,
   },
   ehrRecordStatusIndicator: {
     width: 6,
@@ -1000,45 +1156,54 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   ehrRecordStatusText: {
-    fontSize: 11,
-    fontWeight: '600',
+    fontSize: 10,
+    fontWeight: '700',
     textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   ehrRecordContent: {
-    flex: 1,
-    marginRight: 12,
+    marginBottom: 16,
   },
   ehrRecordDoctor: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   ehrRecordDoctorName: {
     fontSize: 14,
-    color: '#6b7280',
-    fontWeight: '500',
+    color: '#374151',
+    fontWeight: '600',
   },
   ehrRecordCondition: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '600',
     color: '#1f2937',
-    marginBottom: 8,
+    marginBottom: 12,
+    lineHeight: 22,
   },
   ehrRecordMeta: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 16,
   },
   ehrRecordMetaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 6,
+    backgroundColor: '#f8fafc',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
   },
   ehrRecordMetaText: {
-    fontSize: 12,
-    color: '#9ca3af',
+    fontSize: 11,
+    color: '#6b7280',
+    fontWeight: '600',
   },
   ehrRecordAction: {
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
     padding: 4,
   },
   
@@ -1193,7 +1358,403 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
-  // Modal Styles (keeping existing modal styles for the detail view)
+  // Enhanced Professional EHR Modal Styles
+  ehrModalContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
+  
+  // Header Styles
+  ehrModalHeader: {
+    paddingTop: Platform.OS === 'ios' ? 50 : 20,
+    paddingBottom: 20,
+  },
+  ehrHeaderContentModal: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  ehrHeaderLeftModal: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  ehrBackButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  ehrHeaderInfoModal: {
+    flex: 1,
+  },
+  ehrModalTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 4,
+  },
+  ehrPatientName: {
+    fontSize: 16,
+    color: '#93c5fd',
+    fontWeight: '500',
+  },
+  ehrHeaderActions: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  ehrActionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  
+  // Patient Summary
+  ehrPatientSummary: {
+    marginHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 12,
+    padding: 16,
+  },
+  ehrSummaryRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  ehrSummaryItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  ehrSummaryLabel: {
+    fontSize: 14,
+    color: '#dbeafe',
+    fontWeight: '500',
+  },
+  
+  // Content Area
+  ehrModalContent: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  
+  // Card Styles
+  ehrCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  ehrVitalsCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  ehrCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  ehrCardHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  ehrIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#fee2e2',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  ehrCardTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+  },
+  ehrStatusBadge: {
+    backgroundColor: '#dcfce7',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  ehrStatusText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#16a34a',
+  },
+  ehrCardContent: {
+    padding: 20,
+  },
+  ehrCardText: {
+    fontSize: 16,
+    color: '#374151',
+    lineHeight: 24,
+  },
+  
+  // Vitals Grid in Modal
+  ehrVitalCardModal: {
+    flex: 1,
+    minWidth: Platform.OS === 'web' ? 120 : 80,
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    alignItems: 'center',
+    margin: 4,
+  },
+  ehrVitalHeaderModal: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  ehrVitalIconModal: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#fee2e2',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  ehrVitalValueModal: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 4,
+    textAlign: 'center',
+  },
+  ehrVitalUnitModal: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  ehrVitalLabelModal: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6b7280',
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  
+  // Medication Styles
+  ehrMedCountBadge: {
+    backgroundColor: '#fce7f3',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  ehrMedCountText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#ec4899',
+  },
+  ehrMedicationCard: {
+    backgroundColor: '#fefbf7',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#ec4899',
+  },
+  ehrMedHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  ehrMedIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#fce7f3',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  ehrMedInfo: {
+    flex: 1,
+  },
+  ehrMedName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  ehrMedDosage: {
+    fontSize: 14,
+    color: '#ec4899',
+    fontWeight: '500',
+  },
+  ehrMedInstructions: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#f3e8ff',
+  },
+  ehrMedInstructionText: {
+    fontSize: 14,
+    color: '#6b7280',
+    lineHeight: 20,
+  },
+  
+  // Diagnostic Report Styles
+  ehrTestCountBadge: {
+    backgroundColor: '#e0f2fe',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  ehrTestCountText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#0891b2',
+  },
+  ehrDiagnosticCard: {
+    backgroundColor: '#f0f9ff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#0891b2',
+  },
+  ehrDiagHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+  ehrDiagLeft: {
+    flex: 1,
+  },
+  ehrDiagName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  ehrDiagDate: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  ehrDiagStatus: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 16,
+  },
+  ehrDiagStatusText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  ehrDiagContent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    padding: 12,
+  },
+  ehrDiagResults: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  ehrDiagRange: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  ehrDiagRangeText: {
+    fontSize: 12,
+    color: '#6b7280',
+  },
+  
+  // Surgery Styles
+  ehrSurgeryInfo: {
+    backgroundColor: '#fef2f2',
+    borderRadius: 12,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#dc2626',
+  },
+  ehrSurgeryType: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#dc2626',
+    marginBottom: 8,
+  },
+  ehrSurgeryDesc: {
+    fontSize: 14,
+    color: '#374151',
+    lineHeight: 20,
+  },
+  
+  // Physician Info
+  ehrPhysicianInfo: {
+    backgroundColor: '#faf5ff',
+    borderRadius: 12,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#7c3aed',
+  },
+  ehrPhysicianName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#7c3aed',
+    marginBottom: 8,
+  },
+  
+  // Empty State
+  ehrNoDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  ehrNoDataIcon: {
+    marginBottom: 24,
+  },
+  ehrNoDataTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  ehrNoDataSubtitle: {
+    fontSize: 16,
+    color: '#6b7280',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+
+  // Legacy Modal Styles (keeping for compatibility)
   modalContainer: {
     flex: 1,
     backgroundColor: colors.background,
