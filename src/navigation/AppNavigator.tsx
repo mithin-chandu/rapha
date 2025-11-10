@@ -83,6 +83,12 @@ export const AppNavigator: React.FC = () => {
       console.log('handleLogin called with:', user);
       await storage.setUserData(user);
       await storage.setAuthStatus(true);
+      
+      // Also save as a profile for future logins if email exists
+      if (user.email) {
+        await storage.saveUserProfile(user.email, user);
+      }
+      
       console.log('Storage operations completed');
       setUserData(user);
       setIsAuthenticated(true);
@@ -95,10 +101,18 @@ export const AppNavigator: React.FC = () => {
 
   const handleRegister = async (user: UserData) => {
     try {
+      console.log('handleRegister called with:', user);
       await storage.setUserData(user);
       await storage.setAuthStatus(true);
+      
+      // Also save as a profile for future logins if email exists
+      if (user.email) {
+        await storage.saveUserProfile(user.email, user);
+      }
+      
       setUserData(user);
       setIsAuthenticated(true);
+      console.log('Registration completed successfully');
     } catch (error) {
       console.error('Error during registration:', error);
     }
@@ -118,8 +132,14 @@ export const AppNavigator: React.FC = () => {
     setAuthScreen('RoleSelect');
   };
 
-  const handleUpdateUserData = (updatedUserData: UserData) => {
-    setUserData(updatedUserData);
+  const handleUpdateUserData = async (updatedUserData: UserData) => {
+    try {
+      await storage.updateUserData(updatedUserData);
+      setUserData(updatedUserData);
+      console.log('User data updated successfully:', updatedUserData);
+    } catch (error) {
+      console.error('Error updating user data:', error);
+    }
   };
 
   const handleBackToRoleSelect = () => {

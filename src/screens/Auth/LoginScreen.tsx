@@ -240,23 +240,59 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     
     setLoading(true);
     
-    // Mock login - in real app, this would call an API
-    setTimeout(() => {
-      const userData = {
-        name: userRole === 'patient' ? 'Mithin Chandu' : 
-              userRole === 'hospital' ? 'Rapha Multi-Speciality Hospital' :
-              userRole === 'diagnostic' ? 'Rapha Diagnostics' : 'Rapha Medicals',
-        email: formData.email,
-        role: userRole,
-        ...(userRole === 'patient' ? { age: 28, gender: 'Male' } : 
-            userRole === 'hospital' ? { hospitalId: 1 } :
-            userRole === 'diagnostic' ? { diagnosticId: 1, specialization: 'Radiology, Pathology' } :
-            { pharmacyId: 1, contact: '9876543210' })
-      };
+    // Try to get existing user data from storage based on email
+    try {
+      // In a real app, this would validate credentials against an API
+      // For demo purposes, we'll try to load existing user data from storage
+      const existingUserData = await getUserDataFromEmail(formData.email);
       
-      if (onLogin) onLogin(userData);
+      if (existingUserData) {
+        // User exists, log them in with their stored data
+        if (onLogin) onLogin(existingUserData);
+        setLoading(false);
+      } else {
+        // User doesn't exist, create a default profile for demo purposes
+        const userData = {
+          name: userRole === 'patient' ? 'Patient User' : 
+                userRole === 'hospital' ? 'Rapha Multi-Speciality Hospital' :
+                userRole === 'diagnostic' ? 'Rapha Diagnostics' : 'Rapha Medicals',
+          email: formData.email,
+          role: userRole,
+          ...(userRole === 'patient' ? { age: 25, gender: 'Not specified' } : 
+              userRole === 'hospital' ? { hospitalId: 1 } :
+              userRole === 'diagnostic' ? { diagnosticId: 1, specialization: 'Radiology, Pathology' } :
+              { pharmacyId: 1, contact: '9876543210' })
+        };
+        
+        if (onLogin) onLogin(userData);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       setLoading(false);
-    }, 1500);
+      setErrors({ email: 'Login failed. Please try again.' });
+    }
+  };
+
+  // Helper function to get user data by email (for demo purposes)
+  const getUserDataFromEmail = async (email: string) => {
+    try {
+      // In a real app, this would query a database
+      // For now, we'll check if there's any stored user profile with this email
+      const { storage } = await import('../../utils/storage');
+      const userProfile = await storage.getUserProfile(email);
+      
+      if (userProfile) {
+        console.log('Found existing user profile:', userProfile);
+        return userProfile;
+      }
+      
+      console.log('No existing user profile found for:', email);
+      return null;
+    } catch (error) {
+      console.error('Error getting user data:', error);
+      return null;
+    }
   };
 
   const isFormValid = () => {

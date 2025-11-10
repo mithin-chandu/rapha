@@ -36,6 +36,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   // EHR detail modal state
   const [selectedEHR, setSelectedEHR] = useState<EHRRecord | null>(null);
   const [ehrModalVisible, setEhrModalVisible] = useState(false);
+  // EHR records state
+  const [showAllRecords, setShowAllRecords] = useState(false);
+  const [displayedRecordsCount, setDisplayedRecordsCount] = useState(3);
   
   // Utility function to ensure doctor name is displayed correctly
   const formatDoctorName = (name: string) => {
@@ -234,7 +237,14 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           
           <TouchableOpacity
             style={[styles.tabItem, activeTab === 'ehr' && styles.tabItemActive]}
-            onPress={() => setActiveTab('ehr')}
+            onPress={() => {
+              setActiveTab('ehr');
+              // Reset EHR display state when switching to EHR tab
+              if (activeTab !== 'ehr') {
+                setShowAllRecords(false);
+                setDisplayedRecordsCount(3);
+              }
+            }}
             activeOpacity={0.7}
           >
             <View style={styles.tabContent}>
@@ -639,7 +649,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const renderSectionHeader = (title: string, count: number, onViewAll?: () => void) => (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>
-        {title === 'Top Hospitals' ? 'Top Hospitals' : `${title} (${count})`}
+        {title}
       </Text>
       {onViewAll && count > 0 && (
         <TouchableOpacity onPress={onViewAll}>
@@ -739,16 +749,15 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     };
 
     const getSectionTitle = () => {
-      const count = groupedProviders.hospitals.length;
       switch (selectedProvider) {
         case 'topRated':
-          return `Top Rated Hospitals (${count})`;
+          return 'Top Rated Hospitals';
         case 'highRated':
-          return `High Rated Hospitals (${count})`;
+          return 'High Rated Hospitals';
         case 'goodRated':
-          return `Good Rated Hospitals (${count})`;
+          return 'Good Rated Hospitals';
         default:
-          return `All Hospitals (${count})`;
+          return 'All Hospitals';
       }
     };
 
@@ -771,8 +780,20 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   };
 
   const renderEHRContent = () => {
-    const recentRecords = getRecentEHRRecords(3);
+    const recentRecords = getRecentEHRRecords(showAllRecords ? ehrRecords.length : displayedRecordsCount);
     const upcomingFollowUps = getUpcomingFollowUps();
+
+    const handleViewAll = () => {
+      if (showAllRecords) {
+        // Show less - go back to showing limited records
+        setShowAllRecords(false);
+        setDisplayedRecordsCount(3);
+      } else {
+        // Show all records
+        setShowAllRecords(true);
+        setDisplayedRecordsCount(ehrRecords.length);
+      }
+    };
 
     const formatDate = (dateString: string) => {
       return new Date(dateString).toLocaleDateString('en-US', {
@@ -1022,11 +1043,19 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 <View style={[styles.ehrSectionIcon, { backgroundColor: '#dbeafe' }]}>
                   <Ionicons name="document-text-outline" size={20} color="#3b82f6" />
                 </View>
-                <Text style={styles.ehrSectionTitle}>Medical Records</Text>
+                <Text style={styles.ehrSectionTitle}>
+                  Medical Records ({showAllRecords ? ehrRecords.length : `${Math.min(displayedRecordsCount, ehrRecords.length)} of ${ehrRecords.length}`})
+                </Text>
               </View>
-              <TouchableOpacity style={styles.ehrViewAllButton}>
-                <Text style={styles.ehrViewAllText}>View All</Text>
-                <Ionicons name="chevron-forward" size={16} color="#3b82f6" />
+              <TouchableOpacity style={styles.ehrViewAllButton} onPress={handleViewAll}>
+                <Text style={styles.ehrViewAllText}>
+                  {showAllRecords ? 'Show Less' : 'View All'}
+                </Text>
+                <Ionicons 
+                  name={showAllRecords ? 'chevron-up' : 'chevron-forward'} 
+                  size={16} 
+                  color="#3b82f6" 
+                />
               </TouchableOpacity>
             </View>
 
@@ -1776,22 +1805,15 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
             colors={['#3b82f6', '#2563eb', '#1d4ed8']}
             style={styles.ehrModalHeader}
           >
-            <View style={styles.ehrHeaderContent}>
-              <View style={styles.ehrHeaderLeft}>
-                <TouchableOpacity 
-                  style={styles.ehrBackButton} 
-                  onPress={closeEHRModal}
-                  activeOpacity={0.8}
-                >
-                  <Ionicons name="arrow-back" size={24} color="#ffffff" />
-                </TouchableOpacity>
-                <View style={styles.ehrHeaderInfo}>
-                  <Text style={styles.ehrModalTitle}>Medical Record</Text>
-                  <Text style={styles.ehrPatientName}>
-                    {selectedEHR?.patientFullName || 'Patient'}
-                  </Text>
-                </View>
-              </View>
+            {/* Top Row with Back Button and Action Buttons */}
+            <View style={styles.ehrModalTopRow}>
+              <TouchableOpacity 
+                style={styles.ehrBackButton} 
+                onPress={closeEHRModal}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="arrow-back" size={24} color="#ffffff" />
+              </TouchableOpacity>
               
               <View style={styles.ehrHeaderActions}>
                 <TouchableOpacity style={styles.ehrActionButton} activeOpacity={0.8}>
@@ -1801,6 +1823,14 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                   <Ionicons name="share-outline" size={20} color="#ffffff" />
                 </TouchableOpacity>
               </View>
+            </View>
+
+            {/* Title and Patient Info */}
+            <View style={styles.ehrTitleSection}>
+              <Text style={styles.ehrModalTitle}>Medical Record</Text>
+              <Text style={styles.ehrPatientName}>
+                {selectedEHR?.patientFullName || 'Patient'}
+              </Text>
             </View>
             
             {/* Patient Summary Card */}
@@ -2328,12 +2358,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     marginVertical: 16,
     paddingVertical: 20,
-    borderRadius: 16,
+    borderRadius: 32,
     shadowColor: '#1e293b',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 8,
     borderWidth: 1,
     borderColor: '#f1f5f9',
   },
@@ -2808,7 +2838,7 @@ const styles = StyleSheet.create({
   },
   ehrRecordCard: {
     backgroundColor: colors.backgroundTertiary,
-    borderRadius: borderRadius.lg,
+    borderRadius: 20,
     padding: spacing.lg,
     marginBottom: spacing.md,
     ...shadows.sm,
@@ -2979,6 +3009,10 @@ const styles = StyleSheet.create({
   appointmentsHeaderGradient: {
     paddingTop: Platform.OS === 'ios' ? 50 : 20,
     paddingBottom: 30,
+    borderRadius: 24,
+    margin: 16,
+    marginTop: Platform.OS === 'ios' ? 50 : 20,
+    overflow: 'hidden',
   },
   appointmentsHeaderContent: {
     paddingHorizontal: 20,
@@ -3016,22 +3050,22 @@ const styles = StyleSheet.create({
   quickStatsContainer: {
     flexDirection: 'row',
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: 16,
-    padding: 16,
-    gap: 8,
+    borderRadius: 20,
+    padding: 20,
+    gap: 12,
   },
   quickStatItem: {
     flex: 1,
     alignItems: 'center',
   },
   quickStatIconContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 24,
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   quickStatNumber: {
     fontSize: 20,
@@ -3085,7 +3119,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3b82f6',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
+    borderRadius: 20,
   },
   sectionBadgeText: {
     fontSize: 14,
@@ -3099,13 +3133,13 @@ const styles = StyleSheet.create({
   },
   enhancedAppointmentCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 20,
+    padding: 24,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 8,
     borderWidth: 1,
     borderColor: '#f1f5f9',
   },
@@ -3134,7 +3168,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 16,
     gap: 6,
   },
   statusIndicator: {
@@ -3151,7 +3185,7 @@ const styles = StyleSheet.create({
   // Appointment Details
   appointmentDetails: {
     backgroundColor: '#f8fafc',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
     marginBottom: 16,
     gap: 12,
@@ -3163,7 +3197,7 @@ const styles = StyleSheet.create({
   detailIconContainer: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: 16,
     backgroundColor: '#ffffff',
     justifyContent: 'center',
     alignItems: 'center',
@@ -3192,7 +3226,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 16,
     backgroundColor: '#f8fafc',
     borderWidth: 1,
     borderColor: '#e2e8f0',
@@ -3209,7 +3243,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 12,
-    borderRadius: 12,
+    borderRadius: 16,
     backgroundColor: '#3b82f6',
     gap: 6,
   },
@@ -3225,7 +3259,7 @@ const styles = StyleSheet.create({
   },
   historyCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -3274,7 +3308,7 @@ const styles = StyleSheet.create({
   historyActionButton: {
     width: 32,
     height: 32,
-    borderRadius: 16,
+    borderRadius: 20,
     backgroundColor: '#f8fafc',
     justifyContent: 'center',
     alignItems: 'center',
@@ -3290,7 +3324,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: Platform.OS === 'web' ? 150 : 80,
     backgroundColor: '#ffffff',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
     alignItems: 'center',
     shadowColor: '#000000',
@@ -3339,7 +3373,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderRadius: 16,
+    borderRadius: 20,
   },
   totalCountText: {
     fontSize: 14,
@@ -3384,7 +3418,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#3b82f6',
     paddingHorizontal: 24,
     paddingVertical: 16,
-    borderRadius: 16,
+    borderRadius: 20,
     gap: 8,
     shadowColor: '#3b82f6',
     shadowOffset: { width: 0, height: 4 },
@@ -3408,6 +3442,10 @@ const styles = StyleSheet.create({
   ehrHeaderGradient: {
     paddingTop: Platform.OS === 'ios' ? 50 : 20,
     paddingBottom: 30,
+    borderRadius: 24,
+    margin: 16,
+    marginTop: Platform.OS === 'ios' ? 50 : 20,
+    overflow: 'hidden',
   },
   ehrHeaderContent: {
     paddingHorizontal: 20,
@@ -3459,7 +3497,7 @@ const styles = StyleSheet.create({
   ehrQuickStats: {
     flexDirection: 'row',
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 16,
     gap: 8,
   },
@@ -3549,7 +3587,7 @@ const styles = StyleSheet.create({
   },
   ehrAssessmentCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 20,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
@@ -3609,7 +3647,7 @@ const styles = StyleSheet.create({
   // Vitals Section
   ehrVitalsSection: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
+    borderRadius: 20,
     padding: 20,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
@@ -3634,7 +3672,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: Platform.OS === 'web' ? 120 : 80,
     backgroundColor: '#f8fafc',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
     borderWidth: 1,
     borderColor: '#e2e8f0',
@@ -3647,7 +3685,7 @@ const styles = StyleSheet.create({
   ehrVitalIcon: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 8,
@@ -3672,7 +3710,7 @@ const styles = StyleSheet.create({
   ehrVitalStatusBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 16,
     alignSelf: 'flex-start',
   },
   ehrVitalStatusText: {
@@ -3696,20 +3734,6 @@ const styles = StyleSheet.create({
   // Records Container
   ehrRecordsContainer: {
     gap: 12,
-  },
-  ehrRecordCardModal: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 2,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
   },
   ehrRecordHeader: {
     flexDirection: 'row',
@@ -3736,7 +3760,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: 16,
     gap: 4,
   },
   ehrRecordStatusIndicator: {
@@ -4388,17 +4412,21 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 50 : 20,
     paddingBottom: 20,
   },
-  ehrHeaderContentModal: {
+  
+  // New Top Row Layout
+  ehrModalTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    marginBottom: 16,
+    marginBottom: 20,
   },
-  ehrHeaderLeftModal: {
-    flexDirection: 'row',
+  
+  // Title Section (centered)
+  ehrTitleSection: {
     alignItems: 'center',
-    flex: 1,
+    paddingHorizontal: 20,
+    marginBottom: 16,
   },
   ehrBackButton: {
     width: 40,
@@ -4407,21 +4435,19 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
-  },
-  ehrHeaderInfoModal: {
-    flex: 1,
   },
   ehrModalTitle: {
     fontSize: 24,
     fontWeight: '700',
     color: '#ffffff',
     marginBottom: 4,
+    textAlign: 'center',
   },
   ehrPatientName: {
     fontSize: 16,
     color: '#93c5fd',
     fontWeight: '500',
+    textAlign: 'center',
   },
   ehrHeaderActions: {
     flexDirection: 'row',

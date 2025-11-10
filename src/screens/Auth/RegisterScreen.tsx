@@ -289,25 +289,33 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({
     
     setLoading(true);
     
-    // Mock registration - in real app, this would call an API
-    setTimeout(() => {
+    try {
+      // Create user data from form inputs
       const userData = {
-        name: formData.name,
-        email: formData.email,
+        name: formData.name.trim(), // Use the actual name from the form
+        email: formData.email.trim().toLowerCase(),
         role: userRole,
-        phone: formData.phone,
-        address: formData.address,
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
         ...(userRole === 'patient' ? { 
           age: parseInt(formData.age) || 0, 
-          gender: formData.gender 
+          gender: formData.gender.trim()
         } : { 
           hospitalId: Math.floor(Math.random() * 1000) + 1 
         })
       };
       
-      if (onRegister) onRegister(userData);
+      console.log('Registering user with data:', userData);
+      
+      if (onRegister) {
+        await onRegister(userData);
+      }
       setLoading(false);
-    }, 1500);
+    } catch (error) {
+      console.error('Registration error:', error);
+      setLoading(false);
+      setErrors({ name: 'Registration failed. Please try again.' });
+    }
   }, [formData, userRole, onRegister, validateForm]);
 
   const isFormValid = () => {

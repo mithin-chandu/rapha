@@ -43,8 +43,48 @@ export const storage = {
   async clearUserData(): Promise<void> {
     try {
       await AsyncStorage.removeItem('userData');
+      await AsyncStorage.removeItem('isAuthenticated');
+      console.log('User data and auth status cleared');
     } catch (error) {
       console.error('Error clearing user data:', error);
+    }
+  },
+
+  // Enhanced user management for multiple users (for future use)
+  async saveUserProfile(email: string, userData: UserData): Promise<void> {
+    try {
+      const key = `user_${email.toLowerCase()}`;
+      await AsyncStorage.setItem(key, JSON.stringify(userData));
+      console.log('User profile saved for:', email);
+    } catch (error) {
+      console.error('Error saving user profile:', error);
+      throw error;
+    }
+  },
+
+  async getUserProfile(email: string): Promise<UserData | null> {
+    try {
+      const key = `user_${email.toLowerCase()}`;
+      const userData = await AsyncStorage.getItem(key);
+      return userData ? JSON.parse(userData) : null;
+    } catch (error) {
+      console.error('Error getting user profile:', error);
+      return null;
+    }
+  },
+
+  async updateUserData(updatedUserData: UserData): Promise<void> {
+    try {
+      console.log('Updating user data:', updatedUserData);
+      await this.setUserData(updatedUserData);
+      
+      // Also save as a profile for future logins
+      if (updatedUserData.email) {
+        await this.saveUserProfile(updatedUserData.email, updatedUserData);
+      }
+    } catch (error) {
+      console.error('Error updating user data:', error);
+      throw error;
     }
   },
 

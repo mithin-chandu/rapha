@@ -500,8 +500,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               paddingHorizontal: 24,
               paddingVertical: 32,
               paddingTop: 16,
-              borderBottomLeftRadius: 32,
-              borderBottomRightRadius: 32,
+              borderBottomLeftRadius: 40,
+              borderBottomRightRadius: 40,
             }}
           >
             {/* Shimmer overlay */}
@@ -1956,7 +1956,7 @@ const styles = StyleSheet.create({
     height: 220,
     marginHorizontal: spacing.sm,
     marginRight: spacing.md,
-    borderRadius: borderRadius.lg,
+    borderRadius: 24,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#60a5fa', // Light blue border for individual cards
@@ -2164,7 +2164,7 @@ const styles = StyleSheet.create({
   medicinePreviewImage: {
     width: '100%',
     height: 90,
-    borderRadius: borderRadius.md,
+    borderRadius: 16,
     marginBottom: spacing.sm,
   },
   medicinePreviewContent: {

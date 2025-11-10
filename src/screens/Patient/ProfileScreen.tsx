@@ -45,12 +45,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         address: editFormData.address,
       };
 
-      await storage.setUserData(updatedUserData);
+      // Use the enhanced storage update method
+      await storage.updateUserData(updatedUserData);
       onUpdateUserData(updatedUserData);
       
       setEditModalVisible(false);
       Alert.alert('Success', 'Profile updated successfully!');
     } catch (error) {
+      console.error('Error updating profile:', error);
       Alert.alert('Error', 'Failed to update profile. Please try again.');
     } finally {
       setLoading(false);
