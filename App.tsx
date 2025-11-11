@@ -20,6 +20,21 @@ export default function App() {
 
   const initializeAppData = async () => {
     try {
+      // Initialize Samuel's dummy profile first
+      const samuelProfile = {
+        name: 'Samuel Rick',
+        role: 'patient' as const,
+        email: 'samuelrick1219@gmail.com',
+        age: 21,
+        gender: 'male',
+        phone: '70134 02809',
+        address: 'vijawada'
+      };
+
+      // Set the user data and auth status
+      await storage.setUserData(samuelProfile);
+      await storage.setAuthStatus(true);
+
       // Check if this is the first launch
       const existingBookings = await storage.getBookings();
       const existingDoctors = await storage.getDoctors();

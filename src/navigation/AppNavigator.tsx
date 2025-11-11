@@ -47,27 +47,38 @@ const Stack = createStackNavigator();
 type AuthScreens = 'RoleSelect' | 'Login' | 'Register';
 
 export const AppNavigator: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true); // Always authenticated
   const [userData, setUserData] = useState<UserData | null>(null);
   const [authScreen, setAuthScreen] = useState<AuthScreens>('RoleSelect');
   const [selectedRole, setSelectedRole] = useState<'patient' | 'hospital' | 'diagnostic' | 'pharmacy' | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    checkAuthStatus();
+    initializeSamuelProfile();
   }, []);
 
-  const checkAuthStatus = async () => {
+  const initializeSamuelProfile = async () => {
     try {
-      const authStatus = await storage.getAuthStatus();
-      const user = await storage.getUserData();
+      // Create Samuel's dummy profile data based on the image
+      const samuelProfile: UserData = {
+        name: 'Samuel Rick',
+        role: 'patient',
+        email: 'samuelrick1219@gmail.com',
+        age: 21,
+        gender: 'male',
+        phone: '70134 02809',
+        address: 'vijawada'
+      };
+
+      // Set the user data without authentication checks
+      await storage.setUserData(samuelProfile);
+      await storage.setAuthStatus(true);
       
-      if (authStatus && user) {
-        setIsAuthenticated(true);
-        setUserData(user);
-      }
+      setUserData(samuelProfile);
+      setIsAuthenticated(true);
+      console.log('Samuel profile initialized:', samuelProfile);
     } catch (error) {
-      console.error('Error checking auth status:', error);
+      console.error('Error initializing Samuel profile:', error);
     } finally {
       setLoading(false);
     }
@@ -159,47 +170,7 @@ export const AppNavigator: React.FC = () => {
     return null; // You can add a loading screen here
   }
 
-  if (!isAuthenticated) {
-    return (
-      <NavigationContainer>
-        <StatusBar style="dark" />
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          {authScreen === 'RoleSelect' && (
-            <Stack.Screen name="RoleSelect">
-              {() => <RoleSelectScreen onSelectRole={handleRoleSelect} />}
-            </Stack.Screen>
-          )}
-          
-          {authScreen === 'Login' && selectedRole && (
-            <Stack.Screen name="Login">
-              {() => (
-                <LoginScreen
-                  userRole={selectedRole}
-                  onLogin={handleLogin}
-                  onBackPress={handleBackToRoleSelect}
-                  onRegisterPress={handleSwitchToRegister}
-                />
-              )}
-            </Stack.Screen>
-          )}
-          
-          {authScreen === 'Register' && selectedRole && (
-            <Stack.Screen name="Register">
-              {() => (
-                <RegisterScreen
-                  userRole={selectedRole}
-                  onRegister={handleRegister}
-                  onBackPress={handleBackToRoleSelect}
-                  onLoginPress={handleSwitchToLogin}
-                />
-              )}
-            </Stack.Screen>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    );
-  }
-
+  // Always show authenticated content since we're bypassing auth
   if (!userData) {
     return null;
   }
