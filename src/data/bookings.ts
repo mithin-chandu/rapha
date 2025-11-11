@@ -10,7 +10,7 @@ export interface Booking {
   date: string;
   time: string;
   symptoms: string;
-  status: 'Pending' | 'Accepted' | 'Rejected' | 'Completed';
+  status: 'Pending' | 'Accepted' | 'Rejected' | 'Completed' | 'Cancelled';
   bookedAt: string;
 }
 
@@ -23,10 +23,10 @@ export const initialBookings: Booking[] = [
     doctorId: 1,
     doctorName: "Dr. Arjun Rao",
     hospitalId: 1,
-    hospitalName: "Rapha Multi-Speciality Hospital",
-    date: "2025-11-05",
-    time: "10:30 AM",
-    symptoms: "Chest pain and breathing difficulty",
+    hospitalName: "Manipal Hospital Vijayawada",
+    date: "2025-11-11",
+    time: "8:50 PM",
+    symptoms: "fever",
     status: "Pending",
     bookedAt: "2025-10-31T10:00:00Z"
   },

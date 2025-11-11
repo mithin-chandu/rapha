@@ -525,17 +525,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             {/* Enhanced Logo and Brand */}
             <View style={{
               flexDirection: 'row',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               flex: 1,
             }}>
               <View style={{
-                width: 120,
-                height: 120,
+                width: 140,
+                height: 140,
                 backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                borderRadius: 35,
+                borderRadius: 40,
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginRight: 28,
+                marginRight: 32,
                 borderWidth: 3,
                 borderColor: 'rgba(255, 255, 255, 0.5)',
                 shadowColor: 'rgba(0, 0, 0, 0.4)',
@@ -547,8 +547,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                 <Image 
                   source={require('../../../assets/image.png')} 
                   style={{
-                    width: 95,
-                    height: 95,
+                    width: 115,
+                    height: 115,
                   }}
                   resizeMode="contain"
                 />
@@ -563,8 +563,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   textShadowOffset: { width: 0, height: 4 },
                   textShadowRadius: 8,
                   lineHeight: 70,
+                  marginBottom: 8,
                 }}>
                   Rapha
+                </Text>
+                <Text style={{
+                  fontSize: 20,
+                  color: 'rgba(255, 255, 255, 0.95)',
+                  fontWeight: '600',
+                  lineHeight: 28,
+                  textAlign: 'left',
+                  maxWidth: '95%',
+                  textShadowColor: 'rgba(0, 0, 0, 0.3)',
+                  textShadowOffset: { width: 0, height: 2 },
+                  textShadowRadius: 4,
+                }}>
+                  Your trusted partner in comprehensive healthcare management
                 </Text>
               </View>
             </View>
@@ -623,57 +637,43 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   {userData.name.split(' ')[0]}
                 </Text>
               </TouchableOpacity>
-              
-              {/* Greeting Section */}
-              <View style={{
-                alignItems: 'flex-end',
-              }}>
-                <Text style={{
-                  fontSize: 16,
-                  color: 'rgba(255, 255, 255, 0.9)',
-                  fontWeight: '500',
-                  marginBottom: 4,
-                  textAlign: 'right',
-                }}>
-                  {getGreeting()}
-                </Text>
-                <Text style={{
-                  fontSize: 28,
-                  fontWeight: '800',
-                  color: '#ffffff',
-                  textAlign: 'right',
-                  textShadowColor: 'rgba(0, 0, 0, 0.3)',
-                  textShadowOffset: { width: 0, height: 2 },
-                  textShadowRadius: 4,
-                }}>
-                  {userData.name.split(' ')[0]}
-                </Text>
-              </View>
             </View>
           </View>
 
-          {/* Enhanced Professional Tagline Section */}
-          <View style={{
-            alignItems: 'flex-start',
-            marginBottom: 28,
-            paddingLeft: 120, // Align with logo text
-          }}>
-            <Text style={{
-              fontSize: 20,
-              color: 'rgba(255, 255, 255, 0.95)',
-              fontWeight: '600',
-              lineHeight: 28,
-              textAlign: 'left',
-              maxWidth: '85%',
-              textShadowColor: 'rgba(0, 0, 0, 0.3)',
-              textShadowOffset: { width: 0, height: 2 },
-              textShadowRadius: 4,
-            }}>
-              Your trusted partner in comprehensive healthcare management
-            </Text>
-          </View>
-
           <View style={styles.heroContent}>
+            {/* Greeting Section - Bottom Right of Hero */}
+            <View style={{
+              position: 'absolute',
+              bottom: 20,
+              right: 24,
+              alignItems: 'flex-end',
+            }}>
+              <Text style={{
+                fontSize: 24,
+                color: '#ffffff',
+                fontWeight: '800',
+                marginBottom: 4,
+                textAlign: 'right',
+                textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                textShadowOffset: { width: 0, height: 2 },
+                textShadowRadius: 4,
+                letterSpacing: 0.8,
+              }}>
+                {getGreeting()}
+              </Text>
+              <Text style={{
+                fontSize: 24,
+                fontWeight: '800',
+                color: '#ffffff',
+                textAlign: 'right',
+                textShadowColor: 'rgba(0, 0, 0, 0.4)',
+                textShadowOffset: { width: 0, height: 2 },
+                textShadowRadius: 4,
+                letterSpacing: 0.8,
+              }}>
+                {userData.name.split(' ')[0]}
+              </Text>
+            </View>
           </View>
         </LinearGradient>
       </Animated.View>
@@ -1593,6 +1593,132 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               </TouchableOpacity>
             </View>
           )}
+        </View>
+      </Animated.View>
+
+      {/* Enhanced Professional Footer */}
+      <Animated.View 
+        style={[
+          {
+            opacity: fadeAnim,
+            transform: [{ translateY: slideAnim }],
+          },
+        ]}
+      >
+        <View style={styles.footer}>
+          <LinearGradient
+            colors={['#1e40af', '#3b82f6', '#60a5fa']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.footerGradient}
+          >
+            {/* Decorative background elements */}
+            <View style={styles.footerDecorations}>
+              <View style={[styles.footerDecoration, { top: 20, left: '10%', backgroundColor: 'rgba(59, 130, 246, 0.1)' }]} />
+              <View style={[styles.footerDecoration, { top: 60, right: '15%', backgroundColor: 'rgba(16, 185, 129, 0.1)' }]} />
+              <View style={[styles.footerDecoration, { bottom: 30, left: '70%', backgroundColor: 'rgba(168, 85, 247, 0.1)' }]} />
+            </View>
+
+            <View style={styles.footerContent}>
+              {/* Inspiring Quote Section */}
+              <View style={styles.footerQuoteSection}>
+                <View style={styles.quoteContainer}>
+                  <Text style={styles.inspiringQuote}>
+                    "Made with care for healthier communities"
+                  </Text>
+                </View>
+                <Text style={styles.quoteSubtext}>
+                  Empowering lives through compassionate healthcare
+                </Text>
+              </View>
+
+              {/* Main Footer Content */}
+              <View style={styles.footerMainContent}>
+                {/* Footer Logo and Brand */}
+                <View style={styles.footerBrand}>
+                  <View style={styles.footerLogoContainer}>
+                    <Image 
+                      source={require('../../../assets/image.png')} 
+                      style={styles.footerLogo}
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <View style={styles.footerBrandText}>
+                    <Text style={styles.footerTitle}>Rapha</Text>
+                    <Text style={styles.footerSubtitle}>Healthcare Excellence</Text>
+                    <Text style={styles.footerMission}>
+                      Transforming healthcare with technology and compassion
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Footer Navigation */}
+                <View style={styles.footerNav}>
+                  <View style={styles.footerColumn}>
+                    <Text style={styles.footerColumnTitle}>Services</Text>
+                    <TouchableOpacity style={styles.footerNavLink}>
+                      <Text style={styles.footerNavText}>Hospital Booking</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerNavLink}>
+                      <Text style={styles.footerNavText}>Online Pharmacy</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerNavLink}>
+                      <Text style={styles.footerNavText}>Lab Tests</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.footerColumn}>
+                    <Text style={styles.footerColumnTitle}>Support</Text>
+                    <TouchableOpacity style={styles.footerNavLink}>
+                      <Text style={styles.footerNavText}>Help Center</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerNavLink}>
+                      <Text style={styles.footerNavText}>Contact Us</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerNavLink}>
+                      <Text style={styles.footerNavText}>Emergency</Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.footerColumn}>
+                    <Text style={styles.footerColumnTitle}>Legal</Text>
+                    <TouchableOpacity style={styles.footerNavLink}>
+                      <Text style={styles.footerNavText}>Privacy Policy</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerNavLink}>
+                      <Text style={styles.footerNavText}>Terms of Service</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.footerNavLink}>
+                      <Text style={styles.footerNavText}>Medical Disclaimer</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+
+              {/* Footer Bottom with Enhanced Copyright */}
+              <View style={styles.footerBottom}>
+                <View style={styles.footerDivider} />
+                
+                <View style={styles.footerBottomContent}>
+                  <View style={styles.copyrightSection}>
+                    <Text style={styles.footerCopyright}>
+                      © 2025 Rapha Healthcare. All rights reserved.
+                    </Text>
+                    <Text style={styles.footerTagline}>
+                      Connecting patients with quality healthcare providers
+                    </Text>
+                  </View>
+                </View>
+
+                {/* Final Inspiring Message */}
+                <View style={styles.finalMessage}>
+                  <Text style={styles.finalMessageText}>
+                    "Every step towards better health is a victory worth celebrating" ✨
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </LinearGradient>
         </View>
       </Animated.View>
 
@@ -2590,5 +2716,206 @@ const styles = StyleSheet.create({
   
   bottomSpacer: {
     height: spacing.massive,
+  },
+  
+  // Enhanced Professional Footer Styles
+  footer: {
+    marginTop: 32,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  footerGradient: {
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  footerDecorations: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    pointerEvents: 'none',
+  },
+  footerDecoration: {
+    position: 'absolute',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    opacity: 0.3,
+  },
+  footerContent: {
+    maxWidth: 1200,
+    alignSelf: 'center',
+    width: '100%',
+    zIndex: 1,
+  },
+  
+  // Quote Section
+  footerQuoteSection: {
+    alignItems: 'center',
+    marginBottom: 40,
+    paddingVertical: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  quoteContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 8,
+  },
+  inspiringQuote: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#ffffff',
+    textAlign: 'center',
+    letterSpacing: 0.5,
+  },
+  quoteSubtext: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    fontWeight: '500',
+  },
+  
+  // Main Content
+  footerMainContent: {
+    marginBottom: 32,
+  },
+  footerBrand: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 32,
+    justifyContent: 'flex-start',
+  },
+  footerLogoContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 20,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  footerLogo: {
+    width: 48,
+    height: 48,
+  },
+  footerBrandText: {
+    alignItems: 'flex-start',
+    flex: 1,
+  },
+  footerTitle: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#ffffff',
+    letterSpacing: 2,
+    marginBottom: 4,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  footerSubtitle: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  footerMission: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontWeight: '500',
+    lineHeight: 20,
+    maxWidth: 300,
+  },
+  
+  // Navigation
+  footerNav: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: 24,
+    marginBottom: 32,
+  },
+  footerColumn: {
+    flex: 1,
+    minWidth: 120,
+  },
+  footerColumnTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#ffffff',
+    marginBottom: 16,
+    letterSpacing: 0.5,
+  },
+  footerNavLink: {
+    paddingVertical: 8,
+  },
+  footerNavText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '500',
+    lineHeight: 20,
+  },
+  
+  // Footer Bottom
+  footerBottom: {
+    alignItems: 'center',
+  },
+  footerDivider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    marginBottom: 24,
+  },
+  footerBottomContent: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 16,
+    marginBottom: 20,
+  },
+  copyrightSection: {
+    alignItems: 'flex-start',
+  },
+  footerCopyright: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  footerTagline: {
+    fontSize: 13,
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontWeight: '500',
+    lineHeight: 18,
+  },
+  
+  // Final Message
+  finalMessage: {
+    alignItems: 'center',
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  finalMessageText: {
+    fontSize: 15,
+    color: 'rgba(255, 255, 255, 0.8)',
+    textAlign: 'center',
+    fontWeight: '600',
+    fontStyle: 'italic',
+    letterSpacing: 0.3,
   },
 });

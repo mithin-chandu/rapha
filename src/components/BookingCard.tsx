@@ -27,6 +27,8 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         return colors.rejected;
       case 'Completed':
         return colors.completed;
+      case 'Cancelled':
+        return '#6b7280';
       default:
         return colors.textSecondary;
     }
@@ -42,6 +44,8 @@ export const BookingCard: React.FC<BookingCardProps> = ({
         return 'close-circle-outline';
       case 'Completed':
         return 'checkmark-done-circle-outline';
+      case 'Cancelled':
+        return 'ban-outline';
       default:
         return 'time-outline';
     }

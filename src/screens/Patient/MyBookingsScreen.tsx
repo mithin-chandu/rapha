@@ -33,6 +33,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const [loading, setLoading] = useState(true);
   const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
   const [showCategoriesModal, setShowCategoriesModal] = useState(false);
+  const [cancelledAppointments, setCancelledAppointments] = useState<number[]>([]);
   // EHR detail modal state
   const [selectedEHR, setSelectedEHR] = useState<EHRRecord | null>(null);
   const [ehrModalVisible, setEhrModalVisible] = useState(false);
@@ -76,6 +77,12 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       );
       
       setBookings(sortedBookings);
+      
+      // Update cancelled appointments list
+      const cancelledIds = sortedBookings
+        .filter(booking => booking.status === 'Cancelled')
+        .map(booking => booking.id);
+      setCancelledAppointments(cancelledIds);
     } catch (error) {
       console.error('Error loading bookings:', error);
     } finally {
@@ -139,6 +146,50 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     setSelectedEHR(null);
   };
 
+  // Cancel appointment function
+  const cancelAppointment = async (bookingId: number) => {
+    try {
+      // Update booking status to 'Cancelled'
+      const allBookings = await storage.getBookings();
+      const updatedBookings = allBookings.map(booking => 
+        booking.id === bookingId 
+          ? { ...booking, status: 'Cancelled' as const }
+          : booking
+      );
+      
+      // Save updated bookings
+      await storage.saveBookings(updatedBookings);
+      
+      // Add to cancelled appointments list for UI updates
+      setCancelledAppointments(prev => [...prev, bookingId]);
+      
+      // Reload bookings to reflect changes
+      await loadBookings();
+    } catch (error) {
+      console.error('Error canceling appointment:', error);
+    }
+  };
+
+  // Clear cancelled appointments function
+  const clearCancelledAppointments = async () => {
+    try {
+      // Get all bookings and filter out cancelled ones
+      const allBookings = await storage.getBookings();
+      const activeBookings = allBookings.filter(booking => booking.status !== 'Cancelled');
+      
+      // Save filtered bookings
+      await storage.saveBookings(activeBookings);
+      
+      // Clear cancelled appointments list
+      setCancelledAppointments([]);
+      
+      // Reload bookings to reflect changes
+      await loadBookings();
+    } catch (error) {
+      console.error('Error clearing cancelled appointments:', error);
+    }
+  };
+
   // Filter functions
   const getFilteredProviders = () => {
     let allProviders: any[] = [];
@@ -184,6 +235,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       accepted: bookings.filter(b => b.status === 'Accepted').length,
       completed: bookings.filter(b => b.status === 'Completed').length,
       rejected: bookings.filter(b => b.status === 'Rejected').length,
+      cancelled: bookings.filter(b => b.status === 'Cancelled').length,
     };
     return counts;
   };
@@ -1299,12 +1351,28 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               
               <View style={styles.quickStatItem}>
                 <View style={styles.quickStatIconContainer}>
-                  <Ionicons name="close-circle-outline" size={20} color="#ef4444" />
+                  <Ionicons name="ban-outline" size={20} color="#6b7280" />
                 </View>
-                <Text style={styles.quickStatNumber}>{statusCounts.rejected}</Text>
-                <Text style={styles.quickStatLabel}>Rejected</Text>
+                <Text style={styles.quickStatNumber}>{statusCounts.cancelled}</Text>
+                <Text style={styles.quickStatLabel}>Cancelled</Text>
               </View>
             </View>
+
+            {/* Clear Cancelled Appointments Button */}
+            {statusCounts.cancelled > 0 && (
+              <View style={styles.clearButtonContainer}>
+                <TouchableOpacity 
+                  style={styles.clearCancelledButton}
+                  onPress={clearCancelledAppointments}
+                  activeOpacity={0.8}
+                >
+                  <Ionicons name="trash-outline" size={16} color="#ef4444" />
+                  <Text style={styles.clearCancelledText}>
+                    Clear {statusCounts.cancelled} Cancelled Appointment{statusCounts.cancelled > 1 ? 's' : ''}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         </LinearGradient>
 
@@ -1337,19 +1405,25 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       <View style={[
                         styles.statusBadgeEnhanced,
                         {
-                          backgroundColor: booking.status === 'Accepted' ? '#dcfce7' : '#fef3c7'
+                          backgroundColor: booking.status === 'Accepted' ? '#dcfce7' : 
+                                         booking.status === 'Cancelled' ? '#f3f4f6' :
+                                         booking.status === 'Completed' ? '#f0fdf4' : '#fef3c7'
                         }
                       ]}>
                         <View style={[
                           styles.statusIndicator,
                           {
-                            backgroundColor: booking.status === 'Accepted' ? '#16a34a' : '#f59e0b'
+                            backgroundColor: booking.status === 'Accepted' ? '#16a34a' : 
+                                           booking.status === 'Cancelled' ? '#6b7280' :
+                                           booking.status === 'Completed' ? '#22c55e' : '#f59e0b'
                           }
                         ]} />
                         <Text style={[
                           styles.statusTextEnhanced,
                           {
-                            color: booking.status === 'Accepted' ? '#16a34a' : '#f59e0b'
+                            color: booking.status === 'Accepted' ? '#16a34a' : 
+                                 booking.status === 'Cancelled' ? '#6b7280' :
+                                 booking.status === 'Completed' ? '#22c55e' : '#f59e0b'
                           }
                         ]}>
                           {booking.status}
@@ -1386,9 +1460,19 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                         <Text style={styles.actionButtonSecondaryText}>Contact</Text>
                       </TouchableOpacity>
                       
-                      <TouchableOpacity style={styles.actionButtonPrimary}>
-                        <Ionicons name="navigate-outline" size={16} color="#ffffff" />
-                        <Text style={styles.actionButtonPrimaryText}>Navigate</Text>
+                      <TouchableOpacity 
+                        style={[styles.actionButtonPrimary, { backgroundColor: booking.status === 'Cancelled' ? '#6b7280' : '#ef4444' }]}
+                        onPress={() => booking.status !== 'Cancelled' && cancelAppointment(booking.id)}
+                        disabled={booking.status === 'Cancelled'}
+                      >
+                        <Ionicons 
+                          name={booking.status === 'Cancelled' ? "checkmark-outline" : "close-outline"} 
+                          size={16} 
+                          color="#ffffff" 
+                        />
+                        <Text style={styles.actionButtonPrimaryText}>
+                          {booking.status === 'Cancelled' ? 'Cancelled' : 'Cancel'}
+                        </Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -4861,5 +4945,34 @@ const styles = StyleSheet.create({
   diagnosticDate: {
     fontSize: fontSize.sm,
     color: colors.textTertiary,
+  },
+  
+  // Clear Cancelled Appointments Styles
+  clearButtonContainer: {
+    marginTop: 16,
+    paddingHorizontal: 24,
+  },
+  clearCancelledButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fef2f2',
+    borderWidth: 1,
+    borderColor: '#fecaca',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 8,
+    shadowColor: '#ef4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  clearCancelledText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ef4444',
+    letterSpacing: 0.3,
   },
 });
