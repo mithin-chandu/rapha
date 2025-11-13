@@ -347,6 +347,8 @@ const styles = StyleSheet.create({
   headerGradient: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   headerContent: {
     flexDirection: 'row',

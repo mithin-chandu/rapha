@@ -71,18 +71,32 @@ export const pharmacies: Pharmacy[] = [
   }
 ];
 
-// Array of available medicine images to randomly assign
-const medicineImages = [
-  "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&h=200&fit=crop&crop=center",
-  "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&h=200&fit=crop&crop=center",
-  "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=200&fit=crop&crop=center",
-  "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop&crop=center"
-];
-
-// Function to get a random image from the available images
-const getRandomMedicineImage = (id: number): string => {
-  // Use the medicine ID to create a consistent but pseudo-random selection
-  return medicineImages[id % medicineImages.length];
+// Specific medicine images for each medicine type
+const getMedicineImage = (id: number, category: string): string => {
+  const medicineImages: { [key: number]: string } = {
+    1: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&h=200&fit=crop&crop=center", // Paracetamol tablets
+    2: "https://images.unsplash.com/photo-1576602976047-174e57a47881?w=400&h=200&fit=crop&crop=center", // Amoxicillin capsules
+    3: "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&h=200&fit=crop&crop=center", // Cetirizine tablets
+    4: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop&crop=center", // Omeprazole capsules
+    5: "https://images.unsplash.com/photo-1576602976047-174e57a47881?w=400&h=200&fit=crop&crop=center", // Vitamin D3 tablets
+    6: "https://images.unsplash.com/photo-1563213126-a4273aed2016?w=400&h=200&fit=crop&crop=center", // Metformin tablets
+    7: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=200&fit=crop&crop=center", // Amlodipine tablets
+    8: "https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&h=200&fit=crop&crop=center", // Ibuprofen tablets
+    9: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center", // Loratadine tablets
+    10: "https://images.unsplash.com/photo-1628771065518-0d82f1938462?w=400&h=200&fit=crop&crop=center", // Atorvastatin tablets
+    11: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&h=200&fit=crop&crop=center", // Aspirin tablets
+    12: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&h=200&fit=crop&crop=center", // Losartan tablets
+    13: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=200&fit=crop&crop=center", // Calcium tablets
+    14: "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=200&fit=crop&crop=center", // Azithromycin tablets
+    15: "https://images.unsplash.com/photo-1631549916768-4119b2e5f926?w=400&h=200&fit=crop&crop=center", // Salbutamol inhaler
+    16: "https://images.unsplash.com/photo-1576602976047-174e57a47881?w=400&h=200&fit=crop&crop=center", // Multivitamin tablets
+    17: "https://images.unsplash.com/photo-1585435557343-3b092031133c?w=400&h=200&fit=crop&crop=center", // Diclofenac gel
+    18: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center", // Insulin injection
+    19: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&h=200&fit=crop&crop=center", // Probiotic capsules
+    20: "https://images.unsplash.com/photo-1576602976047-174e57a47881?w=400&h=200&fit=crop&crop=center"  // Antihistamine syrup
+  };
+  
+  return medicineImages[id] || "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&h=200&fit=crop&crop=center";
 };
 
 export const medicines: Medicine[] = [
@@ -97,7 +111,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Dec 2026",
     prescription: false,
     dosage: "1-2 tablets every 6-8 hours",
-    image: getRandomMedicineImage(1)
+    image: getMedicineImage(1, 'Pain Relief')
   },
   {
     id: 2,
@@ -110,7 +124,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Mar 2026",
     prescription: true,
     dosage: "1 capsule 3 times daily",
-    image: getRandomMedicineImage(2)
+    image: getMedicineImage(2, 'Antibiotic')
   },
   {
     id: 3,
@@ -123,7 +137,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Aug 2026",
     prescription: false,
     dosage: "1 tablet once daily",
-    image: getRandomMedicineImage(3)
+    image: getMedicineImage(3, 'Antihistamine')
   },
   {
     id: 4,
@@ -136,7 +150,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Jan 2027",
     prescription: true,
     dosage: "1 capsule before breakfast",
-    image: getRandomMedicineImage(4)
+    image: getMedicineImage(1, 'Gastric')
   },
   {
     id: 5,
@@ -149,7 +163,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Oct 2026",
     prescription: false,
     dosage: "1 tablet daily with food",
-    image: getRandomMedicineImage(5)
+    image: getMedicineImage(5, 'Vitamins')
   },
   {
     id: 6,
@@ -162,7 +176,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Jun 2026",
     prescription: true,
     dosage: "1 tablet twice daily with meals",
-    image: getRandomMedicineImage(6)
+    image: getMedicineImage(6, 'Diabetes')
   },
   {
     id: 7,
@@ -175,7 +189,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Sep 2026",
     prescription: true,
     dosage: "1 tablet once daily",
-    image: getRandomMedicineImage(7)
+    image: getMedicineImage(7, 'Hypertension')
   },
   {
     id: 8,
@@ -188,7 +202,7 @@ export const medicines: Medicine[] = [
     expiryDate: "May 2026",
     prescription: false,
     dosage: "1 tablet 3 times daily after meals",
-    image: getRandomMedicineImage(8)
+    image: getMedicineImage(8, 'Pain Relief')
   },
   {
     id: 9,
@@ -201,7 +215,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Nov 2026",
     prescription: false,
     dosage: "1 tablet once daily",
-    image: getRandomMedicineImage(9)
+    image: getMedicineImage(7, 'Antihistamine')
   },
   {
     id: 10,
@@ -214,7 +228,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Feb 2027",
     prescription: true,
     dosage: "1 tablet once daily at bedtime",
-    image: getRandomMedicineImage(10)
+    image: getMedicineImage(10, 'Cholesterol')
   },
   {
     id: 11,
@@ -227,7 +241,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Jul 2026",
     prescription: false,
     dosage: "1 tablet once daily with food",
-    image: getRandomMedicineImage(11)
+    image: getMedicineImage(11, 'Pain Relief')
   },
   {
     id: 12,
@@ -240,7 +254,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Apr 2026",
     prescription: true,
     dosage: "1 tablet once daily",
-    image: getRandomMedicineImage(12)
+    image: getMedicineImage(12, 'Hypertension')
   },
   {
     id: 13,
@@ -253,7 +267,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Dec 2026",
     prescription: false,
     dosage: "1-2 tablets daily with meals",
-    image: getRandomMedicineImage(13)
+    image: getMedicineImage(2, 'Vitamins')
   },
   {
     id: 14,
@@ -266,7 +280,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Jan 2026",
     prescription: true,
     dosage: "1 tablet once daily for 3 days",
-    image: getRandomMedicineImage(14)
+    image: getMedicineImage(1, 'Antibiotic')
   },
   {
     id: 15,
@@ -279,7 +293,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Sep 2026",
     prescription: true,
     dosage: "2 puffs as needed",
-    image: getRandomMedicineImage(15)
+    image: getMedicineImage(15, 'Respiratory')
   },
   {
     id: 16,
@@ -292,7 +306,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Nov 2026",
     prescription: false,
     dosage: "1 tablet daily with breakfast",
-    image: getRandomMedicineImage(16)
+    image: getMedicineImage(16, 'Vitamins')
   },
   {
     id: 17,
@@ -305,7 +319,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Aug 2026",
     prescription: false,
     dosage: "Apply 3-4 times daily to affected area",
-    image: getRandomMedicineImage(17)
+    image: getMedicineImage(15, 'Pain Relief')
   },
   {
     id: 18,
@@ -318,7 +332,7 @@ export const medicines: Medicine[] = [
     expiryDate: "May 2026",
     prescription: true,
     dosage: "As prescribed by doctor",
-    image: getRandomMedicineImage(18)
+    image: getMedicineImage(18, 'Diabetes')
   },
   {
     id: 19,
@@ -331,7 +345,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Oct 2026",
     prescription: false,
     dosage: "1 capsule daily with water",
-    image: getRandomMedicineImage(19)
+    image: getMedicineImage(19, 'Digestive')
   },
   {
     id: 20,
@@ -344,6 +358,6 @@ export const medicines: Medicine[] = [
     expiryDate: "Mar 2027",
     prescription: false,
     dosage: "5-10ml twice daily or as directed",
-    image: getRandomMedicineImage(20)
+    image: getMedicineImage(20, 'Antihistamine')
   }
 ];

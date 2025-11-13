@@ -81,10 +81,6 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
           >
             <Text style={styles.hospitalName}>{hospital.name}</Text>
             <Text style={styles.specialization}>{hospital.specialization}</Text>
-            <View style={styles.heroRating}>
-              <Ionicons name="star" size={20} color="#FFD700" />
-              <Text style={styles.ratingText}>{hospital.rating}/5.0</Text>
-            </View>
           </LinearGradient>
         </View>
 
@@ -448,7 +444,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  ratingText: {
+  ratingTextSmall: {
     fontSize: fontSize.sm,
     color: colors.textSecondary,
     marginLeft: spacing.xs,
@@ -518,17 +514,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 30,
   },
-  heroRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  ratingText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 6,
-  },
+
   quickInfoSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',

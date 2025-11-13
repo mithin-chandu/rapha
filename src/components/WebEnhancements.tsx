@@ -64,6 +64,7 @@ export const WebEnhancements: React.FC<WebEnhancementsProps> = ({ children }) =>
               border-radius: 12px !important;
               overflow: hidden !important;
               box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+              background: #f8f9fa !important;
             }
           }
           
@@ -71,6 +72,18 @@ export const WebEnhancements: React.FC<WebEnhancementsProps> = ({ children }) =>
             .rn-navigation-container {
               max-width: 1000px !important;
             }
+          }
+          
+          /* Fix white corners issue */
+          .rn-view, .react-native-view {
+            background-clip: padding-box !important;
+          }
+          
+          /* Ensure profile screen fills container properly */
+          .rn-scrollview .rn-view:first-child {
+            border-top-left-radius: 12px !important;
+            border-top-right-radius: 12px !important;
+            overflow: hidden !important;
           }
           
           /* Smooth transitions for all interactive elements */

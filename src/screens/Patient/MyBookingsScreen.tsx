@@ -19,20 +19,20 @@ interface MyBookingsScreenProps {
   navigation: any;
 }
 
-type ActiveTab = 'search' | 'ehr' | 'appointments' | 'categories';
-type ProviderType = 'all' | 'topRated' | 'highRated' | 'goodRated';
-type FilterCategory = 'all' | 'cardiology' | 'neurology' | 'orthopedics' | 'pediatrics' | 'dermatology' | 'gastroenterology' | 'radiology' | 'pathology';
+type ActiveTab = 'search' | 'ehr' | 'appointments';
+type ProviderType = 'all' | 'visitors' | 'lowToHigh' | 'highToLow' | 'rating' | 'arogyaSree' | 'insurance';
+
 
 export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, navigation }) => {
   const [activeTab, setActiveTab] = useState<ActiveTab>('search');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<ProviderType>('all');
-  const [selectedCategory, setSelectedCategory] = useState<FilterCategory>('all');
+
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
-  const [showCategoriesModal, setShowCategoriesModal] = useState(false);
+
   const [cancelledAppointments, setCancelledAppointments] = useState<number[]>([]);
   // EHR detail modal state
   const [selectedEHR, setSelectedEHR] = useState<EHRRecord | null>(null);
@@ -53,17 +53,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const slideAnim = useRef(new Animated.Value(30)).current;
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
 
-  // Categories data (includes icon + color for improved UI)
-  const categories = [
-    { key: 'cardiology' as FilterCategory, label: 'Cardiology', icon: 'heart-outline', color: '#ef4444', bgColor: '#fee2e2' },
-    { key: 'neurology' as FilterCategory, label: 'Neurology', icon: 'pulse-outline', color: '#7c3aed', bgColor: '#ede9fe' },
-    { key: 'orthopedics' as FilterCategory, label: 'Orthopedics', icon: 'bandage-outline', color: '#059669', bgColor: '#d1fae5' },
-    { key: 'pediatrics' as FilterCategory, label: 'Pediatrics', icon: 'happy-outline', color: '#f59e0b', bgColor: '#fef3c7' },
-    { key: 'dermatology' as FilterCategory, label: 'Dermatology', icon: 'color-palette-outline', color: '#f97316', bgColor: '#fff7ed' },
-    { key: 'gastroenterology' as FilterCategory, label: 'Gastroenterology', icon: 'restaurant-outline', color: '#0ea5a4', bgColor: '#ecfeff' },
-    { key: 'radiology' as FilterCategory, label: 'Radiology', icon: 'eye-outline', color: '#2563eb', bgColor: '#e0f2fe' },
-    { key: 'pathology' as FilterCategory, label: 'Pathology', icon: 'flask-outline', color: '#a855f7', bgColor: '#f3e8ff' },
-  ];
+
 
   const loadBookings = async () => {
     try {
@@ -194,20 +184,45 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const getFilteredProviders = () => {
     let allProviders: any[] = [];
 
-    // Always include hospitals, but filter by rating
+    // Always include hospitals, then apply filters
     const hospitalsWithType = hospitals.map(h => ({ ...h, type: 'hospital' }));
+    allProviders = [...hospitalsWithType];
     
-    if (selectedProvider === 'all') {
-      allProviders = [...allProviders, ...hospitalsWithType];
-    } else if (selectedProvider === 'topRated') {
-      // Rating 4.5 and above
-      allProviders = [...allProviders, ...hospitalsWithType.filter(h => h.rating >= 4.5)];
-    } else if (selectedProvider === 'highRated') {
-      // Rating 4.0 - 4.4
-      allProviders = [...allProviders, ...hospitalsWithType.filter(h => h.rating >= 4.0 && h.rating < 4.5)];
-    } else if (selectedProvider === 'goodRated') {
-      // Rating 3.5 - 3.9
-      allProviders = [...allProviders, ...hospitalsWithType.filter(h => h.rating >= 3.5 && h.rating < 4.0)];
+    // Apply filtering based on selected provider type
+    if (selectedProvider === 'visitors') {
+      // Sort by visitor count (highest first)
+      allProviders = allProviders.sort((a, b) => (b.visitorsCount || 0) - (a.visitorsCount || 0));
+    } else if (selectedProvider === 'lowToHigh') {
+      // Sort by OP Fee (Low to High) - using a mock OP fee based on rating
+      allProviders = allProviders.sort((a, b) => {
+        const feeA = Math.round(a.rating * 200); // Mock OP fee calculation
+        const feeB = Math.round(b.rating * 200);
+        return feeA - feeB;
+      });
+    } else if (selectedProvider === 'highToLow') {
+      // Sort by OP Fee (High to Low)
+      allProviders = allProviders.sort((a, b) => {
+        const feeA = Math.round(a.rating * 200); // Mock OP fee calculation
+        const feeB = Math.round(b.rating * 200);
+        return feeB - feeA;
+      });
+    } else if (selectedProvider === 'rating') {
+      // Sort by rating (highest first)
+      allProviders = allProviders.sort((a, b) => b.rating - a.rating);
+    } else if (selectedProvider === 'arogyaSree') {
+      // Filter for government scheme hospitals (mock implementation)
+      allProviders = allProviders.filter(h => 
+        h.name.toLowerCase().includes('government') || 
+        h.name.toLowerCase().includes('govt') ||
+        h.specialization.toLowerCase().includes('general medicine') ||
+        h.rating >= 4.0 // Assume high-rated hospitals accept govt schemes
+      );
+    } else if (selectedProvider === 'insurance') {
+      // Filter for insurance claim hospitals (mock implementation)
+      allProviders = allProviders.filter(h => 
+        h.rating >= 3.8 || // Assume higher-rated hospitals accept insurance
+        h.visitorsCount >= 5000 // Popular hospitals likely accept insurance
+      );
     }
 
     // Apply search filter
@@ -219,12 +234,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       );
     }
 
-    // Apply category filter
-    if (selectedCategory !== 'all') {
-      allProviders = allProviders.filter(provider =>
-        provider.specialization?.toLowerCase().includes(selectedCategory.toLowerCase())
-      );
-    }
+
 
     return allProviders;
   };
@@ -330,23 +340,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
             {activeTab === 'appointments' && <Animated.View style={styles.tabUnderline} />}
           </TouchableOpacity>
           
-          <TouchableOpacity
-            style={[styles.tabItem, activeTab === 'categories' && styles.tabItemActive]}
-            onPress={() => setActiveTab('categories')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.tabContent}>
-              <Ionicons 
-                name={activeTab === 'categories' ? 'filter' : 'filter-outline'} 
-                size={20} 
-                color={activeTab === 'categories' ? '#2563eb' : '#64748b'} 
-              />
-              <Text style={[styles.tabText, activeTab === 'categories' && styles.tabTextActive]}>
-                Categories
-              </Text>
-            </View>
-            {activeTab === 'categories' && <Animated.View style={styles.tabUnderline} />}
-          </TouchableOpacity>
+
         </View>
       </LinearGradient>
     </Animated.View>
@@ -399,21 +393,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               )}
             </View>
             
-            <TouchableOpacity 
-              style={styles.categoriesButton}
-              onPress={() => setShowCategoriesModal(true)}
-              activeOpacity={0.7}
-            >
-              <LinearGradient
-                colors={['#3b82f6', '#2563eb']}
-                style={styles.categoriesButtonGradient}
-              >
-                <Ionicons name="filter-outline" size={18} color="#ffffff" />
-                <Text style={styles.categoriesButtonText}>
-                  {selectedCategory === 'all' ? 'Filter' : categories.find(c => c.key === selectedCategory)?.label || 'Filter'}
-                </Text>
-              </LinearGradient>
-            </TouchableOpacity>
+
           </View>
           <View style={styles.searchShadow} />
         </View>
@@ -426,12 +406,15 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     <View style={styles.filtersContainer}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filtersScroll}>
         <View style={styles.filterRow}>
-          {/* Provider Type Filters */}
+          {/* New Filter Options */}
           {[
             { key: 'all', label: 'All Hospitals', icon: 'apps' },
-            { key: 'topRated', label: '4.5+ ⭐', icon: 'star' },
-            { key: 'highRated', label: '4.0-4.4 ⭐', icon: 'star-half' },
-            { key: 'goodRated', label: '3.5-3.9 ⭐', icon: 'star-outline' }
+            { key: 'visitors', label: 'Visitors', icon: 'people' },
+            { key: 'lowToHigh', label: 'Low→High [OP Fee]', icon: 'arrow-up' },
+            { key: 'highToLow', label: 'High→Low [OP Fee]', icon: 'arrow-down' },
+            { key: 'rating', label: 'Rating', icon: 'star' },
+            { key: 'arogyaSree', label: 'Arogya Sree [Govt Scheme]', icon: 'shield-checkmark' },
+            { key: 'insurance', label: 'Insurance Claim Hospitals', icon: 'card' }
           ].map((filter) => (
             <TouchableOpacity
               key={filter.key}
@@ -547,11 +530,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           <View style={styles.compactContent}>
             <View style={styles.compactNameRow}>
               <Text style={styles.compactName} numberOfLines={2}>{item.name}</Text>
-              {item.rating >= 4.5 && (
-                <View style={styles.topRatedBadge}>
-                  <Text style={styles.topRatedBadgeText}>TOP</Text>
-                </View>
-              )}
             </View>
             <Text style={styles.compactSpecialization} numberOfLines={1}>
               {item.specialization}
@@ -714,20 +692,25 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const renderEmptyState = () => {
     const getEmptyStateText = () => {
       switch (selectedProvider) {
-        case 'topRated':
+        case 'visitors':
           return {
-            title: 'No Top Rated Hospitals Found',
-            subtitle: 'Try searching in other rating categories or adjust your filters'
+            title: 'No Hospitals Found by Visitors',
+            subtitle: 'Try adjusting your search or other filters'
           };
-        case 'highRated':
+        case 'rating':
           return {
-            title: 'No High Rated Hospitals Found',
-            subtitle: 'Hospitals with 4.0-4.4 rating will appear here'
+            title: 'No Highly Rated Hospitals Found',
+            subtitle: 'Try adjusting your search criteria'
           };
-        case 'goodRated':
+        case 'arogyaSree':
           return {
-            title: 'No Good Rated Hospitals Found',
-            subtitle: 'Hospitals with 3.5-3.9 rating will appear here'
+            title: 'No Arogya Sree Hospitals Found',
+            subtitle: 'Government scheme hospitals will appear here'
+          };
+        case 'insurance':
+          return {
+            title: 'No Insurance Claim Hospitals Found',
+            subtitle: 'Insurance accepting hospitals will appear here'
           };
         default:
           return {
@@ -808,12 +791,18 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
 
     const getSectionTitle = () => {
       switch (selectedProvider) {
-        case 'topRated':
-          return 'Top Rated Hospitals';
-        case 'highRated':
-          return 'High Rated Hospitals';
-        case 'goodRated':
-          return 'Good Rated Hospitals';
+        case 'visitors':
+          return 'Hospitals by Visitors';
+        case 'rating':
+          return 'Hospitals by Rating';
+        case 'lowToHigh':
+          return 'Hospitals by OP Fee (Low to High)';
+        case 'highToLow':
+          return 'Hospitals by OP Fee (High to Low)';
+        case 'arogyaSree':
+          return 'Arogya Sree Hospitals';
+        case 'insurance':
+          return 'Insurance Claim Hospitals';
         default:
           return 'All Hospitals';
       }
@@ -1622,58 +1611,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     );
   };
 
-  const renderCategoriesContent = () => {
-    // Responsive columns based on screen width
-    const columns = screenDimensions.width > 600 ? 4 : 2;
 
-    return (
-      <View style={styles.contentContainer}>
-        <View style={styles.categoriesCard}>
-          <View style={styles.categoriesHeader}>
-            <Ionicons name="layers-outline" size={28} color="#374151" />
-            <Text style={styles.categoriesTitle}>Medical Categories</Text>
-          </View>
-
-          <Text style={styles.categoriesDescription}>
-            Browse hospitals and services by specialty. Tap a category to filter results.
-          </Text>
-
-          <View style={styles.categoriesGrid}>
-            {categories.map((category, index) => (
-              <TouchableOpacity
-                key={category.key}
-                activeOpacity={0.85}
-                style={[
-                  styles.categoryCard,
-                  { width: `${100 / columns - 2}%` },
-                  selectedCategory === category.key && styles.categoryCardActive
-                ]}
-                onPress={() => {
-                  setSelectedCategory(category.key);
-                  setActiveTab('search');
-                }}
-              >
-                <View style={[styles.categoryIconWrap, { backgroundColor: (category as any).bgColor || '#f8fafc' }]}>
-                  <Ionicons name={(category as any).icon as any} size={22} color={(category as any).color || '#2563eb'} />
-                </View>
-
-                <Text style={[
-                  styles.categoryCardText,
-                  selectedCategory === category.key && styles.categoryCardTextActive
-                ]} numberOfLines={1}>
-                  {category.label}
-                </Text>
-
-                <View style={styles.categoryCountBadge}>
-                  <Text style={styles.categoryCountText}>{Math.floor(Math.random() * 6) + 1} records</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      </View>
-    );
-  };
 
   // Top Hospitals Section Renderer
   const renderTopHospitalsSection = (topHospitals: any[]) => {
@@ -1922,78 +1860,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       {activeTab === 'search' && renderSearchContent()}
       {activeTab === 'ehr' && renderEHRContent()}
       {activeTab === 'appointments' && renderAppointmentsContent()}
-      {activeTab === 'categories' && renderCategoriesContent()}
-      
-      {/* Categories Dropdown */}
-      {showCategoriesModal && (
-        <TouchableOpacity 
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowCategoriesModal(false)}
-        >
-          <View style={styles.dropdownContainer}>
-            <View style={styles.dropdownHeader}>
-              <Text style={styles.dropdownTitle}>Select Category</Text>
-              <TouchableOpacity 
-                onPress={() => setShowCategoriesModal(false)}
-                style={styles.dropdownCloseButton}
-              >
-                <Ionicons name="close" size={18} color="#64748b" />
-              </TouchableOpacity>
-            </View>
-            
-            <ScrollView 
-              style={styles.dropdownContent} 
-              showsVerticalScrollIndicator={true}
-              nestedScrollEnabled={true}
-            >
-              {/* All Categories Option */}
-              <TouchableOpacity
-                style={[
-                  styles.dropdownItem,
-                  selectedCategory === 'all' && styles.dropdownItemSelected
-                ]}
-                onPress={() => {
-                  setSelectedCategory('all');
-                  setShowCategoriesModal(false);
-                }}
-                activeOpacity={0.7}
-              >
-                <Text style={[
-                  styles.dropdownItemText,
-                  selectedCategory === 'all' && styles.dropdownItemTextSelected
-                ]}>All Categories</Text>
-              </TouchableOpacity>
-              
-              {/* Separator */}
-              <View style={styles.dropdownSeparator} />
-              
-              {categories.map((category, index) => {
-                const isSelected = selectedCategory === category.key;
-                return (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.dropdownItem,
-                      isSelected && styles.dropdownItemSelected
-                    ]}
-                    onPress={() => {
-                      setSelectedCategory(category.key);
-                      setShowCategoriesModal(false);
-                    }}
-                    activeOpacity={0.7}
-                  >
-                    <Text style={[
-                      styles.dropdownItemText,
-                      isSelected && styles.dropdownItemTextSelected
-                    ]}>{category.label}</Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
-        </TouchableOpacity>
-      )}
 
       {/* Enhanced Professional EHR Detail Modal */}
       <Modal

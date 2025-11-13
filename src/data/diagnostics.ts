@@ -82,7 +82,7 @@ export const diagnosticTests: DiagnosticTest[] = [
     duration: "15 mins",
     description: "Imaging test to examine chest, lungs, and heart",
     requirements: "Remove metal objects",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop&crop=center"
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center"
   },
   {
     id: 3,
@@ -92,7 +92,7 @@ export const diagnosticTests: DiagnosticTest[] = [
     duration: "20 mins",
     description: "Test to check heart rhythm and electrical activity",
     requirements: "No special preparation needed",
-    image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center"
+     image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center"
   },
   {
     id: 4,
@@ -152,7 +152,7 @@ export const diagnosticTests: DiagnosticTest[] = [
     duration: "45 mins",
     description: "Detailed brain imaging using computed tomography",
     requirements: "Remove metal objects, contrast may be used",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop&crop=center"
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center"
   },
   {
     id: 10,
@@ -172,7 +172,7 @@ export const diagnosticTests: DiagnosticTest[] = [
     duration: "30 mins",
     description: "Blood and urine tests to assess kidney function",
     requirements: "No special preparation needed",
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center"
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center"
   },
   
   {
@@ -183,7 +183,7 @@ export const diagnosticTests: DiagnosticTest[] = [
     duration: "45 mins",
     description: "Ultrasound of the heart to check structure and function",
     requirements: "No special preparation needed",
-    image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center"
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center"
   },
   {
     id: 14,
@@ -223,7 +223,7 @@ export const diagnosticTests: DiagnosticTest[] = [
     duration: "60 mins",
     description: "Examination of the large intestine using a flexible tube",
     requirements: "Bowel preparation required 24 hours before",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop&crop=center"
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center"
   },
   {
     id: 18,
