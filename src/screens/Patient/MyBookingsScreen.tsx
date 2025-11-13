@@ -56,16 +56,80 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const slideAnim = useRef(new Animated.Value(30)).current;
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
 
-  // Categories data (includes icon + color for improved UI)
+  // Professional Categories data with enhanced icons and colors
   const categories = [
-    { key: 'cardiology' as FilterCategory, label: 'Cardiology', icon: 'heart-outline', color: '#ef4444', bgColor: '#fee2e2' },
-    { key: 'neurology' as FilterCategory, label: 'Neurology', icon: 'pulse-outline', color: '#7c3aed', bgColor: '#ede9fe' },
-    { key: 'orthopedics' as FilterCategory, label: 'Orthopedics', icon: 'bandage-outline', color: '#059669', bgColor: '#d1fae5' },
-    { key: 'pediatrics' as FilterCategory, label: 'Pediatrics', icon: 'happy-outline', color: '#f59e0b', bgColor: '#fef3c7' },
-    { key: 'dermatology' as FilterCategory, label: 'Dermatology', icon: 'color-palette-outline', color: '#f97316', bgColor: '#fff7ed' },
-    { key: 'gastroenterology' as FilterCategory, label: 'Gastroenterology', icon: 'restaurant-outline', color: '#0ea5a4', bgColor: '#ecfeff' },
-    { key: 'radiology' as FilterCategory, label: 'Radiology', icon: 'eye-outline', color: '#2563eb', bgColor: '#e0f2fe' },
-    { key: 'pathology' as FilterCategory, label: 'Pathology', icon: 'flask-outline', color: '#a855f7', bgColor: '#f3e8ff' },
+    { 
+      key: 'cardiology' as FilterCategory, 
+      label: 'Cardiology', 
+      icon: 'heart', 
+      color: '#dc2626', 
+      bgColor: '#fef2f2',
+      gradient: ['#fee2e2', '#fecaca'],
+      description: 'Heart & Cardiovascular'
+    },
+    { 
+      key: 'neurology' as FilterCategory, 
+      label: 'Neurology', 
+      icon: 'pulse', 
+      color: '#7c3aed', 
+      bgColor: '#f5f3ff',
+      gradient: ['#ede9fe', '#ddd6fe'],
+      description: 'Brain & Nervous System'
+    },
+    { 
+      key: 'orthopedics' as FilterCategory, 
+      label: 'Orthopedics', 
+      icon: 'fitness', 
+      color: '#059669', 
+      bgColor: '#ecfdf5',
+      gradient: ['#d1fae5', '#a7f3d0'],
+      description: 'Bones & Joints'
+    },
+    { 
+      key: 'pediatrics' as FilterCategory, 
+      label: 'Pediatrics', 
+      icon: 'happy', 
+      color: '#f59e0b', 
+      bgColor: '#fffbeb',
+      gradient: ['#fef3c7', '#fde68a'],
+      description: 'Children\'s Healthcare'
+    },
+    { 
+      key: 'dermatology' as FilterCategory, 
+      label: 'Dermatology', 
+      icon: 'sunny', 
+      color: '#ea580c', 
+      bgColor: '#fff7ed',
+      gradient: ['#fed7aa', '#fdba74'],
+      description: 'Skin & Beauty'
+    },
+    { 
+      key: 'gastroenterology' as FilterCategory, 
+      label: 'Gastroenterology', 
+      icon: 'nutrition', 
+      color: '#0891b2', 
+      bgColor: '#ecfeff',
+      gradient: ['#cffafe', '#a5f3fc'],
+      description: 'Digestive System'
+    },
+    { 
+      key: 'radiology' as FilterCategory, 
+      label: 'Radiology', 
+      icon: 'scan', 
+      color: '#2563eb', 
+      bgColor: '#eff6ff',
+      gradient: ['#dbeafe', '#bfdbfe'],
+      description: 'Medical Imaging'
+    },
+    { 
+      key: 'pathology' as FilterCategory, 
+      label: 'Pathology', 
+      icon: 'flask', 
+      color: '#9333ea', 
+      bgColor: '#faf5ff',
+      gradient: ['#f3e8ff', '#e9d5ff'],
+      description: 'Lab Tests & Analysis'
+    },
   ];
 
   const loadBookings = async () => {
@@ -1865,55 +1929,191 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   };
 
   const renderCategoriesContent = () => {
-    // Responsive columns based on screen width
-    const columns = screenDimensions.width > 600 ? 4 : 2;
-
+    // Responsive columns based on screen width for optimal display
+    const columns = screenDimensions.width > 800 ? 4 : screenDimensions.width > 600 ? 3 : 2;
+    const totalCategories = categories.length;
+    
     return (
-      <View style={styles.contentContainer}>
-        <View style={styles.categoriesCard}>
-          <View style={styles.categoriesHeader}>
-            <Ionicons name="layers-outline" size={28} color="#374151" />
-            <Text style={styles.categoriesTitle}>Medical Categories</Text>
+      <ScrollView 
+        style={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+        bounces={true}
+      >
+        {/* Enhanced Header Section */}
+        <LinearGradient
+          colors={['#f8fafc', '#f1f5f9', '#e2e8f0']}
+          style={styles.categoriesHeaderGradient}
+        >
+          <View style={styles.categoriesHeaderContent}>
+            <View style={styles.categoriesHeaderTop}>
+              <View style={styles.categoriesHeaderLeft}>
+                <View style={styles.categoriesMainIconContainer}>
+                  <LinearGradient
+                    colors={['#3b82f6', '#2563eb']}
+                    style={styles.categoriesMainIcon}
+                  >
+                    <Ionicons name="medical" size={32} color="#ffffff" />
+                  </LinearGradient>
+                </View>
+                <View style={styles.categoriesHeaderTextContainer}>
+                  <Text style={styles.categoriesMainTitle}>Medical Specialties</Text>
+                  <Text style={styles.categoriesHeaderSubtitle}>
+                    Expert care across {totalCategories} medical specialties
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.categoriesHeaderBadge}>
+                <Text style={styles.categoriesHeaderBadgeText}>{totalCategories}</Text>
+              </View>
+            </View>
+            
+            <Text style={styles.categoriesDescription}>
+              Discover specialized healthcare services. Select a category to find expert doctors and hospitals in that specialty.
+            </Text>
+          </View>
+        </LinearGradient>
+
+        {/* Enhanced Categories Grid */}
+        <View style={styles.categoriesMainContent}>
+          <View style={styles.categoriesStatsRow}>
+            <View style={styles.categoriesStatItem}>
+              <View style={styles.categoriesStatIcon}>
+                <Ionicons name="people" size={16} color="#3b82f6" />
+              </View>
+              <Text style={styles.categoriesStatText}>500+ Doctors</Text>
+            </View>
+            <View style={styles.categoriesStatItem}>
+              <View style={styles.categoriesStatIcon}>
+                <Ionicons name="medical" size={16} color="#059669" />
+              </View>
+              <Text style={styles.categoriesStatText}>24/7 Available</Text>
+            </View>
+            <View style={styles.categoriesStatItem}>
+              <View style={styles.categoriesStatIcon}>
+                <Ionicons name="shield-checkmark" size={16} color="#dc2626" />
+              </View>
+              <Text style={styles.categoriesStatText}>Verified Experts</Text>
+            </View>
           </View>
 
-          <Text style={styles.categoriesDescription}>
-            Browse hospitals and services by specialty. Tap a category to filter results.
-          </Text>
+          <View style={styles.enhancedCategoriesGrid}>
+            {categories.map((category, index) => {
+              const isSelected = selectedCategory === category.key;
+              
+              return (
+                <Animated.View
+                  key={category.key}
+                  style={[
+                    styles.enhancedCategoryCard,
+                    { width: `${100 / columns - 1}%` },
+                  ]}
+                >
+                  <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => {
+                      setSelectedCategory(category.key);
+                      setActiveTab('search');
+                    }}
+                    style={[
+                      styles.enhancedCategoryTouchable,
+                      isSelected && styles.enhancedCategoryTouchableActive
+                    ]}
+                  >
+                    <LinearGradient
+                      colors={isSelected ? ['#3b82f6', '#2563eb'] : (category as any).gradient}
+                      style={[
+                        styles.enhancedCategoryGradient,
+                        isSelected && styles.enhancedCategoryGradientActive
+                      ]}
+                    >
+                      {/* Selection Indicator */}
+                      {isSelected && (
+                        <View style={styles.categorySelectionIndicator}>
+                          <Ionicons name="checkmark-circle" size={20} color="#ffffff" />
+                        </View>
+                      )}
 
-          <View style={styles.categoriesGrid}>
-            {categories.map((category, index) => (
-              <TouchableOpacity
-                key={category.key}
-                activeOpacity={0.85}
-                style={[
-                  styles.categoryCard,
-                  { width: `${100 / columns - 2}%` },
-                  selectedCategory === category.key && styles.categoryCardActive
-                ]}
-                onPress={() => {
-                  setSelectedCategory(category.key);
-                  setActiveTab('search');
-                }}
+                      {/* Category Icon */}
+                      <View style={[
+                        styles.enhancedCategoryIconContainer,
+                        { backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : (category as any).bgColor }
+                      ]}>
+                        <Ionicons 
+                          name={(category as any).icon as any} 
+                          size={28} 
+                          color={isSelected ? '#ffffff' : (category as any).color} 
+                        />
+                      </View>
+
+                      {/* Category Content */}
+                      <View style={styles.enhancedCategoryContent}>
+                        <Text style={[
+                          styles.enhancedCategoryTitle,
+                          isSelected && styles.enhancedCategoryTitleActive
+                        ]} numberOfLines={1}>
+                          {category.label}
+                        </Text>
+                        
+                        <Text style={[
+                          styles.enhancedCategoryDescription,
+                          isSelected && styles.enhancedCategoryDescriptionActive
+                        ]} numberOfLines={2}>
+                          {(category as any).description}
+                        </Text>
+                      </View>
+
+                      {/* Doctor Count Badge */}
+                      <View style={[
+                        styles.enhancedCategoryBadge,
+                        { backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : (category as any).color }
+                      ]}>
+                        <Ionicons 
+                          name="people" 
+                          size={12} 
+                          color="#ffffff" 
+                        />
+                        <Text style={[
+                          styles.enhancedCategoryBadgeText,
+                          { color: '#ffffff' }
+                        ]}>
+                          {Math.floor(Math.random() * 20) + 10}
+                        </Text>
+                      </View>
+
+                      {/* Hover Effect Overlay */}
+                      <View style={styles.categoryHoverOverlay} />
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </Animated.View>
+              );
+            })}
+          </View>
+
+          {/* Bottom Action Section */}
+          <View style={styles.categoriesBottomSection}>
+            <TouchableOpacity 
+              style={styles.categoriesViewAllButton}
+              onPress={() => {
+                setSelectedCategory('all');
+                setActiveTab('search');
+              }}
+            >
+              <LinearGradient
+                colors={['#3b82f6', '#2563eb']}
+                style={styles.categoriesViewAllGradient}
               >
-                <View style={[styles.categoryIconWrap, { backgroundColor: (category as any).bgColor || '#f8fafc' }]}>
-                  <Ionicons name={(category as any).icon as any} size={22} color={(category as any).color || '#2563eb'} />
-                </View>
-
-                <Text style={[
-                  styles.categoryCardText,
-                  selectedCategory === category.key && styles.categoryCardTextActive
-                ]} numberOfLines={1}>
-                  {category.label}
-                </Text>
-
-                <View style={styles.categoryCountBadge}>
-                  <Text style={styles.categoryCountText}>{Math.floor(Math.random() * 6) + 1} records</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+                <Ionicons name="apps" size={20} color="#ffffff" />
+                <Text style={styles.categoriesViewAllText}>View All Hospitals</Text>
+                <Ionicons name="arrow-forward" size={16} color="#ffffff" />
+              </LinearGradient>
+            </TouchableOpacity>
+            
+            <Text style={styles.categoriesBottomNote}>
+              Can't find your specialty? Browse all hospitals for comprehensive care.
+            </Text>
           </View>
         </View>
-      </View>
+      </ScrollView>
     );
   };
 
@@ -5332,5 +5532,232 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#ffffff',
     letterSpacing: 0.3,
+  },
+
+  // Categories Content Styles - Missing Styles
+  categoriesHeaderGradient: {
+    paddingTop: 20,
+    paddingBottom: 30,
+    borderRadius: 24,
+    margin: 16,
+    overflow: 'hidden',
+  },
+  categoriesHeaderContent: {
+    paddingHorizontal: 20,
+  },
+  categoriesHeaderTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  categoriesHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  categoriesMainIconContainer: {
+    marginRight: 16,
+  },
+  categoriesMainIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  categoriesHeaderTextContainer: {
+    flex: 1,
+  },
+  categoriesMainTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  categoriesHeaderSubtitle: {
+    fontSize: 16,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  categoriesHeaderBadge: {
+    backgroundColor: '#dbeafe',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    minWidth: 40,
+    alignItems: 'center',
+  },
+  categoriesHeaderBadgeText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#3b82f6',
+  },
+  categoriesMainContent: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  categoriesStatsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 24,
+    paddingHorizontal: 16,
+  },
+  categoriesStatItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  categoriesStatIcon: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#f1f5f9',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  categoriesStatText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4b5563',
+  },
+  enhancedCategoriesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+    marginBottom: 32,
+  },
+  enhancedCategoryCard: {
+    width: Platform.OS === 'web' 
+      ? `${(100 / 2) - 2}%` 
+      : (Dimensions.get('window').width - 60) / 2,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  enhancedCategoryTouchable: {
+    width: '100%',
+    minHeight: 200,
+  },
+  enhancedCategoryTouchableActive: {
+    transform: [{ scale: 0.98 }],
+  },
+  enhancedCategoryGradient: {
+    flex: 1,
+    padding: 20,
+    position: 'relative',
+  },
+  enhancedCategoryGradientActive: {
+    backgroundColor: '#f0f9ff',
+  },
+  categorySelectionIndicator: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#3b82f6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  enhancedCategoryIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  enhancedCategoryContent: {
+    flex: 1,
+  },
+  enhancedCategoryTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 8,
+  },
+  enhancedCategoryTitleActive: {
+    color: '#3b82f6',
+  },
+  enhancedCategoryDescription: {
+    fontSize: 14,
+    color: '#6b7280',
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  enhancedCategoryDescriptionActive: {
+    color: '#4b5563',
+  },
+  enhancedCategoryBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    marginTop: 'auto',
+  },
+  enhancedCategoryBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#4b5563',
+  },
+  categoryHoverOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
+    opacity: 0,
+  },
+  categoriesBottomSection: {
+    paddingTop: 24,
+    alignItems: 'center',
+  },
+  categoriesViewAllButton: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginBottom: 16,
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  categoriesViewAllGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    gap: 8,
+  },
+  categoriesViewAllText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#ffffff',
+    letterSpacing: 0.5,
+  },
+  categoriesBottomNote: {
+    fontSize: 14,
+    color: '#9ca3af',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    paddingHorizontal: 32,
+    lineHeight: 20,
   },
 });
