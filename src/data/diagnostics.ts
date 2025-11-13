@@ -174,16 +174,7 @@ export const diagnosticTests: DiagnosticTest[] = [
     requirements: "No special preparation needed",
     image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center"
   },
-  {
-    id: 12,
-    name: "Bone Density Scan",
-    category: "Radiology",
-    price: "₹2200",
-    duration: "30 mins",
-    description: "DEXA scan to measure bone mineral density",
-    requirements: "Avoid calcium supplements 24 hours before",
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop&crop=center"
-  },
+  
   {
     id: 13,
     name: "Echocardiogram",

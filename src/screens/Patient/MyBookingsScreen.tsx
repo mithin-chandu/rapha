@@ -800,6 +800,12 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       hospitals: filteredProviders.filter(p => p.type === 'hospital')
     };
 
+    // Top-rated hospitals specifically for Vijayawada (4.8+ rating)
+    const topRatedHospitals = hospitals
+      .filter(h => h.rating >= 4.8 && h.address.toLowerCase().includes('vijayawada'))
+      .map(h => ({ ...h, type: 'hospital' }))
+      .sort((a, b) => b.rating - a.rating);
+
     const getSectionTitle = () => {
       switch (selectedProvider) {
         case 'topRated':
@@ -816,12 +822,15 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     return (
       <View style={styles.contentContainer}>
 
-        {/* Top Hospitals Section */}
+        {/* All Hospitals Section */}
         {renderProviderGrid(
           groupedProviders.hospitals, 
           getSectionTitle(), 
-          () => setSelectedProvider('topRated')
+          () => setSelectedProvider('all')
         )}
+
+        {/* Top Hospitals Section */}
+        {topRatedHospitals.length > 0 && renderTopHospitalsSection(topRatedHospitals)}
 
         {/* Nearby Hospitals Section */}
         {renderNearbyHospitals()}
@@ -1661,6 +1670,116 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               </TouchableOpacity>
             ))}
           </View>
+        </View>
+      </View>
+    );
+  };
+
+  // Top Hospitals Section Renderer
+  const renderTopHospitalsSection = (topHospitals: any[]) => {
+    return (
+      <View style={styles.topHospitalsSection}>
+        <View style={styles.topHospitalsSectionHeader}>
+          <View style={styles.topHospitalsHeaderLeft}>
+            <View style={styles.topHospitalsIconContainer}>
+              <LinearGradient
+                colors={['#fbbf24', '#f59e0b', '#d97706']}
+                style={styles.topHospitalsIcon}
+              >
+                <Ionicons name="star" size={20} color="#ffffff" />
+              </LinearGradient>
+            </View>
+            <View style={styles.topHospitalsTitleContainer}>
+              <Text style={styles.topHospitalsSectionTitle}>Top Hospitals</Text>
+              <Text style={styles.topHospitalsSectionSubtitle}>
+                Highest rated hospitals in Vijayawada
+              </Text>
+            </View>
+          </View>
+          <View style={styles.topHospitalsRatingBadge}>
+            <Ionicons name="star" size={12} color="#fbbf24" />
+            <Text style={styles.topHospitalsRatingText}>4.8+</Text>
+          </View>
+        </View>
+
+        <View style={styles.topHospitalsContainer}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.topHospitalsScrollContent}
+            style={styles.topHospitalsScroll}
+          >
+            {topHospitals.map((hospital, index) => (
+              <View key={hospital.id} style={styles.topHospitalCard}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('HospitalDetails', { hospital })}
+                  style={styles.topHospitalTouchable}
+                  activeOpacity={0.9}
+                >
+                  <LinearGradient
+                    colors={['#ffffff', '#fefce8', '#fef3c7']}
+                    style={styles.topHospitalGradient}
+                  >
+
+
+                    {/* Hospital Image */}
+                    <View style={styles.topHospitalImageContainer}>
+                      <Image
+                        source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
+                        style={styles.topHospitalImage}
+                      />
+                      <View style={styles.topHospitalRating}>
+                        <Ionicons name="star" size={14} color="#fbbf24" />
+                        <Text style={styles.topHospitalRatingValue}>{hospital.rating}</Text>
+                      </View>
+                    </View>
+
+                    {/* Hospital Content */}
+                    <View style={styles.topHospitalContent}>
+                      <Text style={styles.topHospitalName} numberOfLines={2}>
+                        {hospital.name}
+                      </Text>
+                      <Text style={styles.topHospitalSpecialization} numberOfLines={1}>
+                        {hospital.specialization}
+                      </Text>
+                      
+                      <View style={styles.topHospitalLocationRow}>
+                        <Ionicons name="location-outline" size={12} color="#64748b" />
+                        <Text style={styles.topHospitalLocation} numberOfLines={1}>
+                          {hospital.address.split(',')[0]}
+                        </Text>
+                      </View>
+
+                      {hospital.visitorsCount && (
+                        <View style={styles.topHospitalVisitorsRow}>
+                          <Ionicons name="people-outline" size={12} color="#3b82f6" />
+                          <Text style={styles.topHospitalVisitorsText}>
+                            {hospital.visitorsCount >= 1000 
+                              ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
+                              : hospital.visitorsCount} visitors
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* Features */}
+                      <View style={styles.topHospitalFeatures}>
+                        <View style={styles.topHospitalFeatureTag}>
+                          <Ionicons name="time-outline" size={10} color="#10b981" />
+                          <Text style={styles.topHospitalFeatureText}>24/7</Text>
+                        </View>
+                        <View style={styles.topHospitalFeatureTag}>
+                          <Ionicons name="shield-checkmark-outline" size={10} color="#3b82f6" />
+                          <Text style={styles.topHospitalFeatureText}>Verified</Text>
+                        </View>
+                      </View>
+
+
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
         </View>
       </View>
     );
@@ -4973,6 +5092,219 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#ef4444',
+    letterSpacing: 0.3,
+  },
+
+  // Top Hospitals Section Styles
+  topHospitalsSection: {
+    marginBottom: 32,
+    paddingHorizontal: 24,
+  },
+  topHospitalsSectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  topHospitalsHeaderLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  topHospitalsIconContainer: {
+    marginRight: 12,
+  },
+  topHospitalsIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#f59e0b',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  topHospitalsTitleContainer: {
+    flex: 1,
+  },
+  topHospitalsSectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 2,
+  },
+  topHospitalsSectionSubtitle: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  topHospitalsRatingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fef3c7',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  topHospitalsRatingText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#d97706',
+  },
+  topHospitalsContainer: {
+    marginTop: 8,
+  },
+  topHospitalsScroll: {
+    flexGrow: 0,
+  },
+  topHospitalsScrollContent: {
+    paddingRight: 24,
+  },
+  topHospitalCard: {
+    width: 240,
+    marginRight: 16,
+  },
+  topHospitalTouchable: {
+    width: '100%',
+    height: 280,
+  },
+  topHospitalGradient: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 12,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: '#f1f5f9',
+  },
+  topHospitalPremiumBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
+  },
+  premiumBadgeGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 3,
+  },
+  premiumBadgeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#ffffff',
+    letterSpacing: 0.5,
+  },
+  topHospitalImageContainer: {
+    height: 100,
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 12,
+    position: 'relative',
+  },
+  topHospitalImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  topHospitalRating: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+    gap: 3,
+  },
+  topHospitalRatingValue: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#ffffff',
+  },
+  topHospitalContent: {
+    flex: 1,
+  },
+  topHospitalName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 6,
+    lineHeight: 20,
+  },
+  topHospitalSpecialization: {
+    fontSize: 13,
+    color: '#3b82f6',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  topHospitalLocationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+    gap: 4,
+  },
+  topHospitalLocation: {
+    fontSize: 12,
+    color: '#64748b',
+    flex: 1,
+  },
+  topHospitalVisitorsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    gap: 4,
+  },
+  topHospitalVisitorsText: {
+    fontSize: 11,
+    color: '#3b82f6',
+    fontWeight: '600',
+  },
+  topHospitalFeatures: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 12,
+  },
+  topHospitalFeatureTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 6,
+    gap: 3,
+  },
+  topHospitalFeatureText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  topHospitalBookButton: {
+    marginTop: 'auto',
+  },
+  topHospitalBookGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    gap: 6,
+  },
+  topHospitalBookText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#ffffff',
     letterSpacing: 0.3,
   },
 });

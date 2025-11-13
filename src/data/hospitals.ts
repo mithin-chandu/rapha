@@ -66,7 +66,7 @@ export const hospitals: Hospital[] = [
     specialization: "Neurosurgery, Transplant",
     address: "Minister Road, Secunderabad, Vijayawada, Andhra Pradesh",
     rating: 4.7,
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop&crop=center",
+    image:  "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
     description: "Advanced neurosurgical procedures and organ transplant services.",
     visitorsCount: 10400
   },
@@ -126,7 +126,7 @@ export const hospitals: Hospital[] = [
     specialization: "Liver Transplant, Nephrology",
     address: "Auto Nagar, Vijayawada, Andhra Pradesh",
     rating: 4.6,
-    image: "https://images.unsplash.com/photo-1666214280557-f1b5022eb634?w=400&h=200&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1632833239869-a37e3a5806d2?w=400&h=200&fit=crop&crop=center",
     description: "Leading liver transplant center with advanced kidney care facilities.",
     visitorsCount: 9600
   },
@@ -136,7 +136,7 @@ export const hospitals: Hospital[] = [
     specialization: "Pediatric Care, NICU",
     address: "Patamatalanka, Vijayawada, Andhra Pradesh",
     rating: 4.6,
-    image: "https://images.unsplash.com/photo-1581595220975-119360b7906d?w=400&h=200&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&h=200&fit=crop&crop=center",
     description: "Specialized pediatric care with advanced neonatal intensive care unit.",
     visitorsCount: 8300
   },
@@ -156,7 +156,7 @@ export const hospitals: Hospital[] = [
     specialization: "Emergency Care, Maternity",
     address: "Labbipet, Vijayawada, Andhra Pradesh",
     rating: 4.4,
-    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=400&h=200&fit=crop&crop=center",
     description: "Comprehensive emergency services and specialized maternity care.",
     visitorsCount: 6900
   },
@@ -166,7 +166,7 @@ export const hospitals: Hospital[] = [
     specialization: "General Medicine, Surgery",
     address: "Eluru Road, Vijayawada, Andhra Pradesh",
     rating: 4.3,
-    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
     description: "Established hospital providing general medical and surgical services.",
     visitorsCount: 5800
   },
@@ -176,7 +176,7 @@ export const hospitals: Hospital[] = [
     specialization: "Cardiac Speciality, Interventional",
     address: "Health City, Vijayawada, Andhra Pradesh",
     rating: 4.8,
-    image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=400&h=200&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=400&h=200&fit=crop&crop=center",
     description: "Premier cardiac care institute with interventional cardiology expertise.",
     visitorsCount: 12800
   },

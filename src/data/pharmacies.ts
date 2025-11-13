@@ -71,6 +71,20 @@ export const pharmacies: Pharmacy[] = [
   }
 ];
 
+// Array of available medicine images to randomly assign
+const medicineImages = [
+  "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&h=200&fit=crop&crop=center",
+  "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&h=200&fit=crop&crop=center",
+  "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=200&fit=crop&crop=center",
+  "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop&crop=center"
+];
+
+// Function to get a random image from the available images
+const getRandomMedicineImage = (id: number): string => {
+  // Use the medicine ID to create a consistent but pseudo-random selection
+  return medicineImages[id % medicineImages.length];
+};
+
 export const medicines: Medicine[] = [
   {
     id: 1,
@@ -83,7 +97,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Dec 2026",
     prescription: false,
     dosage: "1-2 tablets every 6-8 hours",
-    image: "https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=400&h=200&fit=crop&crop=center"
+    image: getRandomMedicineImage(1)
   },
   {
     id: 2,
@@ -96,7 +110,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Mar 2026",
     prescription: true,
     dosage: "1 capsule 3 times daily",
-    image: "https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=400&h=200&fit=crop&crop=center"
+    image: getRandomMedicineImage(2)
   },
   {
     id: 3,
@@ -109,7 +123,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Aug 2026",
     prescription: false,
     dosage: "1 tablet once daily",
-    image: "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&h=200&fit=crop&crop=center"
+    image: getRandomMedicineImage(3)
   },
   {
     id: 4,
@@ -122,7 +136,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Jan 2027",
     prescription: true,
     dosage: "1 capsule before breakfast",
-    image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&h=200&fit=crop&crop=center"
+    image: getRandomMedicineImage(4)
   },
   {
     id: 5,
@@ -135,7 +149,7 @@ export const medicines: Medicine[] = [
     expiryDate: "Oct 2026",
     prescription: false,
     dosage: "1 tablet daily with food",
-    image: "https://images.unsplash.com/photo-1550572017-edd951aa8ca6?w=400&h=200&fit=crop&crop=center"
+    image: getRandomMedicineImage(5)
   },
   {
     id: 6,
@@ -147,7 +161,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Glenmark",
     expiryDate: "Jun 2026",
     prescription: true,
-    dosage: "1 tablet twice daily with meals"
+    dosage: "1 tablet twice daily with meals",
+    image: getRandomMedicineImage(6)
   },
   {
     id: 7,
@@ -159,7 +174,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Torrent",
     expiryDate: "Sep 2026",
     prescription: true,
-    dosage: "1 tablet once daily"
+    dosage: "1 tablet once daily",
+    image: getRandomMedicineImage(7)
   },
   {
     id: 8,
@@ -171,7 +187,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Mankind",
     expiryDate: "May 2026",
     prescription: false,
-    dosage: "1 tablet 3 times daily after meals"
+    dosage: "1 tablet 3 times daily after meals",
+    image: getRandomMedicineImage(8)
   },
   {
     id: 9,
@@ -183,7 +200,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Zydus",
     expiryDate: "Nov 2026",
     prescription: false,
-    dosage: "1 tablet once daily"
+    dosage: "1 tablet once daily",
+    image: getRandomMedicineImage(9)
   },
   {
     id: 10,
@@ -195,7 +213,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Ranbaxy",
     expiryDate: "Feb 2027",
     prescription: true,
-    dosage: "1 tablet once daily at bedtime"
+    dosage: "1 tablet once daily at bedtime",
+    image: getRandomMedicineImage(10)
   },
   {
     id: 11,
@@ -207,7 +226,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Bayer",
     expiryDate: "Jul 2026",
     prescription: false,
-    dosage: "1 tablet once daily with food"
+    dosage: "1 tablet once daily with food",
+    image: getRandomMedicineImage(11)
   },
   {
     id: 12,
@@ -219,7 +239,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Teva",
     expiryDate: "Apr 2026",
     prescription: true,
-    dosage: "1 tablet once daily"
+    dosage: "1 tablet once daily",
+    image: getRandomMedicineImage(12)
   },
   {
     id: 13,
@@ -231,7 +252,8 @@ export const medicines: Medicine[] = [
     manufacturer: "USV",
     expiryDate: "Dec 2026",
     prescription: false,
-    dosage: "1-2 tablets daily with meals"
+    dosage: "1-2 tablets daily with meals",
+    image: getRandomMedicineImage(13)
   },
   {
     id: 14,
@@ -243,7 +265,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Pfizer",
     expiryDate: "Jan 2026",
     prescription: true,
-    dosage: "1 tablet once daily for 3 days"
+    dosage: "1 tablet once daily for 3 days",
+    image: getRandomMedicineImage(14)
   },
   {
     id: 15,
@@ -255,7 +278,8 @@ export const medicines: Medicine[] = [
     manufacturer: "GSK",
     expiryDate: "Sep 2026",
     prescription: true,
-    dosage: "2 puffs as needed"
+    dosage: "2 puffs as needed",
+    image: getRandomMedicineImage(15)
   },
   {
     id: 16,
@@ -267,7 +291,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Centrum",
     expiryDate: "Nov 2026",
     prescription: false,
-    dosage: "1 tablet daily with breakfast"
+    dosage: "1 tablet daily with breakfast",
+    image: getRandomMedicineImage(16)
   },
   {
     id: 17,
@@ -279,7 +304,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Voltaren",
     expiryDate: "Aug 2026",
     prescription: false,
-    dosage: "Apply 3-4 times daily to affected area"
+    dosage: "Apply 3-4 times daily to affected area",
+    image: getRandomMedicineImage(17)
   },
   {
     id: 18,
@@ -291,7 +317,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Sanofi",
     expiryDate: "May 2026",
     prescription: true,
-    dosage: "As prescribed by doctor"
+    dosage: "As prescribed by doctor",
+    image: getRandomMedicineImage(18)
   },
   {
     id: 19,
@@ -303,7 +330,8 @@ export const medicines: Medicine[] = [
     manufacturer: "Yakult",
     expiryDate: "Oct 2026",
     prescription: false,
-    dosage: "1 capsule daily with water"
+    dosage: "1 capsule daily with water",
+    image: getRandomMedicineImage(19)
   },
   {
     id: 20,
@@ -315,6 +343,7 @@ export const medicines: Medicine[] = [
     manufacturer: "Himalaya",
     expiryDate: "Mar 2027",
     prescription: false,
-    dosage: "5-10ml twice daily or as directed"
+    dosage: "5-10ml twice daily or as directed",
+    image: getRandomMedicineImage(20)
   }
 ];

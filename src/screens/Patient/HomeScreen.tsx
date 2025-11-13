@@ -1242,72 +1242,127 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
       >
         <View style={{
           flexDirection: 'row',
-          gap: 16,
+          justifyContent: 'space-between',
+          alignItems: 'stretch',
+          gap: 12,
           marginTop: 16,
+          paddingHorizontal: 4,
         }}>
           {[
             {
               icon: 'business',
               number: '50+',
-              label: 'Hospitals',
-              color: '#3b82f6',
-              bgColor: '#eff6ff',
+              label: 'HOSPITALS',
+              gradient: ['#667eea', '#764ba2'] as [string, string],
+              iconGradient: ['#f093fb', '#f5576c'] as [string, string],
+              shadowColor: '#667eea',
             },
             {
               icon: 'people',
               number: '200+',
-              label: 'Doctors',
-              color: '#10b981',
-              bgColor: '#f0fdf4',
+              label: 'DOCTORS',
+              gradient: ['#4facfe', '#00f2fe'] as [string, string],
+              iconGradient: ['#43e97b', '#38f9d7'] as [string, string],
+              shadowColor: '#4facfe',
             },
           ].map((stat, index) => (
-            <View key={index} style={{
-              flex: 1,
-              backgroundColor: '#ffffff',
-              borderRadius: 16,
-              padding: 24,
-              alignItems: 'center',
-              minHeight: 140,
-              justifyContent: 'center',
-              shadowColor: '#000000',
-              shadowOffset: { width: 0, height: 4 },
-              shadowOpacity: 0.08,
-              shadowRadius: 12,
-              elevation: 6,
-              borderWidth: 1,
-              borderColor: '#f1f5f9',
-            }}>
-              <View style={{
-                width: 56,
-                height: 56,
-                borderRadius: 16,
-                backgroundColor: stat.bgColor,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: 16,
-              }}>
-                <Ionicons name={stat.icon as any} size={28} color={stat.color} />
-              </View>
-              
-              <Text style={{
-                fontSize: 32,
-                fontWeight: '800',
-                color: '#1f2937',
-                marginBottom: 4,
-              }}>
-                {stat.number}
-              </Text>
-              
-              <Text style={{
-                fontSize: 14,
-                color: '#6b7280',
-                textAlign: 'center',
-                fontWeight: '600',
-                letterSpacing: 0.5,
-              }}>
-                {stat.label}
-              </Text>
-            </View>
+            <Animated.View 
+              key={index} 
+              style={{
+                flex: 1,
+                maxWidth: '48%',
+                transform: [{ scale: pulseAnim }],
+              }}
+            >
+              <LinearGradient
+                colors={stat.gradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={{
+                  borderRadius: 20,
+                  padding: 20,
+                  alignItems: 'center',
+                  minHeight: 160,
+                  width: '100%',
+                  justifyContent: 'center',
+                  shadowColor: stat.shadowColor,
+                  shadowOffset: { width: 0, height: 8 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 16,
+                  elevation: 12,
+                  position: 'relative',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Decorative Elements */}
+                <View style={{
+                  position: 'absolute',
+                  top: -20,
+                  right: -20,
+                  width: 80,
+                  height: 80,
+                  borderRadius: 40,
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                }} />
+                <View style={{
+                  position: 'absolute',
+                  bottom: -30,
+                  left: -30,
+                  width: 60,
+                  height: 60,
+                  borderRadius: 30,
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                }} />
+                
+                {/* Icon Container with Gradient */}
+                <LinearGradient
+                  colors={stat.iconGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: 20,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 16,
+                    shadowColor: '#000000',
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 8,
+                    elevation: 6,
+                  }}
+                >
+                  <Ionicons name={stat.icon as any} size={32} color="#ffffff" />
+                </LinearGradient>
+                
+                <Text style={{
+                  fontSize: 36,
+                  fontWeight: '900',
+                  color: '#ffffff',
+                  marginBottom: 6,
+                  textShadowColor: 'rgba(0, 0, 0, 0.3)',
+                  textShadowOffset: { width: 0, height: 2 },
+                  textShadowRadius: 4,
+                }}>
+                  {stat.number}
+                </Text>
+                
+                <Text style={{
+                  fontSize: 16,
+                  color: 'rgba(255, 255, 255, 0.9)',
+                  textAlign: 'center',
+                  fontWeight: '700',
+                  letterSpacing: 0.8,
+                  textTransform: 'uppercase',
+                  textShadowColor: 'rgba(0, 0, 0, 0.2)',
+                  textShadowOffset: { width: 0, height: 1 },
+                  textShadowRadius: 2,
+                }}>
+                  {stat.label}
+                </Text>
+              </LinearGradient>
+            </Animated.View>
           ))}
         </View>
       </Animated.View>
@@ -1324,7 +1379,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
       >
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Popular Medicines</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('PharmacyScreen')}>
+          <TouchableOpacity onPress={() => navigation.navigate('AllMedicines')}>
             <Text style={styles.viewAllText}>View All</Text>
           </TouchableOpacity>
         </View>
@@ -1394,7 +1449,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
       >
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Popular Diagnostic Tests</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('DiagnosticsScreen')}>
+          <TouchableOpacity onPress={() => navigation.navigate('AllDiagnostics')}>
             <Text style={styles.viewAllText}>View All</Text>
           </TouchableOpacity>
         </View>

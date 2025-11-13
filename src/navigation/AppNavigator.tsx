@@ -13,6 +13,8 @@ import { WebHeader } from '../components/WebHeader';
 import { HomeScreen } from '../screens/Patient/HomeScreen';
 import { MyBookingsScreen } from '../screens/Patient/MyBookingsScreen';
 import { ProfileScreen as PatientProfileScreen } from '../screens/Patient/ProfileScreen';
+import { AllMedicinesScreen } from '../screens/Patient/AllMedicinesScreen';
+import { AllDiagnosticsScreen } from '../screens/Patient/AllDiagnosticsScreen';
 
 // Hospital Screens
 import { DashboardScreen } from '../screens/Hospital/DashboardScreen';
@@ -63,11 +65,11 @@ export const AppNavigator: React.FC = () => {
       const samuelProfile: UserData = {
         name: 'Samuel Rick',
         role: 'patient',
-        email: 'samuelrick1219@gmail.com',
-        age: 21,
+        email: ' ',
+        age: 20,
         gender: 'male',
-        phone: '70134 02809',
-        address: 'vijawada'
+        phone: ' ',
+        address: 'india'
       };
 
       // Set the user data without authentication checks
@@ -317,6 +319,18 @@ export const AppNavigator: React.FC = () => {
                   />
                   <EHRScreen />
                 </View>
+              )}
+            </Stack.Screen>
+
+            <Stack.Screen name="AllMedicines">
+              {({ navigation }: any) => (
+                <AllMedicinesScreen navigation={navigation} />
+              )}
+            </Stack.Screen>
+
+            <Stack.Screen name="AllDiagnostics">
+              {({ navigation }: any) => (
+                <AllDiagnosticsScreen navigation={navigation} />
               )}
             </Stack.Screen>
           </>

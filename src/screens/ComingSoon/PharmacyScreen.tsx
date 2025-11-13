@@ -120,7 +120,7 @@ const MedicineCard: React.FC<{ medicine: Medicine; index: number }> = ({ medicin
 };
 
 export const PharmacyScreen: React.FC<PharmacyScreenProps> = ({ onBackPress, navigation }) => {
-  const [activeTab, setActiveTab] = useState<'overview' | 'medicines' | 'pharmacies'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'medicines'>('overview');
   const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -273,8 +273,7 @@ export const PharmacyScreen: React.FC<PharmacyScreenProps> = ({ onBackPress, nav
       <View style={styles.tabContainer}>
         {[
           { key: 'overview', label: 'Overview', icon: 'grid-outline' },
-          { key: 'medicines', label: 'Medicines', icon: 'medical-outline' },
-          { key: 'pharmacies', label: 'Pharmacies', icon: 'storefront-outline' }
+          { key: 'medicines', label: 'Medicines', icon: 'medical-outline' }
         ].map((tab) => (
           <TouchableOpacity
             key={tab.key}
@@ -408,59 +407,7 @@ export const PharmacyScreen: React.FC<PharmacyScreenProps> = ({ onBackPress, nav
         </Animated.View>
       )}
 
-      {activeTab === 'pharmacies' && (
-        <Animated.View style={[
-          styles.tabContent,
-          { opacity: fadeAnim }
-        ]}>
-          <Text style={styles.sectionTitle}>Partner Pharmacies</Text>
-          <Text style={styles.sectionSubtitle}>
-            Trusted pharmacy partners in your area
-          </Text>
-          
-          <View style={styles.pharmaciesGrid}>
-            {pharmacies.map((pharmacy, index) => (
-              <Card key={pharmacy.id} variant="elevated" padding="lg" style={styles.pharmacyCard}>
-                <View style={styles.pharmacyHeader}>
-                  <View style={styles.pharmacyIcon}>
-                    <Ionicons name="storefront" size={24} color={colors.secondary} />
-                  </View>
-                  <View style={styles.pharmacyRating}>
-                    <Ionicons name="star" size={16} color="#FFC107" />
-                    <Text style={styles.ratingText}>{pharmacy.rating}</Text>
-                  </View>
-                </View>
-                
-                <Text style={styles.pharmacyName}>{pharmacy.name}</Text>
-                <Text style={styles.pharmacyAddress}>{pharmacy.address}</Text>
-                
-                {pharmacy.description && (
-                  <Text style={styles.pharmacyDescription} numberOfLines={2}>
-                    {pharmacy.description}
-                  </Text>
-                )}
 
-                <View style={styles.pharmacyDetails}>
-                  <View style={styles.pharmacyDetail}>
-                    <Ionicons name="time-outline" size={16} color={colors.textSecondary} />
-                    <Text style={styles.pharmacyDetailText}>{pharmacy.operatingHours}</Text>
-                  </View>
-                  <View style={styles.pharmacyDetail}>
-                    <Ionicons name="call-outline" size={16} color={colors.textSecondary} />
-                    <Text style={styles.pharmacyDetailText}>{pharmacy.contact}</Text>
-                  </View>
-                  {pharmacy.license && (
-                    <View style={styles.pharmacyDetail}>
-                      <Ionicons name="shield-checkmark-outline" size={16} color={colors.success} />
-                      <Text style={styles.pharmacyDetailText}>Licensed</Text>
-                    </View>
-                  )}
-                </View>
-              </Card>
-            ))}
-          </View>
-        </Animated.View>
-      )}
       </View>
     </ScrollView>
   );
@@ -921,65 +868,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   
-  // Pharmacy Cards
-  pharmaciesGrid: {
-    gap: spacing.md,
-  },
-  pharmacyCard: {
-    marginBottom: spacing.md,
-  },
-  pharmacyHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  pharmacyIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.secondary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  pharmacyRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.xs,
-  },
-  ratingText: {
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: colors.textPrimary,
-  },
-  pharmacyName: {
-    fontSize: fontSize.lg,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    marginBottom: spacing.sm,
-  },
-  pharmacyAddress: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-  },
-  pharmacyDescription: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    lineHeight: fontSize.sm * 1.4,
-    marginBottom: spacing.md,
-  },
-  pharmacyDetails: {
-    gap: spacing.sm,
-  },
-  pharmacyDetail: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  pharmacyDetailText: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
+
 });

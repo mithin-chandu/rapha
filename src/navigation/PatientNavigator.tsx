@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform, Dimensions } from 'react-native';
@@ -9,8 +10,15 @@ import { UserData } from '../utils/storage';
 import { HomeScreen } from '../screens/Patient/HomeScreen';
 import { MyBookingsScreen } from '../screens/Patient/MyBookingsScreen';
 import { ProfileScreen } from '../screens/Patient/ProfileScreen';
+import { AllMedicinesScreen } from '../screens/Patient/AllMedicinesScreen';
+import { AllDiagnosticsScreen } from '../screens/Patient/AllDiagnosticsScreen';
+
+// Additional Screens
+import { PharmacyScreen } from '../screens/ComingSoon/PharmacyScreen';
+import { DiagnosticsScreen } from '../screens/ComingSoon/DiagnosticsScreen';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
 interface PatientNavigatorProps {
   userData: UserData;
@@ -18,7 +26,8 @@ interface PatientNavigatorProps {
   onUpdateUserData: (userData: UserData) => void;
 }
 
-export const PatientNavigator: React.FC<PatientNavigatorProps> = ({
+// Tab Navigator Component
+const PatientTabs: React.FC<PatientNavigatorProps> = ({
   userData,
   onLogout,
   onUpdateUserData,
@@ -401,5 +410,35 @@ export const PatientNavigator: React.FC<PatientNavigatorProps> = ({
         )}
       </Tab.Screen>
     </Tab.Navigator>
+  );
+};
+
+export const PatientNavigator: React.FC<PatientNavigatorProps> = (props) => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="PatientTabs">
+        {() => <PatientTabs {...props} />}
+      </Stack.Screen>
+      <Stack.Screen
+        name="PharmacyScreen"
+        component={PharmacyScreen}
+        options={{ headerShown: true, title: 'Pharmacy' }}
+      />
+      <Stack.Screen
+        name="DiagnosticsScreen"
+        component={DiagnosticsScreen}
+        options={{ headerShown: true, title: 'Diagnostics' }}
+      />
+      <Stack.Screen
+        name="AllMedicines"
+        component={AllMedicinesScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AllDiagnostics"
+        component={AllDiagnosticsScreen}
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
   );
 };
