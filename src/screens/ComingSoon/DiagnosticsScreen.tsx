@@ -102,7 +102,6 @@ const TestCard: React.FC<{ test: DiagnosticTest; index: number }> = ({ test, ind
 export const DiagnosticsScreen: React.FC<DiagnosticsScreenProps> = ({ onBackPress, navigation, onLogout }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'tests' | 'centers'>('overview');
   const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
@@ -129,19 +128,10 @@ export const DiagnosticsScreen: React.FC<DiagnosticsScreenProps> = ({ onBackPres
   }, []);
 
   const handleAccessDiagnosticPortal = () => {
-    // This should trigger logout to go back to role selection
-    handleLogoutPress();
-  };
-
-  const handleLogoutPress = () => {
-    setShowProfileMenu(false);
-    
-    // Call the logout handler from parent if available
+    // Navigate to role selection
     if (onLogout) {
       onLogout();
     } else if (navigation) {
-      // Fallback navigation if onLogout is not provided
-      console.warn('No onLogout handler provided, using fallback navigation');
       navigation.reset({
         index: 0,
         routes: [{ name: 'RoleSelect' }],
@@ -149,13 +139,7 @@ export const DiagnosticsScreen: React.FC<DiagnosticsScreenProps> = ({ onBackPres
     }
   };
 
-  const toggleProfileMenu = () => {
-    setShowProfileMenu(!showProfileMenu);
-  };
 
-  const closeProfileMenu = () => {
-    setShowProfileMenu(false);
-  };
 
   const isSmallScreen = screenDimensions.width < 768;
   const numColumns = isSmallScreen ? 1 : screenDimensions.width < 1024 ? 2 : 3;
@@ -182,56 +166,14 @@ export const DiagnosticsScreen: React.FC<DiagnosticsScreenProps> = ({ onBackPres
         }} />
       )}
 
-      {/* Profile Menu Overlay */}
-      {showProfileMenu && (
-        <TouchableOpacity 
-          style={styles.profileMenuOverlay} 
-          activeOpacity={1}
-          onPress={closeProfileMenu}
-        />
-      )}
-
-      {/* Profile Header */}
-      <View style={styles.profileHeader}>
-        <View style={styles.profileHeaderLeft}>
-          {onBackPress && (
-            <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
-          )}
-        </View>
-        <View style={styles.profileHeaderRight}>
-          <TouchableOpacity onPress={toggleProfileMenu} style={styles.profileButton}>
-            <View style={styles.profileAvatar}>
-              <Ionicons name="person" size={20} color={colors.primary} />
-            </View>
-            <Ionicons 
-              name={showProfileMenu ? "chevron-up" : "chevron-down"} 
-              size={16} 
-              color={colors.textSecondary} 
-            />
+      {/* Back Button Only */}
+      {onBackPress && (
+        <View style={styles.backButtonContainer}>
+          <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
-          
-          {showProfileMenu && (
-            <Animated.View style={styles.profileMenu}>
-              <View style={styles.profileMenuHeader}>
-                <View style={styles.profileMenuAvatar}>
-                  <Ionicons name="person" size={24} color={colors.primary} />
-                </View>
-                <View style={styles.profileMenuInfo}>
-                  <Text style={styles.profileMenuName}>Patient</Text>
-                  <Text style={styles.profileMenuRole}>Diagnostic Services</Text>
-                </View>
-              </View>
-              <View style={styles.profileMenuDivider} />
-              <TouchableOpacity style={styles.profileMenuItem} onPress={handleLogoutPress}>
-                <Ionicons name="log-out-outline" size={20} color={colors.error} />
-                <Text style={styles.profileMenuText}>Logout</Text>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
         </View>
-      </View>
+      )}
 
       {/* Hero Section */}
       <Animated.View 
@@ -439,30 +381,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
 
-  // Profile Header
-  profileMenuOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    zIndex: 999,
-  },
-  profileHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  // Back Button Container
+  backButtonContainer: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     backgroundColor: colors.background,
     ...shadows.sm,
-    zIndex: 1000,
-  },
-  profileHeaderLeft: {
-    flex: 1,
-  },
-  profileHeaderRight: {
-    position: 'relative',
   },
   backButton: {
     width: 40,
@@ -471,79 +395,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundSecondary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  profileButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.backgroundSecondary,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    gap: spacing.sm,
-  },
-  profileAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.primary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileMenu: {
-    position: 'absolute',
-    top: '100%',
-    right: 0,
-    marginTop: spacing.sm,
-    backgroundColor: colors.background,
-    borderRadius: borderRadius.lg,
-    ...shadows.md,
-    minWidth: 200,
-    zIndex: 1001,
-  },
-  profileMenuHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-    gap: spacing.md,
-  },
-  profileMenuAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.primary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileMenuInfo: {
-    flex: 1,
-  },
-  profileMenuName: {
-    fontSize: fontSize.md,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
-  },
-  profileMenuRole: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  profileMenuDivider: {
-    height: 1,
-    backgroundColor: colors.backgroundSecondary,
-    marginHorizontal: spacing.lg,
-  },
-  profileMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    gap: spacing.sm,
-  },
-  profileMenuText: {
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: colors.error,
   },
   
   // Hero Section

@@ -122,7 +122,6 @@ const MedicineCard: React.FC<{ medicine: Medicine; index: number }> = ({ medicin
 export const PharmacyScreen: React.FC<PharmacyScreenProps> = ({ onBackPress, navigation }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'medicines'>('overview');
   const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
-  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(30)).current;
 
@@ -157,35 +156,7 @@ export const PharmacyScreen: React.FC<PharmacyScreenProps> = ({ onBackPress, nav
     }
   };
 
-  const handleLogout = async () => {
-    setShowProfileMenu(false);
-    
-    try {
-      // Clear user data from storage
-      await storage.clearUserData();
-      
-      // Navigate to role selection screen and reset navigation stack
-      if (navigation) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'RoleSelect' }],
-        });
-      }
-    } catch (error) {
-      console.error('Error during logout:', error);
-      // Still navigate even if storage clear fails
-      if (navigation) {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'RoleSelect' }],
-        });
-      }
-    }
-  };
 
-  const toggleProfileMenu = () => {
-    setShowProfileMenu(!showProfileMenu);
-  };
 
   const isSmallScreen = screenDimensions.width < 768;
   const numColumns = isSmallScreen ? 1 : screenDimensions.width < 1024 ? 2 : 3;
@@ -212,33 +183,14 @@ export const PharmacyScreen: React.FC<PharmacyScreenProps> = ({ onBackPress, nav
         }} />
       )}
 
-      {/* Profile Header */}
-      <View style={styles.profileHeader}>
-        <View style={styles.profileHeaderLeft}>
-          {onBackPress && (
-            <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
-            </TouchableOpacity>
-          )}
-        </View>
-        <View style={styles.profileHeaderRight}>
-          <TouchableOpacity onPress={toggleProfileMenu} style={styles.profileButton}>
-            <View style={styles.profileAvatar}>
-              <Ionicons name="person" size={20} color={colors.primary} />
-            </View>
-            <Ionicons name="chevron-down" size={16} color={colors.textSecondary} />
+      {/* Back Button Only */}
+      {onBackPress && (
+        <View style={styles.backButtonContainer}>
+          <TouchableOpacity onPress={onBackPress} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color={colors.textPrimary} />
           </TouchableOpacity>
-          
-          {showProfileMenu && (
-            <Animated.View style={styles.profileMenu}>
-              <TouchableOpacity style={styles.profileMenuItem} onPress={handleLogout}>
-                <Ionicons name="log-out-outline" size={20} color={colors.error} />
-                <Text style={styles.profileMenuText}>Logout</Text>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
         </View>
-      </View>
+      )}
 
       {/* Hero Section */}
       <Animated.View 
@@ -426,22 +378,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
   },
 
-  // Profile Header
-  profileHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  // Back Button Container
+  backButtonContainer: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     backgroundColor: colors.background,
     ...shadows.sm,
-    zIndex: 1000,
-  },
-  profileHeaderLeft: {
-    flex: 1,
-  },
-  profileHeaderRight: {
-    position: 'relative',
   },
   backButton: {
     width: 40,
@@ -450,46 +392,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.backgroundSecondary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  profileButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.backgroundSecondary,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    gap: spacing.sm,
-  },
-  profileAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: colors.primary + '20',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  profileMenu: {
-    position: 'absolute',
-    top: '100%',
-    right: 0,
-    marginTop: spacing.sm,
-    backgroundColor: colors.background,
-    borderRadius: borderRadius.lg,
-    ...shadows.md,
-    minWidth: 120,
-    zIndex: 1001,
-  },
-  profileMenuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    gap: spacing.sm,
-  },
-  profileMenuText: {
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: colors.error,
   },
   
   // Hero Section

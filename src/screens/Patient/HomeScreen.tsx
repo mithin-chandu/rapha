@@ -1795,23 +1795,23 @@ const styles = StyleSheet.create({
   
   // Hero Section
   heroSection: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.sm,
     ...(Platform.OS === 'web' && {
-      marginBottom: spacing.lg,
+      marginBottom: spacing.sm,
     }),
   },
   heroGradient: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.massive,
-    paddingTop: spacing.lg,
-    borderBottomLeftRadius: borderRadius.xxxl,
-    borderBottomRightRadius: borderRadius.xxxl,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.lg,
+    paddingTop: spacing.sm,
+    borderBottomLeftRadius: borderRadius.xl,
+    borderBottomRightRadius: borderRadius.xl,
     ...(Platform.OS === 'web' && {
-      paddingHorizontal: Math.max(spacing.lg, 20),
-      paddingVertical: spacing.xl,
-      paddingTop: spacing.md,
-      borderBottomLeftRadius: Math.min(borderRadius.xxxl, 24),
-      borderBottomRightRadius: Math.min(borderRadius.xxxl, 24),
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.md,
+      paddingTop: spacing.sm,
+      borderBottomLeftRadius: borderRadius.lg,
+      borderBottomRightRadius: borderRadius.lg,
     } as any),
   },
   
@@ -1933,7 +1933,7 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'center',
     lineHeight: fontSize.lg * 1.4,
-    paddingHorizontal: spacing.lg,
+    paddingHorizontal: spacing.md,
   },
   quickStats: {
     flexDirection: 'row',
@@ -1956,10 +1956,10 @@ const styles = StyleSheet.create({
   
   // Quick Actions
   quickActionsSection: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.md,
     ...(Platform.OS === 'web' && ({
-      paddingHorizontal: Math.max(spacing.lg, 20),
+      paddingHorizontal: spacing.md,
       maxWidth: 1200,
       alignSelf: 'center',
       width: '100%',
@@ -1968,8 +1968,8 @@ const styles = StyleSheet.create({
   quickActionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: spacing.md,
-    marginTop: spacing.md,
+    gap: spacing.sm,
+    marginTop: spacing.sm,
     ...(Platform.OS === 'web' && ({
       justifyContent: 'center',
     } as any)),
@@ -1997,7 +1997,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
-    paddingBottom: spacing.massive,
+    paddingBottom: spacing.lg,
   },
   
   // Shimmer Overlay
@@ -2066,10 +2066,10 @@ const styles = StyleSheet.create({
   
   // Health Tip
   healthTipSection: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.md,
     ...(Platform.OS === 'web' && ({
-      paddingHorizontal: Math.max(spacing.lg, 20),
+      paddingHorizontal: spacing.md,
       maxWidth: 1200,
       alignSelf: 'center',
       width: '100%',
@@ -2098,7 +2098,7 @@ const styles = StyleSheet.create({
   
   // Enhanced Featured Section
   enhancedFeaturedSection: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.md,
   },
   
   featuredHospitalsContainer: {
@@ -2280,10 +2280,10 @@ const styles = StyleSheet.create({
   
   // Stats Section
   statsSection: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.md,
     ...(Platform.OS === 'web' && ({
-      paddingHorizontal: Math.max(spacing.lg, 20),
+      paddingHorizontal: spacing.md,
       maxWidth: 1200,
       alignSelf: 'center',
       width: '100%',
@@ -2318,13 +2318,13 @@ const styles = StyleSheet.create({
   
   // Diagnostics Section
   diagnosticsSection: {
-    marginBottom: spacing.xl,
-    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.md,
   },
   
   // Medicines Section  
   medicinesSection: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.md,
     paddingHorizontal: spacing.lg,
   },
   
@@ -2489,10 +2489,10 @@ const styles = StyleSheet.create({
     } as any)),
   },
   sectionHeader: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.md,
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.sm,
     ...(Platform.OS === 'web' && ({
-      paddingHorizontal: Math.max(spacing.lg, 20),
+      paddingHorizontal: spacing.md,
     } as any)),
   },
   sectionTitle: {

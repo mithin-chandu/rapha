@@ -207,7 +207,7 @@ export const AllMedicinesScreen: React.FC<AllMedicinesScreenProps> = ({ navigati
       filtered = filtered.filter(medicine =>
         medicine.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         medicine.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        medicine.manufacturer.toLowerCase().includes(searchQuery.toLowerCase())
+        (medicine.manufacturer ?? '').toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
