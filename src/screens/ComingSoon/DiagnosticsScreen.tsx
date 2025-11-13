@@ -405,6 +405,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.massive,
     paddingHorizontal: spacing.xl,
     alignItems: 'center',
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
   },
   heroContent: {
     alignItems: 'center',

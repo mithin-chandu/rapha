@@ -19,7 +19,8 @@ interface MyBookingsScreenProps {
   navigation: any;
 }
 
-type ActiveTab = 'search' | 'ehr' | 'appointments';
+type ActiveTab = 'search' | 'ehr' | 'appointments' | 'categories';
+type FilterCategory = 'all' | 'cardiology' | 'neurology' | 'orthopedics' | 'pediatrics' | 'dermatology' | 'gastroenterology' | 'radiology' | 'pathology';
 type ProviderType = 'all' | 'visitors' | 'lowToHigh' | 'highToLow' | 'rating' | 'arogyaSree' | 'insurance';
 
 
@@ -27,6 +28,8 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const [activeTab, setActiveTab] = useState<ActiveTab>('search');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProvider, setSelectedProvider] = useState<ProviderType>('all');
+  const [selectedCategory, setSelectedCategory] = useState<FilterCategory>('all');
+  const [showCategoriesModal, setShowCategoriesModal] = useState(false);
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -53,7 +56,17 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const slideAnim = useRef(new Animated.Value(30)).current;
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
 
-
+  // Categories data (includes icon + color for improved UI)
+  const categories = [
+    { key: 'cardiology' as FilterCategory, label: 'Cardiology', icon: 'heart-outline', color: '#ef4444', bgColor: '#fee2e2' },
+    { key: 'neurology' as FilterCategory, label: 'Neurology', icon: 'pulse-outline', color: '#7c3aed', bgColor: '#ede9fe' },
+    { key: 'orthopedics' as FilterCategory, label: 'Orthopedics', icon: 'bandage-outline', color: '#059669', bgColor: '#d1fae5' },
+    { key: 'pediatrics' as FilterCategory, label: 'Pediatrics', icon: 'happy-outline', color: '#f59e0b', bgColor: '#fef3c7' },
+    { key: 'dermatology' as FilterCategory, label: 'Dermatology', icon: 'color-palette-outline', color: '#f97316', bgColor: '#fff7ed' },
+    { key: 'gastroenterology' as FilterCategory, label: 'Gastroenterology', icon: 'restaurant-outline', color: '#0ea5a4', bgColor: '#ecfeff' },
+    { key: 'radiology' as FilterCategory, label: 'Radiology', icon: 'eye-outline', color: '#2563eb', bgColor: '#e0f2fe' },
+    { key: 'pathology' as FilterCategory, label: 'Pathology', icon: 'flask-outline', color: '#a855f7', bgColor: '#f3e8ff' },
+  ];
 
   const loadBookings = async () => {
     try {
@@ -234,7 +247,12 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       );
     }
 
-
+    // Apply category filter
+    if (selectedCategory !== 'all') {
+      allProviders = allProviders.filter(provider =>
+        provider.specialization?.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+    }
 
     return allProviders;
   };
@@ -339,6 +357,24 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
             </View>
             {activeTab === 'appointments' && <Animated.View style={styles.tabUnderline} />}
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.tabItem, activeTab === 'categories' && styles.tabItemActive]}
+            onPress={() => setActiveTab('categories')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.tabContent}>
+              <Ionicons 
+                name={activeTab === 'categories' ? 'layers' : 'layers-outline'} 
+                size={20} 
+                color={activeTab === 'categories' ? '#2563eb' : '#64748b'} 
+              />
+              <Text style={[styles.tabText, activeTab === 'categories' && styles.tabTextActive]}>
+                Categories
+              </Text>
+            </View>
+            {activeTab === 'categories' && <Animated.View style={styles.tabUnderline} />}
+          </TouchableOpacity>
           
 
         </View>
@@ -392,7 +428,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 </TouchableOpacity>
               )}
             </View>
-            
 
           </View>
           <View style={styles.searchShadow} />
@@ -1829,6 +1864,59 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     );
   };
 
+  const renderCategoriesContent = () => {
+    // Responsive columns based on screen width
+    const columns = screenDimensions.width > 600 ? 4 : 2;
+
+    return (
+      <View style={styles.contentContainer}>
+        <View style={styles.categoriesCard}>
+          <View style={styles.categoriesHeader}>
+            <Ionicons name="layers-outline" size={28} color="#374151" />
+            <Text style={styles.categoriesTitle}>Medical Categories</Text>
+          </View>
+
+          <Text style={styles.categoriesDescription}>
+            Browse hospitals and services by specialty. Tap a category to filter results.
+          </Text>
+
+          <View style={styles.categoriesGrid}>
+            {categories.map((category, index) => (
+              <TouchableOpacity
+                key={category.key}
+                activeOpacity={0.85}
+                style={[
+                  styles.categoryCard,
+                  { width: `${100 / columns - 2}%` },
+                  selectedCategory === category.key && styles.categoryCardActive
+                ]}
+                onPress={() => {
+                  setSelectedCategory(category.key);
+                  setActiveTab('search');
+                }}
+              >
+                <View style={[styles.categoryIconWrap, { backgroundColor: (category as any).bgColor || '#f8fafc' }]}>
+                  <Ionicons name={(category as any).icon as any} size={22} color={(category as any).color || '#2563eb'} />
+                </View>
+
+                <Text style={[
+                  styles.categoryCardText,
+                  selectedCategory === category.key && styles.categoryCardTextActive
+                ]} numberOfLines={1}>
+                  {category.label}
+                </Text>
+
+                <View style={styles.categoryCountBadge}>
+                  <Text style={styles.categoryCountText}>{Math.floor(Math.random() * 6) + 1} records</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   if (loading && activeTab === 'appointments') {
     return (
       <View style={[styles.container, styles.centered]}>
@@ -1860,6 +1948,78 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       {activeTab === 'search' && renderSearchContent()}
       {activeTab === 'ehr' && renderEHRContent()}
       {activeTab === 'appointments' && renderAppointmentsContent()}
+      {activeTab === 'categories' && renderCategoriesContent()}
+
+      {/* Categories Dropdown */}
+      {showCategoriesModal && (
+        <TouchableOpacity 
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowCategoriesModal(false)}
+        >
+          <View style={styles.dropdownContainer}>
+            <View style={styles.dropdownHeader}>
+              <Text style={styles.dropdownTitle}>Select Category</Text>
+              <TouchableOpacity 
+                onPress={() => setShowCategoriesModal(false)}
+                style={styles.dropdownCloseButton}
+              >
+                <Ionicons name="close" size={18} color="#64748b" />
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView 
+              style={styles.dropdownContent} 
+              showsVerticalScrollIndicator={true}
+              nestedScrollEnabled={true}
+            >
+              {/* All Categories Option */}
+              <TouchableOpacity
+                style={[
+                  styles.dropdownItem,
+                  selectedCategory === 'all' && styles.dropdownItemSelected
+                ]}
+                onPress={() => {
+                  setSelectedCategory('all');
+                  setShowCategoriesModal(false);
+                }}
+                activeOpacity={0.7}
+              >
+                <Text style={[
+                  styles.dropdownItemText,
+                  selectedCategory === 'all' && styles.dropdownItemTextSelected
+                ]}>All Categories</Text>
+              </TouchableOpacity>
+              
+              {/* Separator */}
+              <View style={styles.dropdownSeparator} />
+              
+              {categories.map((category, index) => {
+                const isSelected = selectedCategory === category.key;
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.dropdownItem,
+                      isSelected && styles.dropdownItemSelected
+                    ]}
+                    onPress={() => {
+                      setSelectedCategory(category.key);
+                      setShowCategoriesModal(false);
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <Text style={[
+                      styles.dropdownItemText,
+                      isSelected && styles.dropdownItemTextSelected
+                    ]}>{category.label}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      )}
 
       {/* Enhanced Professional EHR Detail Modal */}
       <Modal
