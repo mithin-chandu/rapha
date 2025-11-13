@@ -1999,13 +1999,14 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           <View style={styles.enhancedCategoriesGrid}>
             {categories.map((category, index) => {
               const isSelected = selectedCategory === category.key;
+              const isEvenIndex = index % 2 === 0;
               
               return (
                 <Animated.View
                   key={category.key}
                   style={[
                     styles.enhancedCategoryCard,
-                    { width: `${100 / columns - 1}%` },
+                    isEvenIndex ? styles.categoryCardLeft : styles.categoryCardRight,
                   ]}
                 >
                   <TouchableOpacity
@@ -5624,13 +5625,17 @@ const styles = StyleSheet.create({
   enhancedCategoriesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 16,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    gap: 8,
     marginBottom: 32,
+    paddingHorizontal: 8,
+    minHeight: 400,
   },
   enhancedCategoryCard: {
     width: Platform.OS === 'web' 
-      ? `${(100 / 2) - 2}%` 
-      : (Dimensions.get('window').width - 60) / 2,
+      ? '46%' 
+      : (Dimensions.get('window').width - 80) / 2,
     backgroundColor: '#ffffff',
     borderRadius: 16,
     overflow: 'hidden',
@@ -5641,6 +5646,17 @@ const styles = StyleSheet.create({
     elevation: 6,
     borderWidth: 1,
     borderColor: '#f1f5f9',
+    marginBottom: 12,
+  },
+  categoryCardLeft: {
+    alignSelf: 'flex-start',
+    marginRight: 8,
+    marginTop: 0,
+  },
+  categoryCardRight: {
+    alignSelf: 'flex-end',
+    marginLeft: 8,
+    marginTop: -6,
   },
   enhancedCategoryTouchable: {
     width: '100%',
