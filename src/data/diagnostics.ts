@@ -23,9 +23,9 @@ export interface DiagnosticTest {
 export const diagnostics: Diagnostic[] = [
   {
     id: 1,
-    name: "Rapha Diagnostics",
+    name: "Vijaya Diagnostics",
     specialization: "Radiology, Pathology",
-    address: "Hyderabad, Telangana",
+    address: "Benz Circle, Vijayawada, Andhra Pradesh",
     rating: 4.7,
     contact: "9876543210",
     description: "Advanced diagnostic center with state-of-the-art equipment for accurate medical testing and imaging services.",
@@ -33,33 +33,93 @@ export const diagnostics: Diagnostic[] = [
   },
   {
     id: 2,
-    name: "Grace Labs",
-    specialization: "Blood Tests, Scans",
-    address: "Chennai, Tamil Nadu",
-    rating: 4.5,
+    name: "Apollo Diagnostics",
+    specialization: "Comprehensive Diagnostics, Imaging",
+    address: "MG Road, Vijayawada, Andhra Pradesh",
+    rating: 4.8,
     contact: "9123456789",
-    description: "Comprehensive laboratory services with quick turnaround times and precise test results.",
+    description: "Leading healthcare chain offering complete diagnostic services with advanced technology and expert professionals.",
     image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center"
   },
   {
     id: 3,
-    name: "Hope Diagnostic Center",
-    specialization: "Cardiology, Neurology Tests",
-    address: "Bangalore, Karnataka",
-    rating: 4.8,
+    name: "SRL Diagnostics",
+    specialization: "Pathology, Microbiology, Biochemistry",
+    address: "Governorpet, Vijayawada, Andhra Pradesh",
+    rating: 4.6,
     contact: "9998887776",
-    description: "Specialized in cardiac and neurological diagnostic procedures with expert technicians.",
+    description: "One of India's largest diagnostic chains with comprehensive laboratory services and home collection facility.",
     image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=200&fit=crop&crop=center"
   },
   {
     id: 4,
-    name: "Mercy Medical Labs",
-    specialization: "General Pathology, Microbiology",
-    address: "Mumbai, Maharashtra",
-    rating: 4.6,
+    name: "Dr. Lal Path Labs",
+    specialization: "Clinical Pathology, Radiology",
+    address: "Patamata, Vijayawada, Andhra Pradesh",
+    rating: 4.5,
     contact: "9876512345",
-    description: "Full-service laboratory with expertise in pathology and microbiological testing.",
+    description: "Trusted diagnostic center with accurate test results and comprehensive health checkup packages.",
     image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 5,
+    name: "Vijaya Diagnostics",
+    specialization: "Full Body Checkups, Cardiac Tests",
+    address: "Labbipet, Vijayawada, Andhra Pradesh",
+    rating: 4.7,
+    contact: "9555666777",
+    description: "Comprehensive diagnostic center specializing in preventive health checkups and cardiac diagnostics.",
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 6,
+    name: "Metropolis Healthcare",
+    specialization: "Advanced Pathology, Genetics",
+    address: "One Town, Vijayawada, Andhra Pradesh",
+    rating: 4.6,
+    contact: "9444555666",
+    description: "Leading diagnostic chain offering advanced pathology services, genetic testing, and specialized health packages.",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 7,
+    name: "Thyrocare Technologies",
+    specialization: "Thyroid Tests, Wellness Packages",
+    address: "Auto Nagar, Vijayawada, Andhra Pradesh",
+    rating: 4.4,
+    contact: "9333444555",
+    description: "Specialized in thyroid function tests and comprehensive wellness packages with online reports.",
+    image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 8,
+    name: "Pragna Diagnostics",
+    specialization: "Digital X-Ray, Ultrasound, ECG",
+    address: "Kankipadu, Vijayawada, Andhra Pradesh",
+    rating: 4.5,
+    contact: "9222333444",
+    description: "Modern diagnostic facility with digital imaging services and quick report generation.",
+    image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 9,
+    name: "Ganesh Diagnostic Center",
+    specialization: "CT Scan, MRI, Mammography",
+    address: "Suryaraopet, Vijayawada, Andhra Pradesh",
+    rating: 4.6,
+    contact: "9111222333",
+    description: "Advanced imaging center with latest CT, MRI machines and specialized women's health diagnostics.",
+    image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 10,
+    name: "Krishna Diagnostics",
+    specialization: "Blood Tests, Urine Analysis, Diabetic Care",
+    address: "Machavaram, Vijayawada, Andhra Pradesh",
+    rating: 4.3,
+    contact: "9000111222",
+    description: "Community-focused diagnostic center providing affordable and reliable laboratory services with diabetic care packages.",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center"
   }
 ];
 

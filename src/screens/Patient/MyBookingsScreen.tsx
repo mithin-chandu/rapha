@@ -2259,7 +2259,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
             <View style={styles.ehrTitleSection}>
               <Text style={styles.ehrModalTitle}>Medical Record</Text>
               <Text style={styles.ehrPatientName}>
-                {selectedEHR?.patientFullName || 'Patient'}
+                Samuel Rick
               </Text>
             </View>
             

@@ -79,7 +79,7 @@ export const ehrRecords: EHRRecord[] = [
     id: "ehr_001",
     raphaId: "RAPHA_2024_001_MC",
     appointmentDateTime: "2024-11-08T10:00:00Z",
-    patientFullName: "Mithin Chandu",
+    patientFullName: "Samuel Rick",
     patientBasicVitals: {
       sugarReading: 95,
       bloodPressure: {
@@ -150,7 +150,7 @@ export const ehrRecords: EHRRecord[] = [
     id: "ehr_002",
     raphaId: "RAPHA_2024_002_AS",
     appointmentDateTime: "2024-11-07T14:30:00Z",
-    patientFullName: "Anita Sharma",
+    patientFullName: "Samuel Rick",
     patientBasicVitals: {
       sugarReading: 180,
       bloodPressure: {
@@ -236,7 +236,7 @@ export const ehrRecords: EHRRecord[] = [
     id: "ehr_003",
     raphaId: "RAPHA_2024_003_RK",
     appointmentDateTime: "2024-11-06T11:15:00Z",
-    patientFullName: "Rohit Kumar",
+    patientFullName: "Samuel Rick",
     patientBasicVitals: {
       sugarReading: 88,
       bloodPressure: {
@@ -339,7 +339,7 @@ export const ehrRecords: EHRRecord[] = [
     id: "ehr_004",
     raphaId: "RAPHA_2024_004_PS",
     appointmentDateTime: "2024-11-05T09:00:00Z",
-    patientFullName: "Priya Singh",
+    patientFullName: "Samuel Rick",
     patientBasicVitals: {
       sugarReading: 92,
       bloodPressure: {
@@ -417,7 +417,7 @@ export const ehrRecords: EHRRecord[] = [
     id: "ehr_005",
     raphaId: "RAPHA_2024_005_VG",
     appointmentDateTime: "2024-11-04T16:00:00Z",
-    patientFullName: "Vikram Gupta",
+    patientFullName: "Samuel Rick",
     patientBasicVitals: {
       sugarReading: 105,
       bloodPressure: {
