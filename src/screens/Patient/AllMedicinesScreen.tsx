@@ -119,12 +119,6 @@ const MedicineCard: React.FC<{ medicine: Medicine; index: number }> = ({ medicin
                 {medicine.category}
               </Text>
             </View>
-            {medicine.prescription && (
-              <View style={styles.prescriptionBadge}>
-                <Ionicons name="document-text" size={10} color={colors.error} />
-                <Text style={styles.prescriptionText}>Rx</Text>
-              </View>
-            )}
           </View>
           
           <Text style={styles.medicineName} numberOfLines={2}>{medicine.name}</Text>
@@ -144,12 +138,6 @@ const MedicineCard: React.FC<{ medicine: Medicine; index: number }> = ({ medicin
           </View>
 
           <View style={styles.medicineFooter}>
-            <View style={styles.stockContainer}>
-              <View style={[styles.stockIndicator, { backgroundColor: stockInfo.color }]} />
-              <Text style={[styles.stockText, { color: stockInfo.color }]}>
-                Stock: {medicine.stock}
-              </Text>
-            </View>
             <TouchableOpacity style={styles.addToCartButton}>
               <Ionicons name="cart-outline" size={16} color={colors.primary} />
             </TouchableOpacity>
@@ -559,12 +547,12 @@ const styles = StyleSheet.create({
   discountedPrice: {
     fontSize: fontSize.lg,
     fontWeight: '700',
-    color: colors.success,
+    color: '#000000',
   },
   medicinePrice: {
     fontSize: fontSize.lg,
     fontWeight: '700',
-    color: colors.success,
+    color: '#000000',
     marginBottom: spacing.xs,
   },
   dosageText: {

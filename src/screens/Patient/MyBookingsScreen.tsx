@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, FlatList, StyleSheet, RefreshControl, TextInput, TouchableOpacity, ScrollView, Platform, Dimensions, Animated, Image, Modal } from 'react-native';
+import { View, Text, FlatList, StyleSheet, RefreshControl, TextInput, TouchableOpacity, ScrollView, Platform, Dimensions, Animated, Image, Modal, Alert } from 'react-native';
 import { colors, spacing, borderRadius, fontSize, shadows } from '../../utils/colors';
 import { BookingCard } from '../../components/BookingCard';
 import { HospitalCard } from '../../components/HospitalCard';
@@ -13,6 +13,7 @@ import { ehrRecords, EHRRecord, getRecentEHRRecords, getUpcomingFollowUps } from
 import { storage, UserData } from '../../utils/storage';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as Location from 'expo-location';
 
 interface MyBookingsScreenProps {
   userData: UserData;
@@ -376,7 +377,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 Book Appointment
               </Text>
             </View>
-            {activeTab === 'search' && <Animated.View style={styles.tabUnderline} />}
           </TouchableOpacity>
           
           <TouchableOpacity
@@ -401,7 +401,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 EHR
               </Text>
             </View>
-            {activeTab === 'ehr' && <Animated.View style={styles.tabUnderline} />}
           </TouchableOpacity>
           
           <TouchableOpacity
@@ -419,7 +418,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 My Appointments
               </Text>
             </View>
-            {activeTab === 'appointments' && <Animated.View style={styles.tabUnderline} />}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -437,64 +435,8 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 Categories
               </Text>
             </View>
-            {activeTab === 'categories' && <Animated.View style={styles.tabUnderline} />}
           </TouchableOpacity>
-          
 
-        </View>
-      </LinearGradient>
-    </Animated.View>
-  );
-
-  // Enhanced Search Bar Component
-  const renderSearchBar = () => (
-    <Animated.View 
-      style={[
-        styles.searchContainer,
-        {
-          opacity: fadeAnim,
-          transform: [{ scale: scaleAnim }],
-        }
-      ]}
-    >
-      <LinearGradient
-        colors={['#ffffff', '#f1f5f9']}
-        style={styles.searchGradient}
-      >
-        <View style={styles.searchBarWrapper}>
-          <View style={styles.searchRow}>
-            {/* Location Block */}
-            <View style={styles.locationBlock}>
-              <Ionicons name="location" size={18} color="#3b82f6" />
-              <Text style={styles.locationText}>Vijayawada</Text>
-            </View>
-            
-            <View style={styles.searchBar}>
-              <View style={styles.searchIconContainer}>
-                <Ionicons name="search" size={22} color="#3b82f6" />
-              </View>
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Search hospitals in Vijayawada..."
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                placeholderTextColor="#94a3b8"
-              />
-              {searchQuery.length > 0 && (
-                <TouchableOpacity 
-                  onPress={() => setSearchQuery('')}
-                  style={styles.clearButton}
-                  activeOpacity={0.7}
-                >
-                  <View style={styles.clearButtonInner}>
-                    <Ionicons name="close" size={16} color="#64748b" />
-                  </View>
-                </TouchableOpacity>
-              )}
-            </View>
-
-          </View>
-          <View style={styles.searchShadow} />
         </View>
       </LinearGradient>
     </Animated.View>
@@ -567,6 +509,18 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
         style={styles.compactCard}
         onPress={() => handleProviderPress(item)}
         activeOpacity={0.95}
+        {...(Platform.OS === 'web' && {
+          onMouseEnter: (e: any) => {
+            e.currentTarget.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.25), 0 0 0 2px rgba(59, 130, 246, 0.15)';
+            e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
+            e.currentTarget.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            e.currentTarget.style.borderRadius = '16px';
+          },
+          onMouseLeave: (e: any) => {
+            e.currentTarget.style.boxShadow = '';
+            e.currentTarget.style.transform = 'translateY(0) scale(1)';
+          },
+        })}
       >
         <LinearGradient
           colors={
@@ -848,11 +802,11 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const renderProviderGrid = (providers: any[], title: string, onViewAll: () => void) => {
     if (providers.length === 0) return null;
     
-    const displayProviders = providers.slice(0, 6); // Show 6 items (2 rows of 3)
+    const displayProviders = providers.slice(0, 8); // Show 8 items (2 rows of 4)
     const rows = [];
     
-    for (let i = 0; i < displayProviders.length; i += 3) {
-      const rowItems = displayProviders.slice(i, i + 3);
+    for (let i = 0; i < displayProviders.length; i += 4) {
+      const rowItems = displayProviders.slice(i, i + 4);
       rows.push(rowItems);
     }
 
@@ -863,11 +817,11 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           <View key={`row-${rowIndex}`} style={styles.providerRow}>
             {row.map((provider, index) => (
               <View key={`${provider.type}-${provider.id}`} style={styles.providerCardWrapper}>
-                {renderCompactProviderCard({ item: provider, index: rowIndex * 3 + index })}
+                {renderCompactProviderCard({ item: provider, index: rowIndex * 4 + index })}
               </View>
             ))}
             {/* Fill empty slots in the last row */}
-            {row.length < 3 && Array.from({ length: 3 - row.length }).map((_, emptyIndex) => (
+            {row.length < 4 && Array.from({ length: 4 - row.length }).map((_, emptyIndex) => (
               <View key={`empty-${emptyIndex}`} style={styles.providerCardWrapper} />
             ))}
           </View>
@@ -1752,6 +1706,18 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                   onPress={() => navigation.navigate('HospitalDetails', { hospital })}
                   style={styles.topHospitalTouchable}
                   activeOpacity={0.9}
+                  {...(Platform.OS === 'web' && {
+                    onMouseEnter: (e: any) => {
+                      e.currentTarget.parentElement.style.boxShadow = '0 16px 40px rgba(251, 191, 36, 0.4), 0 0 0 3px rgba(251, 191, 36, 0.2)';
+                      e.currentTarget.parentElement.style.transform = 'translateY(-6px) scale(1.02)';
+                      e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                      e.currentTarget.parentElement.style.borderRadius = '20px';
+                    },
+                    onMouseLeave: (e: any) => {
+                      e.currentTarget.parentElement.style.boxShadow = '';
+                      e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
+                    },
+                  })}
                 >
                   <LinearGradient
                     colors={['#ffffff', '#fefce8', '#fef3c7']}
@@ -1823,7 +1789,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   };
 
   const renderNearbyHospitals = () => {
-    const nearbyHospitals = hospitals.slice(1, 9); // Show 8 hospitals like in home screen
+    const nearbyHospitals = hospitals.slice(0, 16); // Show 16 hospitals (4 rows of 4)
     
     return (
       <View style={styles.nearbySection}>
@@ -1846,6 +1812,18 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       onPress={() => navigation.navigate('BookAppointment', { hospital })}
                       style={styles.nearbyHospitalTouchable}
                       activeOpacity={0.8}
+                      {...(Platform.OS === 'web' && {
+                        onMouseEnter: (e: any) => {
+                          e.currentTarget.parentElement.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(59, 130, 246, 0.2)';
+                          e.currentTarget.parentElement.style.transform = 'translateY(-4px) scale(1.02)';
+                          e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                          e.currentTarget.parentElement.style.borderRadius = '16px';
+                        },
+                        onMouseLeave: (e: any) => {
+                          e.currentTarget.parentElement.style.boxShadow = '';
+                          e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
+                        },
+                      })}
                     >
                       <View style={styles.nearbyHospitalGradient}>
                         <View style={styles.nearbyHospitalImageContainer}>
@@ -1912,7 +1890,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                               onPress={() => navigation.navigate('BookAppointment', { hospital })}
                             >
                               <Ionicons name="navigate-outline" size={14} color="#3b82f6" />
-                              <Text style={styles.nearbyDirectionsText}>Book</Text>
+                              <Text style={styles.nearbyDirectionsText}>Directions</Text>
                             </TouchableOpacity>
                           </View>
                         </View>
@@ -2019,6 +1997,18 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       styles.enhancedCategoryTouchable,
                       isSelected && styles.enhancedCategoryTouchableActive
                     ]}
+                    {...(Platform.OS === 'web' && {
+                      onMouseEnter: (e: any) => {
+                        e.currentTarget.style.boxShadow = `0 12px 32px ${(category as any).color}40, 0 0 0 2px ${(category as any).color}30`;
+                        e.currentTarget.style.transform = 'translateY(-6px) scale(1.03)';
+                        e.currentTarget.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                        e.currentTarget.style.borderRadius = '20px';
+                      },
+                      onMouseLeave: (e: any) => {
+                        e.currentTarget.style.boxShadow = '';
+                        e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                      },
+                    })}
                   >
                     <LinearGradient
                       colors={isSelected ? ['#3b82f6', '#2563eb'] : (category as any).gradient}
@@ -2137,10 +2127,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       {/* Tab Navigation */}
       {renderTabNavigation()}
       
-      {/* Search Bar and Filters - Show only for search tab */}
+      {/* Filters - Show only for search tab */}
       {activeTab === 'search' && (
         <>
-          {renderSearchBar()}
           {renderFilters()}
         </>
       )}
@@ -2657,8 +2646,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 16,
     paddingVertical: Platform.OS === 'ios' ? 14 : 12,
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
     shadowColor: '#1e293b',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
@@ -2673,6 +2660,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1e293b',
     fontWeight: '500',
+    ...(Platform.OS === 'web' && ({ outlineStyle: 'none' } as any)),
   },
   clearButton: {
     marginLeft: 8,
@@ -2814,30 +2802,26 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 6,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
   },
   compactCardGradient: {
     padding: 12,
-    minHeight: 180,
+    minHeight: 240,
     justifyContent: 'space-between',
   },
   compactImageContainer: {
     width: '100%',
-    height: 80,
+    height: 140,
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 12,
-    shadowColor: '#1e293b',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
+    backgroundColor: 'transparent',
   },
   compactImage: {
     width: '100%',
     height: '100%',
     borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
   },
   compactIcon: {
     width: 36,
@@ -2901,7 +2885,7 @@ const styles = StyleSheet.create({
   },
   compactSpecialization: {
     fontSize: 11,
-    color: '#3b82f6',
+    color: '#000000',
     fontWeight: '600',
     marginBottom: 6,
   },
@@ -2912,7 +2896,7 @@ const styles = StyleSheet.create({
   },
   compactAddress: {
     fontSize: 10,
-    color: '#64748b',
+    color: '#000000',
     fontWeight: '500',
     flex: 1,
   },
@@ -4696,8 +4680,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
   },
   nearbyHospitalImageContainer: {
     position: 'relative',
@@ -4705,9 +4687,11 @@ const styles = StyleSheet.create({
   },
   nearbyHospitalImage: {
     width: '100%',
-    height: 80,
+    height: 180,
     borderRadius: 12,
     backgroundColor: '#f1f5f9',
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
   },
   nearbyRatingBadge: {
     position: 'absolute',
@@ -4752,12 +4736,12 @@ const styles = StyleSheet.create({
   nearbyHospitalName: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1e293b',
+    color: '#000000',
     lineHeight: 18,
   },
   nearbyHospitalSpecialization: {
     fontSize: 12,
-    color: '#3b82f6',
+    color: '#4b5563',
     fontWeight: '500',
   },
   nearbyHospitalLocationRow: {
@@ -4767,7 +4751,7 @@ const styles = StyleSheet.create({
   },
   nearbyHospitalLocation: {
     fontSize: 11,
-    color: '#64748b',
+    color: '#6b7280',
     flex: 1,
   },
   nearbyHospitalVisitorsRow: {
@@ -5391,12 +5375,12 @@ const styles = StyleSheet.create({
     paddingRight: 24,
   },
   topHospitalCard: {
-    width: 240,
+    width: 280,
     marginRight: 16,
   },
   topHospitalTouchable: {
     width: '100%',
-    height: 280,
+    height: 240,
   },
   topHospitalGradient: {
     flex: 1,
@@ -5407,8 +5391,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 6,
-    borderWidth: 1,
-    borderColor: '#f1f5f9',
   },
   topHospitalPremiumBadge: {
     position: 'absolute',
@@ -5436,6 +5418,8 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 12,
     position: 'relative',
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
   },
   topHospitalImage: {
     width: '100%',
@@ -5465,13 +5449,13 @@ const styles = StyleSheet.create({
   topHospitalName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1f2937',
+    color: '#000000',
     marginBottom: 6,
     lineHeight: 20,
   },
   topHospitalSpecialization: {
     fontSize: 13,
-    color: '#3b82f6',
+    color: '#4b5563',
     fontWeight: '600',
     marginBottom: 8,
   },
@@ -5483,7 +5467,7 @@ const styles = StyleSheet.create({
   },
   topHospitalLocation: {
     fontSize: 12,
-    color: '#64748b',
+    color: '#6b7280',
     flex: 1,
   },
   topHospitalVisitorsRow: {

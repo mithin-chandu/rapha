@@ -211,14 +211,6 @@ export const AppNavigator: React.FC = () => {
             <Stack.Screen name="PatientHome">
               {({ navigation }: any) => (
                 <View style={styles.screenContainer}>
-                  <WebHeader
-                    title="Home"
-                    userData={userData}
-                    onLogout={handleLogout}
-                    onUpdateUserData={handleUpdateUserData}
-                    showProfile={false}
-                    navigation={navigation}
-                  />
                   <HomeScreen 
                     navigation={navigation} 
                     userData={userData}
@@ -470,6 +462,8 @@ const styles = StyleSheet.create({
   screenContainer: {
     flex: 1,
     backgroundColor: colors.background,
+    margin: 0,
+    padding: 0,
   },
 });
 
@@ -479,8 +473,10 @@ const webStyles = StyleSheet.create({
     maxWidth: Platform.OS === 'web' ? 1200 : undefined,
     alignSelf: 'center',
     width: '100%',
+    margin: 0,
+    padding: 0,
     ...(Platform.OS === 'web' && {
-      minHeight: '100%' as any,
+      minHeight: '100vh' as any,
     }),
   },
 });

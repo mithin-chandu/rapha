@@ -545,12 +545,12 @@ const styles = StyleSheet.create({
   discountedPrice: {
     fontSize: fontSize.lg,
     fontWeight: '700',
-    color: colors.success,
+    color: '#000000',
   },
   testPrice: {
     fontSize: fontSize.lg,
     fontWeight: '700',
-    color: colors.success,
+    color: '#000000',
   },
   testFooter: {
     flexDirection: 'row',

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Platform, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, Platform, Modal, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../utils/colors';
 import { UserData } from '../utils/storage';
+import * as Location from 'expo-location';
 
 interface WebHeaderProps {
   title: string;
@@ -27,6 +28,60 @@ export const WebHeader: React.FC<WebHeaderProps> = ({
   navigation,
 }) => {
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState('Vijayawada');
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+
+  const getCurrentLocation = async () => {
+    setIsLoadingLocation(true);
+    setShowLocationDropdown(false);
+    
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Denied',
+          'Please enable location permissions to use this feature.',
+          [{ text: 'OK' }]
+        );
+        setIsLoadingLocation(false);
+        return;
+      }
+      
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.Balanced,
+      });
+      
+      const { latitude, longitude } = location.coords;
+      
+      try {
+        const [geocode] = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+        });
+        
+        if (geocode) {
+          const locationName = geocode.city || geocode.subregion || geocode.region || 'Current Location';
+          setCurrentLocation(locationName);
+        } else {
+          setCurrentLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+        }
+      } catch (geocodeError) {
+        console.error('Geocoding error:', geocodeError);
+        setCurrentLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+      }
+    } catch (error) {
+      console.error('Error getting location:', error);
+      Alert.alert(
+        'Location Error',
+        'Unable to get your current location. Please try again.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
 
   const getInitials = (name: string) => {
     return name
@@ -46,7 +101,9 @@ export const WebHeader: React.FC<WebHeaderProps> = ({
       container: {
         height: width < 768 ? 50 : 60,
         paddingHorizontal: width < 768 ? 16 : width < 1024 ? 24 : 32,
-        paddingTop: width < 768 ? 4 : 8,
+        paddingTop: 0,
+        paddingBottom: 0,
+        marginTop: 0,
       },
       title: {
         fontSize: width < 768 ? 18 : width < 1024 ? 20 : 22,
@@ -71,8 +128,11 @@ export const WebHeader: React.FC<WebHeaderProps> = ({
       backgroundColor: colors.background,
       borderBottomWidth: 1,
       borderBottomColor: colors.borderLight,
-      paddingVertical: 8,
+      paddingVertical: 0,
       paddingHorizontal: 20,
+      paddingTop: 0,
+      paddingBottom: 0,
+      marginTop: 0,
       zIndex: 100,
       ...(Platform.OS === 'web' && {
         position: 'sticky' as any,
@@ -106,6 +166,99 @@ export const WebHeader: React.FC<WebHeaderProps> = ({
     rightSection: {
       flexDirection: 'row' as const,
       alignItems: 'center' as const,
+      gap: 12,
+    },
+    locationButton: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      backgroundColor: colors.primary + '15',
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 20,
+      borderWidth: 1,
+      borderColor: colors.primary + '30',
+      gap: 6,
+      position: 'relative' as const,
+      ...(Platform.OS === 'web' && {
+        cursor: 'pointer' as any,
+      }),
+    },
+    locationText: {
+      fontSize: 14,
+      fontWeight: '600' as const,
+      color: colors.primary,
+      maxWidth: 100,
+    },
+    locationDropdown: {
+      position: 'absolute' as const,
+      top: 45,
+      right: 0,
+      backgroundColor: colors.background,
+      borderRadius: 12,
+      shadowColor: 'rgba(0, 0, 0, 0.3)',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 1,
+      shadowRadius: 8,
+      elevation: 8,
+      minWidth: 220,
+      zIndex: 1000,
+      ...(Platform.OS === 'web' && {
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.15)',
+      }),
+    },
+    locationDropdownItem: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      paddingHorizontal: 16,
+      paddingVertical: 14,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderLight,
+      ...(Platform.OS === 'web' && {
+        cursor: 'pointer' as any,
+      }),
+    },
+    locationDropdownText: {
+      fontSize: 15,
+      fontWeight: '500' as const,
+      color: colors.textPrimary,
+      marginLeft: 12,
+    },
+    searchBar: {
+      flexDirection: 'row' as const,
+      alignItems: 'center' as const,
+      backgroundColor: colors.backgroundSecondary,
+      borderRadius: 20,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      minWidth: 300,
+      maxWidth: 400,
+      gap: 10,
+      borderWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    searchInput: {
+      flex: 1,
+      fontSize: 14,
+      color: colors.textPrimary,
+      fontWeight: '500' as const,
+      ...(Platform.OS === 'web' && {
+        outline: 'none' as any,
+        border: 'none',
+      }),
+    },
+    helpButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: colors.backgroundSecondary,
+      alignItems: 'center' as const,
+      justifyContent: 'center' as const,
+      borderWidth: 1,
+      borderColor: colors.borderLight,
+      ...(Platform.OS === 'web' && {
+        cursor: 'pointer' as any,
+        transition: 'all 0.2s ease',
+      }),
     },
     profileButton: {
       flexDirection: 'row' as const,
@@ -149,7 +302,7 @@ export const WebHeader: React.FC<WebHeaderProps> = ({
       backgroundColor: 'rgba(0, 0, 0, 0.6)',
       justifyContent: 'flex-start' as const,
       alignItems: 'flex-end' as const,
-      paddingTop: Platform.OS === 'web' ? 70 : 60,
+      paddingTop: Platform.OS === 'web' ? 10 : 10,
       paddingRight: Platform.OS === 'web' ? 20 : 16,
       ...(Platform.OS === 'web' && {
         position: 'fixed' as any,
@@ -341,6 +494,82 @@ export const WebHeader: React.FC<WebHeaderProps> = ({
 
         {showProfile && (
           <View style={baseStyles.rightSection}>
+            {/* Location Picker */}
+            <View style={{ position: 'relative', zIndex: 1000 }}>
+              <TouchableOpacity
+                style={baseStyles.locationButton}
+                onPress={() => setShowLocationDropdown(!showLocationDropdown)}
+                {...(Platform.OS === 'web' && {
+                  onMouseEnter: (e: any) => {
+                    e.currentTarget.style.backgroundColor = colors.primary + '25';
+                  },
+                  onMouseLeave: (e: any) => {
+                    e.currentTarget.style.backgroundColor = colors.primary + '15';
+                  },
+                })}
+              >
+                <Ionicons name="location" size={18} color={colors.primary} />
+                <Text style={baseStyles.locationText} numberOfLines={1}>
+                  {isLoadingLocation ? 'Loading...' : currentLocation}
+                </Text>
+                <Ionicons 
+                  name={showLocationDropdown ? "chevron-up" : "chevron-down"} 
+                  size={14} 
+                  color={colors.primary} 
+                />
+              </TouchableOpacity>
+
+              {/* Location Dropdown */}
+              {showLocationDropdown && (
+                <View style={baseStyles.locationDropdown}>
+                  <TouchableOpacity
+                    style={baseStyles.locationDropdownItem}
+                    onPress={getCurrentLocation}
+                    {...(Platform.OS === 'web' && {
+                      onMouseEnter: (e: any) => {
+                        e.currentTarget.style.backgroundColor = colors.backgroundSecondary;
+                      },
+                      onMouseLeave: (e: any) => {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                      },
+                    })}
+                  >
+                    <Ionicons name="navigate" size={20} color={colors.primary} />
+                    <Text style={baseStyles.locationDropdownText}>
+                      Use my current location
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+
+            {/* Search Bar */}
+            <View style={baseStyles.searchBar}>
+              <Ionicons name="search" size={18} color={colors.textSecondary} />
+              <TextInput
+                style={baseStyles.searchInput}
+                placeholder="Search hospitals, doctors..."
+                placeholderTextColor={colors.textSecondary}
+              />
+            </View>
+
+            {/* Help Button */}
+            <TouchableOpacity
+              style={baseStyles.helpButton}
+              onPress={() => Alert.alert('Help', 'How can we assist you today?')}
+              {...(Platform.OS === 'web' && {
+                onMouseEnter: (e: any) => {
+                  e.currentTarget.style.backgroundColor = colors.hover;
+                },
+                onMouseLeave: (e: any) => {
+                  e.currentTarget.style.backgroundColor = colors.backgroundSecondary;
+                },
+              })}
+            >
+              <Ionicons name="help-circle-outline" size={22} color={colors.textSecondary} />
+            </TouchableOpacity>
+
+            {/* Profile Button */}
             <TouchableOpacity
               style={baseStyles.profileButton}
               onPress={() => setShowProfileModal(true)}
@@ -366,9 +595,7 @@ export const WebHeader: React.FC<WebHeaderProps> = ({
                     justifyContent: 'center',
                   }}
                 >
-                  <Text style={baseStyles.profileText}>
-                    {getInitials(userData.name)}
-                  </Text>
+                  <Ionicons name="person" size={24} color={colors.textWhite} />
                 </LinearGradient>
               </View>
               <Text style={baseStyles.profileName}>{userData.name}</Text>

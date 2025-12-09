@@ -194,7 +194,7 @@ export const Header: React.FC<HeaderProps> = ({
 
 const styles = StyleSheet.create({
   header: {
-    paddingTop: Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 0,
+    paddingTop: Platform.OS === 'ios' ? 44 : Platform.OS === 'android' ? (StatusBar.currentHeight || 0) : 0,
   },
   
   // Header variants
@@ -274,5 +274,9 @@ const styles = StyleSheet.create({
     marginLeft: spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
+    gap: spacing.md,
+    flex: 1,
+    justifyContent: 'flex-end',
+    maxWidth: '70%',
   },
 });

@@ -9,15 +9,16 @@
   <style>
     /* Inline critical CSS for immediate application */
     html, body, #root {
-      min-height: 100%;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
+      min-height: 100vh !important;
+      height: 100vh !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow-x: hidden !important;
+      background-color: #f8fafc !important;
     }
     
     #root {
-      min-height: 100vh;
-      width: 100vw;
+      width: 100vw !important;
     }
     
     /* Ensure React Native ScrollView works on web */

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, StyleSheet, RefreshControl, Animated, TouchableOpacity, Image, Platform, Dimensions, FlatList } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, RefreshControl, Animated, TouchableOpacity, Image, Platform, Dimensions, FlatList, TextInput, Alert } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { colors, spacing, borderRadius, fontSize, shadows } from '../../utils/colors';
 import { HospitalCard } from '../../components/HospitalCard';
 import { Card } from '../../components/Card';
@@ -54,6 +55,18 @@ const EnhancedHospitalCard: React.FC<{
         onPressOut={handlePressOut}
         activeOpacity={0.9}
         style={styles.enhancedHospitalTouchable}
+        {...(Platform.OS === 'web' && {
+          onMouseEnter: (e: any) => {
+            e.currentTarget.style.boxShadow = '0 8px 32px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(59, 130, 246, 0.1)';
+            e.currentTarget.style.transform = 'translateY(-4px)';
+            e.currentTarget.style.transition = 'all 0.3s ease';
+            e.currentTarget.style.borderRadius = '16px';
+          },
+          onMouseLeave: (e: any) => {
+            e.currentTarget.style.boxShadow = '';
+            e.currentTarget.style.transform = 'translateY(0)';
+          },
+        })}
       >
         <LinearGradient
           colors={['#ffffff', '#f8fafc']}
@@ -198,6 +211,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
   const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
   const [currentHospitalIndex, setCurrentHospitalIndex] = useState(0);
   const [showAllHospitals, setShowAllHospitals] = useState(false);
+  const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState('Your Location');
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   // Demo discount data
   const discounts = {
@@ -329,6 +345,88 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
     }, 1000);
   };
 
+  const getCurrentLocation = async () => {
+    setIsLoadingLocation(true);
+    setShowLocationDropdown(false);
+    
+    try {
+      // Request location permissions
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Denied',
+          'Please enable location permissions to use this feature.',
+          [{ text: 'OK' }]
+        );
+        setIsLoadingLocation(false);
+        return;
+      }
+
+      // Get current position with high accuracy
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      const { latitude, longitude } = location.coords;
+
+      // Reverse geocode to get address
+      try {
+        const addresses = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
+        });
+
+        if (addresses && addresses.length > 0) {
+          const address = addresses[0];
+          
+          // Build a readable location string with priority order
+          const locationParts = [];
+          
+          // Add neighborhood/sublocality if available
+          if (address.name && address.name !== address.city) {
+            locationParts.push(address.name);
+          } else if (address.district) {
+            locationParts.push(address.district);
+          } else if (address.subregion) {
+            locationParts.push(address.subregion);
+          }
+          
+          // Add city
+          if (address.city) {
+            locationParts.push(address.city);
+          }
+          
+          // If we have no parts yet, try region/state
+          if (locationParts.length === 0 && address.region) {
+            locationParts.push(address.region);
+          }
+          
+          // Create final location string
+          const locationString = locationParts.length > 0 
+            ? locationParts.slice(0, 2).join(', ')
+            : `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
+          
+          setCurrentLocation(locationString);
+        } else {
+          setCurrentLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+        }
+      } catch (geocodeError) {
+        console.error('Geocoding error:', geocodeError);
+        setCurrentLocation(`${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+      }
+    } catch (error) {
+      console.error('Error getting location:', error);
+      Alert.alert(
+        'Location Error',
+        'Unable to get your current location. Please try again.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setIsLoadingLocation(false);
+    }
+  };
+
   const handleHospitalPress = (hospital: Hospital) => {
     try {
       console.log('Hospital pressed:', hospital.name);
@@ -399,9 +497,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
       {
         flex: 1,
         backgroundColor: '#f8fafc',
-        minHeight: screenDimensions.height,
-        maxHeight: screenDimensions.height,
-        overflow: 'hidden',
       }
     ]}>
       {/* Web-specific style injection */}
@@ -412,7 +507,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               margin: 0 !important;
               padding: 0 !important;
               height: 100vh !important;
+              width: 100vw !important;
               overflow: hidden !important;
+              background-color: #f8fafc !important;
             }
             .home-scroll::-webkit-scrollbar {
               display: none;
@@ -462,12 +559,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
       </View>
 
       <ScrollView 
-        style={{ flex: 1 }}
+        style={{ flex: 1, margin: 0, padding: 0 }}
         contentContainerStyle={[
           {
             flexGrow: 1,
             paddingBottom: 80,
-            paddingHorizontal: screenDimensions.width < 768 ? 16 : screenDimensions.width >= 768 && screenDimensions.width < 1024 ? 24 : 32,
+            paddingTop: 0,
+            marginTop: 0,
           }
         ]}
         refreshControl={
@@ -497,11 +595,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{
-              paddingHorizontal: 24,
-              paddingVertical: 32,
+              paddingHorizontal: 0,
+              paddingVertical: 0,
               paddingTop: 16,
-              borderBottomLeftRadius: 40,
-              borderBottomRightRadius: 40,
+              paddingBottom: 40,
+              marginHorizontal: 16,
+              marginTop: 16,
+              borderTopLeftRadius: 32,
+              borderTopRightRadius: 32,
+              borderBottomLeftRadius: 32,
+              borderBottomRightRadius: 32,
+              overflow: 'hidden',
             }}
           >
             {/* Shimmer overlay */}
@@ -520,7 +624,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             justifyContent: 'space-between',
             alignItems: 'flex-start',
             marginBottom: 32,
-            paddingTop: 8,
+            paddingTop: 0,
+            paddingHorizontal: 24,
+            marginTop: 0,
           }}>
             {/* Enhanced Logo and Brand */}
             <View style={{
@@ -529,56 +635,50 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               flex: 1,
             }}>
               <View style={{
-                width: 140,
-                height: 140,
-                backgroundColor: 'rgba(255, 255, 255, 0.25)',
-                borderRadius: 40,
+                width: 60,
+                height: 60,
+                backgroundColor: '#ffffff',
+                borderRadius: 20,
                 alignItems: 'center',
                 justifyContent: 'center',
-                marginRight: 32,
-                borderWidth: 3,
-                borderColor: 'rgba(255, 255, 255, 0.5)',
-                shadowColor: 'rgba(0, 0, 0, 0.4)',
-                shadowOffset: { width: 0, height: 6 },
+                marginRight: 16,
+                borderWidth: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.3)',
+                shadowOffset: { width: 0, height: 4 },
                 shadowOpacity: 1,
-                shadowRadius: 12,
-                elevation: 12,
+                shadowRadius: 8,
+                elevation: 8,
               }}>
                 <Image 
                   source={require('../../../assets/image.png')} 
-                  style={{
-                    width: 115,
-                    height: 115,
-                  }}
-                  resizeMode="contain"
+                  style={{ width: 59, height: 59 }} 
+                  resizeMode="contain" 
                 />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{
-                  fontSize: 64,
-                  fontWeight: '900',
+                  fontSize: 39,
+                  fontWeight: '600',
                   color: '#ffffff',
-                  letterSpacing: 4,
+                  letterSpacing: 0,
                   textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                  textShadowOffset: { width: 0, height: 4 },
-                  textShadowRadius: 8,
-                  lineHeight: 70,
-                  marginBottom: 8,
+                  textShadowOffset: { width: 0, height: 3 },
+                  textShadowRadius: 6,
+                  lineHeight: 40,
                 }}>
                   Rapha
                 </Text>
                 <Text style={{
-                  fontSize: 20,
-                  color: 'rgba(255, 255, 255, 0.95)',
-                  fontWeight: '600',
-                  lineHeight: 28,
-                  textAlign: 'left',
-                  maxWidth: '95%',
+                  fontSize: 16,
+                  fontWeight: '500',
+                  color: '#ffffff',
+                  letterSpacing: 0,
+                  marginTop: 4,
                   textShadowColor: 'rgba(0, 0, 0, 0.3)',
-                  textShadowOffset: { width: 0, height: 2 },
-                  textShadowRadius: 4,
+                  textShadowOffset: { width: 0, height: 1 },
+                  textShadowRadius: 3,
                 }}>
-                  Your trusted partner in comprehensive healthcare management
+                 
                 </Text>
               </View>
             </View>
@@ -620,13 +720,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   borderWidth: 1,
                   borderColor: 'rgba(255, 255, 255, 0.4)',
                 }}>
-                  <Text style={{
-                    fontSize: 14,
-                    fontWeight: '700',
-                    color: '#ffffff',
-                  }}>
-                    {userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
-                  </Text>
+                  <Ionicons name="person" size={20} color="#ffffff" />
                 </View>
                 <Text style={{
                   fontSize: 16,
@@ -640,260 +734,384 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             </View>
           </View>
 
-          <View style={styles.heroContent}>
-            {/* Greeting Section - Bottom Right of Hero */}
+          {/* Quick Actions inside Hero */}
+          <Animated.View 
+            style={[
+              {
+                paddingHorizontal: 24,
+                marginTop: 32,
+                maxWidth: 1200,
+                alignSelf: 'center',
+                width: '100%',
+              },
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideAnim }],
+              },
+            ]}
+          >
+            {/* Centered Text Messages */}
             <View style={{
-              position: 'absolute',
-              bottom: 20,
-              right: 24,
-              alignItems: 'flex-end',
+              alignItems: 'center',
+              marginBottom: 24,
             }}>
               <Text style={{
-                fontSize: 24,
+                fontSize: 36,
+                fontWeight: '700',
                 color: '#ffffff',
-                fontWeight: '800',
-                marginBottom: 4,
-                textAlign: 'right',
-                textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                textShadowOffset: { width: 0, height: 2 },
-                textShadowRadius: 4,
-                letterSpacing: 0.8,
-              }}>
-                {getGreeting()}
-              </Text>
-              <Text style={{
-                fontSize: 24,
-                fontWeight: '800',
-                color: '#ffffff',
-                textAlign: 'right',
+                letterSpacing: 0.3,
+                textAlign: 'center',
+                marginBottom: 8,
                 textShadowColor: 'rgba(0, 0, 0, 0.4)',
                 textShadowOffset: { width: 0, height: 2 },
                 textShadowRadius: 4,
-                letterSpacing: 0.8,
               }}>
-                {userData.name.split(' ')[0]}
+                Discover hospitals & complete healthcare
+              </Text>
+              <Text style={{
+                fontSize: 36,
+                fontWeight: '700',
+                color: '#ffffff',
+                letterSpacing: 0.3,
+                textAlign: 'center',
+                textShadowColor: 'rgba(0, 0, 0, 0.4)',
+                textShadowOffset: { width: 0, height: 2 },
+                textShadowRadius: 4,
+              }}>
+                Book appointments in minutes Rapha!
+              </Text>
+              <Text style={{
+                fontSize: 36,
+                fontWeight: '700',
+                color: '#ffffff',
+                letterSpacing: 0.5,
+                textAlign: 'center',
+                marginTop: 12,
+                textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                textShadowOffset: { width: 0, height: 2 },
+                textShadowRadius: 5,
+              }}>
+                
               </Text>
             </View>
-          </View>
-        </LinearGradient>
-      </Animated.View>
 
-        {/* Enhanced Quick Actions Section */}
-        <Animated.View 
-          style={[
-            {
-              paddingHorizontal: 24,
-              marginBottom: 32,
-              maxWidth: 1200,
-              alignSelf: 'center',
-              width: '100%',
-            },
-            {
-              opacity: fadeAnim,
-              transform: [{ translateY: slideAnim }],
-            },
-          ]}
-        >
-          <View style={{
-            marginBottom: 20,
-          }}>
-            <Text style={{
-              fontSize: 28,
-              fontWeight: '800',
-              color: '#1f2937',
-              marginBottom: 8,
-              letterSpacing: 0.5,
+            {/* Location and Search Bar */}
+            <View style={{
+              alignItems: 'center',
+              marginBottom: 24,
+              paddingHorizontal: 20,
             }}>
-              Quick Actions
-            </Text>
-            <Text style={{
-              fontSize: 16,
-              color: '#6b7280',
-              fontWeight: '500',
-            }}>
-              Access healthcare services instantly
-            </Text>
-          </View>
-          
-          <View style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            gap: 16,
-            marginTop: 20,
-            justifyContent: 'center',
-          }}>
-            {[
-              {
-                key: 'bookings',
-                title: 'Book Apointment',
-                subtitle: 'Schedule at ease',
-                icon: 'calendar',
-                gradient: ['#3b82f6', '#1d4ed8', '#1e40af'],
-                iconColor: '#ffffff',
-                shadowColor: '#3b82f6',
-              },
-              {
-                key: 'ehr',
-                title: 'EHR',
-                subtitle: 'View health records',
-                icon: 'document-text',
-                gradient: ['#8b5cf6', '#7c3aed', '#6d28d9'],
-                iconColor: '#ffffff',
-                shadowColor: '#8b5cf6',
-              },
-              {
-                key: 'pharmacy',
-                title: 'Pharmacy',
-                subtitle: 'Order medicines online',
-                icon: 'medical-outline',
-                gradient: ['#10b981', '#059669', '#047857'],
-                iconColor: '#ffffff',
-                shadowColor: '#10b981',
-              },
-              {
-                key: 'diagnostics',
-                title: 'Diagnostics',
-                subtitle: 'Book lab tests & reports',
-                icon: 'analytics',
-                gradient: ['#f59e0b', '#d97706', '#b45309'],
-                iconColor: '#ffffff',
-                shadowColor: '#f59e0b',
-              },
-            ].map((action, index) => (
-              <Animated.View key={action.key} style={[
-                {
-                  flex: 1,
-                  minWidth: 200,
-                  maxWidth: 280,
-                  borderRadius: 20,
-                  overflow: 'hidden',
-                  shadowColor: action.shadowColor,
-                  shadowOffset: { width: 0, height: 8 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 20,
-                  elevation: 8,
-                },
-                {
-                  transform: [{
-                    scale: pulseAnim.interpolate({
-                      inputRange: [1, 1.03],
-                      outputRange: [1, 1.01],
-                    })
-                  }],
-                }
-              ]}>
-                <TouchableOpacity
-                  onPress={() => handleQuickAction(action.key)}
-                  style={{
-                    width: '100%',
-                  }}
-                  activeOpacity={0.85}
-                >
-                  <LinearGradient
-                    colors={action.gradient as [string, string, ...string[]]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
+              {/* Location and Search in Same Row */}
+              <View style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                width: '100%',
+                maxWidth: 800,
+                gap: 16,
+                position: 'relative',
+              }}>
+                {/* Location - Clickable */}
+                <View style={{ position: 'relative' }}>
+                  <TouchableOpacity
                     style={{
-                      padding: 24,
+                      flexDirection: 'row',
                       alignItems: 'center',
-                      position: 'relative',
-                      minHeight: 140,
-                      justifyContent: 'center',
-                    }}
-                  >
-                    {/* Background Pattern */}
-                    <View style={{
-                      position: 'absolute',
-                      top: -20,
-                      right: -20,
-                      width: 80,
-                      height: 80,
-                      borderRadius: 40,
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    }} />
-                    <View style={{
-                      position: 'absolute',
-                      bottom: -30,
-                      left: -30,
-                      width: 60,
-                      height: 60,
-                      borderRadius: 30,
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    }} />
-                    
-                    {/* Icon Container */}
-                    <View style={{
-                      width: 60,
-                      height: 60,
+                      backgroundColor: 'rgba(255, 255, 255, 0.15)',
+                      paddingHorizontal: 16,
+                      paddingVertical: 12,
                       borderRadius: 20,
-                      backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: 16,
                       borderWidth: 1,
                       borderColor: 'rgba(255, 255, 255, 0.3)',
-                    }}>
-                      <Ionicons 
-                        name={action.icon as any} 
-                        size={28} 
-                        color={action.iconColor} 
-                      />
-                    </View>
-                    
+                    }}
+                    onPress={() => setShowLocationDropdown(!showLocationDropdown)}
+                  >
+                    <Ionicons name="location" size={20} color="#ffffff" />
                     <Text style={{
-                      fontSize: 18,
-                      fontWeight: '700',
+                      fontSize: 16,
+                      fontWeight: '600',
                       color: '#ffffff',
-                      marginBottom: 6,
-                      textAlign: 'center',
+                      marginLeft: 8,
+                      marginRight: 4,
                       textShadowColor: 'rgba(0, 0, 0, 0.3)',
                       textShadowOffset: { width: 0, height: 1 },
-                      textShadowRadius: 2,
-                    }}>
-                      {action.title}
+                      textShadowRadius: 3,
+                    }} numberOfLines={1}>
+                      {isLoadingLocation ? 'Loading...' : currentLocation}
                     </Text>
-                    
-                    <Text style={{
-                      fontSize: 14,
-                      color: 'rgba(255, 255, 255, 0.9)',
-                      textAlign: 'center',
-                      fontWeight: '500',
-                      lineHeight: 20,
-                    }}>
-                      {action.subtitle}
-                    </Text>
-                    
-                    {/* Shimmer effect */}
-                    <Animated.View style={[
-                      {
-                        position: 'absolute',
-                        top: 0,
-                        left: '-100%',
-                        width: '100%',
-                        height: '100%',
-                        backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                        transform: [{ skewX: '-20deg' }],
-                      },
-                      {
-                        opacity: pulseAnim.interpolate({
-                          inputRange: [1, 1.03],
-                          outputRange: [0.2, 0.4],
-                        }),
-                      }
-                    ]} />
-                  </LinearGradient>
-                </TouchableOpacity>
-              </Animated.View>
-            ))}
-          </View>
-        </Animated.View>
+                    <Ionicons 
+                      name={showLocationDropdown ? "chevron-up" : "chevron-down"} 
+                      size={16} 
+                      color="#ffffff" 
+                    />
+                  </TouchableOpacity>
 
+                  {/* Location Dropdown */}
+                  {showLocationDropdown && (
+                    <View style={{
+                      position: 'absolute',
+                      top: 50,
+                      left: 0,
+                      backgroundColor: '#ffffff',
+                      borderRadius: 12,
+                      shadowColor: 'rgba(0, 0, 0, 0.3)',
+                      shadowOffset: { width: 0, height: 4 },
+                      shadowOpacity: 1,
+                      shadowRadius: 8,
+                      elevation: 8,
+                      minWidth: 220,
+                      zIndex: 1000,
+                    }}>
+                      <TouchableOpacity
+                        style={{
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          paddingHorizontal: 16,
+                          paddingVertical: 14,
+                          borderBottomWidth: 1,
+                          borderBottomColor: '#f0f0f0',
+                        }}
+                        onPress={getCurrentLocation}
+                      >
+                        <Ionicons name="navigate" size={20} color="#3b82f6" />
+                        <Text style={{
+                          fontSize: 15,
+                          fontWeight: '500',
+                          color: '#333',
+                          marginLeft: 12,
+                        }}>
+                          Use my current location
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
+
+                {/* Search Bar */}
+                <View style={{
+                  flex: 1,
+                  backgroundColor: '#ffffff',
+                  borderRadius: 25,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  paddingHorizontal: 20,
+                  paddingVertical: 14,
+                  shadowColor: 'rgba(0, 0, 0, 0.3)',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 1,
+                  shadowRadius: 8,
+                  elevation: 8,
+                  ...(Platform.OS === 'web' && {
+                    border: 'none',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.3)',
+                  } as any),
+                }}>
+                  <Ionicons name="search" size={22} color="#666" />
+                  <TextInput
+                    style={{
+                      flex: 1,
+                      marginLeft: 12,
+                      fontSize: 16,
+                      color: '#333',
+                      fontWeight: '500',
+                      ...(Platform.OS === 'web' && {
+                        outline: 'none',
+                        border: 'none',
+                        boxShadow: 'none',
+                        borderWidth: 0,
+                      } as any),
+                    }}
+                    placeholder="Search for hospitals, doctors, services..."
+                    placeholderTextColor="#999"
+                  />
+                </View>
+              </View>
+            </View>
+
+            <View style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 16,
+              marginTop: 20,
+              justifyContent: 'center',
+            }}>
+              {[
+                {
+                  key: 'bookings',
+                  title: 'Book Appointment',
+                  subtitle: 'Schedule at ease',
+                  icon: 'calendar',
+                  iconColor: '#3b82f6',
+                  shadowColor: '#3b82f6',
+                },
+                {
+                  key: 'ehr',
+                  title: 'EHR',
+                  subtitle: 'View health records',
+                  icon: 'document-text',
+                  iconColor: '#8b5cf6',
+                  shadowColor: '#8b5cf6',
+                },
+                {
+                  key: 'pharmacy',
+                  title: 'Pharmacy',
+                  subtitle: 'Order medicines online',
+                  icon: 'medical-outline',
+                  iconColor: '#10b981',
+                  shadowColor: '#10b981',
+                },
+                {
+                  key: 'diagnostics',
+                  title: 'Diagnostics',
+                  subtitle: 'Book lab tests & reports',
+                  icon: 'analytics',
+                  iconColor: '#f59e0b',
+                  shadowColor: '#f59e0b',
+                },
+              ].map((action, index) => (
+                <Animated.View key={action.key} style={[
+                  {
+                    flex: 1,
+                    minWidth: 200,
+                    maxWidth: 280,
+                    borderRadius: 20,
+                    overflow: 'hidden',
+                    shadowColor: action.shadowColor,
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.15,
+                    shadowRadius: 20,
+                    elevation: 8,
+                    backgroundColor: '#ffffff',
+                  },
+                  {
+                    transform: [{
+                      scale: pulseAnim.interpolate({
+                        inputRange: [1, 1.03],
+                        outputRange: [1, 1.01],
+                      })
+                    }],
+                  }
+                ]}>
+                  <TouchableOpacity
+                    onPress={() => handleQuickAction(action.key)}
+                    style={{
+                      width: '100%',
+                    }}
+                    activeOpacity={0.85}
+                    {...(Platform.OS === 'web' && {
+                      onMouseEnter: (e: any) => {
+                        e.currentTarget.parentElement.style.boxShadow = `0 12px 40px ${action.shadowColor}40, 0 0 0 2px ${action.shadowColor}20`;
+                        e.currentTarget.parentElement.style.transform = 'translateY(-6px) scale(1.02)';
+                        e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                        e.currentTarget.parentElement.style.borderRadius = '20px';
+                      },
+                      onMouseLeave: (e: any) => {
+                        e.currentTarget.parentElement.style.boxShadow = `0 8px 20px ${action.shadowColor}15`;
+                        e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
+                      },
+                    })}
+                  >
+                    <View
+                      style={{
+                        padding: 24,
+                        alignItems: 'center',
+                        position: 'relative',
+                        minHeight: 140,
+                        justifyContent: 'center',
+                        backgroundColor: '#ffffff',
+                      }}
+                    >
+                      {/* Background Pattern */}
+                      <View style={{
+                        position: 'absolute',
+                        top: -20,
+                        right: -20,
+                        width: 80,
+                        height: 80,
+                        borderRadius: 40,
+                        backgroundColor: `${action.iconColor}15`,
+                      }} />
+                      <View style={{
+                        position: 'absolute',
+                        bottom: -30,
+                        left: -30,
+                        width: 60,
+                        height: 60,
+                        borderRadius: 30,
+                        backgroundColor: `${action.iconColor}10`,
+                      }} />
+                      
+                      {/* Icon Container */}
+                      <View style={{
+                        width: 60,
+                        height: 60,
+                        borderRadius: 20,
+                        backgroundColor: `${action.iconColor}20`,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: 16,
+                        borderWidth: 1,
+                        borderColor: `${action.iconColor}30`,
+                      }}>
+                        <Ionicons 
+                          name={action.icon as any} 
+                          size={28} 
+                          color={action.iconColor} 
+                        />
+                      </View>
+                      
+                      <Text style={{
+                        fontSize: 18,
+                        fontWeight: '700',
+                        color: '#1f2937',
+                        marginBottom: 6,
+                        textAlign: 'center',
+                      }}>
+                        {action.title}
+                      </Text>
+                      
+                      <Text style={{
+                        fontSize: 14,
+                        color: '#6b7280',
+                        textAlign: 'center',
+                        fontWeight: '500',
+                        lineHeight: 20,
+                      }}>
+                        {action.subtitle}
+                      </Text>
+                      
+                      {/* Shimmer effect */}
+                      <Animated.View style={[
+                        {
+                          position: 'absolute',
+                          top: 0,
+                          left: '-100%',
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: `${action.iconColor}10`,
+                          transform: [{ skewX: '-20deg' }],
+                        },
+                        {
+                          opacity: pulseAnim.interpolate({
+                            inputRange: [1, 1.03],
+                            outputRange: [0.1, 0.3],
+                          }),
+                        }
+                      ]} />
+                    </View>
+                  </TouchableOpacity>
+                </Animated.View>
+              ))}
+            </View>
+          </Animated.View>
+        </LinearGradient>
+      </Animated.View>
       {/* Enhanced Health Tip Card */}
       <Animated.View 
         style={[
           {
             paddingHorizontal: 24,
             marginBottom: 32,
+            marginTop: 32,
             maxWidth: 1200,
             alignSelf: 'center',
             width: '100%',
@@ -1075,8 +1293,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   marginRight: 16,
                   borderRadius: 16,
                   overflow: 'hidden',
-                  borderWidth: 1,
-                  borderColor: '#e5e7eb',
                   shadowColor: '#000000',
                   shadowOffset: { width: 0, height: 4 },
                   shadowOpacity: 0.08,
@@ -1088,6 +1304,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                     onPress={() => handleHospitalPress(item)}
                     style={{ width: '100%', height: '100%' }}
                     activeOpacity={0.9}
+                    {...(Platform.OS === 'web' && {
+                      onMouseEnter: (e: any) => {
+                        e.currentTarget.parentElement.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(59, 130, 246, 0.15)';
+                        e.currentTarget.parentElement.style.transform = 'translateY(-6px) scale(1.02)';
+                        e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                        e.currentTarget.parentElement.style.borderRadius = '16px';
+                      },
+                      onMouseLeave: (e: any) => {
+                        e.currentTarget.parentElement.style.boxShadow = '';
+                        e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
+                      },
+                    })}
                   >
                     <LinearGradient
                       colors={['#ffffff', '#f8fafc']}
@@ -1100,6 +1328,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                         height: 120,
                         position: 'relative',
                         backgroundColor: '#f1f5f9',
+                        borderWidth: 2,
+                        borderColor: '#e5e7eb',
+                        borderRadius: 12,
+                        overflow: 'hidden',
                       }}>
                         <Image
                           source={{ uri: item.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
@@ -1148,7 +1380,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                         <Text style={{
                           fontSize: 16,
                           fontWeight: '700',
-                          color: '#1f2937',
+                          color: '#000000',
                           marginBottom: 4,
                         }} numberOfLines={1}>
                           {item.name}
@@ -1156,7 +1388,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                         
                         <Text style={{
                           fontSize: 14,
-                          color: '#3b82f6',
+                          color: '#4b5563',
                           marginBottom: 8,
                           fontWeight: '600',
                         }} numberOfLines={1}>
@@ -1169,10 +1401,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                           gap: 4,
                           marginBottom: 6,
                         }}>
-                          <Ionicons name="location-outline" size={14} color="#6b7280" />
+                          <Ionicons name="location-outline" size={14} color="#4b5563" />
                           <Text style={{
                             fontSize: 12,
-                            color: '#6b7280',
+                            color: '#4b5563',
                             flex: 1,
                           }} numberOfLines={1}>
                             {item.address}
@@ -1186,11 +1418,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                             gap: 4,
                             marginBottom: 8,
                           }}>
-                            <Ionicons name="people-outline" size={14} color="#3b82f6" />
+                            <Ionicons name="people-outline" size={14} color="#6b7280" />
                             <Text style={{
                               fontSize: 12,
-                              color: '#3b82f6',
-                              fontWeight: '600',
+                              color: '#6b7280',
+                              fontWeight: '500',
                             }}>
                               {item.visitorsCount >= 1000 
                                 ? `${(item.visitorsCount / 1000).toFixed(1)}K` 
@@ -1253,17 +1485,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               icon: 'business',
               number: '50+',
               label: 'HOSPITALS',
-              gradient: ['#667eea', '#764ba2'] as [string, string],
-              iconGradient: ['#f093fb', '#f5576c'] as [string, string],
-              shadowColor: '#667eea',
+              gradient: ['#ffffff', '#ffffff'] as [string, string],
+              iconGradient: ['#f4f6fb', '#f4f6fb'] as [string, string],
+              shadowColor: '#d1d5db',
             },
             {
               icon: 'people',
               number: '200+',
               label: 'DOCTORS',
-              gradient: ['#4facfe', '#00f2fe'] as [string, string],
-              iconGradient: ['#43e97b', '#38f9d7'] as [string, string],
-              shadowColor: '#4facfe',
+              gradient: ['#ffffff', '#ffffff'] as [string, string],
+              iconGradient: ['#f4f6fb', '#f4f6fb'] as [string, string],
+              shadowColor: '#d1d5db',
             },
           ].map((stat, index) => (
             <Animated.View 
@@ -1422,14 +1654,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                       <Text style={styles.medicinePreviewPrice}>{medicine.price}</Text>
                     )}
                   </View>
-                  
-                  <View style={styles.medicinePreviewMeta}>
-                    <Ionicons name="cube-outline" size={14} color={colors.textSecondary} />
-                    <Text style={styles.medicinePreviewStock}>Stock: {medicine.stock}</Text>
-                    {medicine.prescription && (
-                      <Text style={styles.prescriptionBadge}>Rx</Text>
-                    )}
-                  </View>
                 </View>
               </Card>
             );
@@ -1536,6 +1760,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                       onPress={() => handleHospitalPress(hospital)}
                       style={styles.nearbyHospitalTouchable}
                       activeOpacity={0.8}
+                      {...(Platform.OS === 'web' && {
+                        onMouseEnter: (e: any) => {
+                          e.currentTarget.parentElement.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(59, 130, 246, 0.15)';
+                          e.currentTarget.parentElement.style.transform = 'translateY(-6px) scale(1.02)';
+                          e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                          e.currentTarget.parentElement.style.borderRadius = '16px';
+                        },
+                        onMouseLeave: (e: any) => {
+                          e.currentTarget.parentElement.style.boxShadow = '';
+                          e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
+                        },
+                      })}
                     >
                       <LinearGradient
                         colors={['#ffffff', '#f8fafc']}
@@ -1796,8 +2032,12 @@ const styles = StyleSheet.create({
   // Hero Section
   heroSection: {
     marginBottom: spacing.sm,
+    marginTop: 0,
+    paddingTop: 0,
     ...(Platform.OS === 'web' && {
       marginBottom: spacing.sm,
+      marginTop: 0,
+      paddingTop: 0,
     }),
   },
   heroGradient: {
@@ -1845,11 +2085,11 @@ const styles = StyleSheet.create({
   },
   
   headerLogoImage: {
-    width: 60,
-    height: 60,
+    width: 55,
+    height: 55,
     ...(Platform.OS === 'web' && ({
-      maxWidth: 70,
-      maxHeight: 70,
+      maxWidth: 64,
+      maxHeight: 64,
     } as any)),
   },
   
@@ -2341,33 +2581,36 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
     marginBottom: spacing.sm,
     position: 'relative',
+    borderWidth: 0,
   },
   medicinePreviewImage: {
     width: '100%',
     height: 90,
     borderRadius: 16,
     marginBottom: spacing.sm,
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
   },
   medicinePreviewContent: {
     flex: 1,
   },
   medicinePreviewName: {
     fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: colors.textPrimary,
+    fontWeight: '700',
+    color: '#000000',
     marginBottom: spacing.xs,
     lineHeight: fontSize.sm * 1.2,
   },
   medicinePreviewCategory: {
     fontSize: fontSize.xs,
-    color: colors.secondary,
+    color: '#4b5563',
     fontWeight: '500',
     marginBottom: spacing.xs,
   },
   medicinePreviewPrice: {
     fontSize: fontSize.md,
     fontWeight: '700',
-    color: colors.success,
+    color: '#000000',
     marginBottom: spacing.xs,
   },
   medicinePreviewMeta: {
@@ -2378,7 +2621,7 @@ const styles = StyleSheet.create({
   },
   medicinePreviewStock: {
     fontSize: fontSize.xs,
-    color: colors.textSecondary,
+    color: '#6b7280',
     flex: 1,
   },
   prescriptionBadge: {
@@ -2397,33 +2640,36 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
     marginBottom: spacing.sm,
     position: 'relative',
+    borderWidth: 0,
   },
   testPreviewImage: {
     width: '100%',
     height: 90,
     borderRadius: borderRadius.md,
     marginBottom: spacing.sm,
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
   },
   testPreviewContent: {
     flex: 1,
   },
   testPreviewName: {
     fontSize: fontSize.sm,
-    fontWeight: '600',
-    color: colors.textPrimary,
+    fontWeight: '700',
+    color: '#000000',
     marginBottom: spacing.xs,
     lineHeight: fontSize.sm * 1.2,
   },
   testPreviewCategory: {
     fontSize: fontSize.xs,
-    color: colors.primary,
+    color: '#4b5563',
     fontWeight: '500',
     marginBottom: spacing.xs,
   },
   testPreviewPrice: {
     fontSize: fontSize.md,
     fontWeight: '700',
-    color: colors.success,
+    color: '#000000',
     marginBottom: spacing.xs,
   },
   testPreviewMeta: {
@@ -2433,7 +2679,7 @@ const styles = StyleSheet.create({
   },
   testPreviewDuration: {
     fontSize: fontSize.xs,
-    color: colors.textSecondary,
+    color: '#6b7280',
   },
 
   // Discount Styles
@@ -2462,21 +2708,21 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xs,
   },
   discountedPriceRow: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    gap: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   originalPrice: {
     fontSize: fontSize.sm,
     fontWeight: '500',
-    color: colors.textSecondary,
+    color: '#6b7280',
     textDecorationLine: 'line-through',
     textDecorationStyle: 'solid',
   },
   discountedPrice: {
     fontSize: fontSize.md,
     fontWeight: '700',
-    color: colors.success,
+    color: '#000000',
   },
   
   // Hospitals Section
@@ -2542,9 +2788,6 @@ const styles = StyleSheet.create({
     maxWidth: '24%', // Ensure 4 cards fit per row
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: '#60a5fa', // Light blue border for individual cards
-    ...shadows.sm,
     ...(Platform.OS === 'web' && ({
       cursor: 'pointer',
       transition: 'all 0.2s ease',
@@ -2560,16 +2803,25 @@ const styles = StyleSheet.create({
   nearbyHospitalGradient: {
     flexDirection: 'column',
     padding: spacing.sm,
+    backgroundColor: '#ffffff',
+    borderRadius: borderRadius.lg,
+    shadowColor: '#1e293b',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
   },
   
   nearbyHospitalImageContainer: {
     width: '100%',
-    height: 80,
+    height: 140,
     borderRadius: borderRadius.md,
     overflow: 'hidden',
     position: 'relative',
     marginBottom: spacing.sm,
     backgroundColor: colors.backgroundSecondary,
+    borderWidth: 2,
+    borderColor: '#e5e7eb',
   },
   
   nearbyHospitalImage: {
@@ -2630,14 +2882,14 @@ const styles = StyleSheet.create({
   nearbyHospitalName: {
     fontSize: fontSize.sm,
     fontWeight: '700',
-    color: colors.textPrimary,
+    color: '#000000',
     marginBottom: spacing.xs,
     lineHeight: fontSize.sm * 1.2,
   },
   
   nearbyHospitalSpecialization: {
     fontSize: fontSize.xs,
-    color: colors.primary,
+    color: '#4b5563',
     marginBottom: spacing.xs,
     fontWeight: '600',
   },
@@ -2651,7 +2903,7 @@ const styles = StyleSheet.create({
   
   nearbyHospitalLocation: {
     fontSize: fontSize.xs,
-    color: colors.textSecondary,
+    color: '#4b5563',
     flex: 1,
   },
   
@@ -2664,8 +2916,8 @@ const styles = StyleSheet.create({
   
   nearbyHospitalVisitorsText: {
     fontSize: fontSize.xs,
-    color: colors.primary,
-    fontWeight: '600',
+    color: '#6b7280',
+    fontWeight: '500',
   },
   
   nearbyHospitalFeatures: {
@@ -2686,8 +2938,8 @@ const styles = StyleSheet.create({
   
   nearbyFeatureText: {
     fontSize: 10,
-    fontWeight: '600',
-    color: colors.textSecondary,
+    fontWeight: '500',
+    color: '#6b7280',
   },
   
   travelTimeContainer: {
