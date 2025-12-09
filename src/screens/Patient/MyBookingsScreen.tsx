@@ -378,6 +378,23 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               </Text>
             </View>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.tabItem, activeTab === 'categories' && styles.tabItemActive]}
+            onPress={() => setActiveTab('categories')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.tabContent}>
+              <Ionicons 
+                name={activeTab === 'categories' ? 'layers' : 'layers-outline'} 
+                size={20} 
+                color={activeTab === 'categories' ? '#2563eb' : '#64748b'} 
+              />
+              <Text style={[styles.tabText, activeTab === 'categories' && styles.tabTextActive]}>
+                Categories
+              </Text>
+            </View>
+          </TouchableOpacity>
           
           <TouchableOpacity
             style={[styles.tabItem, activeTab === 'ehr' && styles.tabItemActive]}
@@ -416,23 +433,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               />
               <Text style={[styles.tabText, activeTab === 'appointments' && styles.tabTextActive]}>
                 My Appointments
-              </Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.tabItem, activeTab === 'categories' && styles.tabItemActive]}
-            onPress={() => setActiveTab('categories')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.tabContent}>
-              <Ionicons 
-                name={activeTab === 'categories' ? 'layers' : 'layers-outline'} 
-                size={20} 
-                color={activeTab === 'categories' ? '#2563eb' : '#64748b'} 
-              />
-              <Text style={[styles.tabText, activeTab === 'categories' && styles.tabTextActive]}>
-                Categories
               </Text>
             </View>
           </TouchableOpacity>
@@ -813,6 +813,8 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     return (
       <View style={styles.providerSection}>
         {renderSectionHeader(title, providers.length, onViewAll)}
+        {/* Filters below the heading */}
+        {renderFilters()}
         {rows.map((row, rowIndex) => (
           <View key={`row-${rowIndex}`} style={styles.providerRow}>
             {row.map((provider, index) => (
@@ -836,11 +838,18 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       hospitals: filteredProviders.filter(p => p.type === 'hospital')
     };
 
-    // Top-rated hospitals specifically for Vijayawada (4.8+ rating)
-    const topRatedHospitals = hospitals
-      .filter(h => h.rating >= 4.8 && h.address.toLowerCase().includes('vijayawada'))
+    // Featured hospitals - Premium hospitals with excellent services (4.7+ rating)
+    const featuredHospitals = hospitals
+      .filter(h => h.rating >= 4.7 && h.address.toLowerCase().includes('vijayawada'))
       .map(h => ({ ...h, type: 'hospital' }))
-      .sort((a, b) => b.rating - a.rating);
+      .slice(0, 4); // Show only top 4 featured hospitals
+
+    // Top-rated hospitals - Highest rated hospitals (4.5+ rating)
+    const topRatedHospitals = hospitals
+      .filter(h => h.rating >= 4.5 && h.rating < 4.7 && h.address.toLowerCase().includes('vijayawada'))
+      .map(h => ({ ...h, type: 'hospital' }))
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, 5); // Show top 5
 
     const getSectionTitle = () => {
       switch (selectedProvider) {
@@ -864,18 +873,21 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     return (
       <View style={styles.contentContainer}>
 
-        {/* All Hospitals Section */}
-        {renderProviderGrid(
-          groupedProviders.hospitals, 
-          getSectionTitle(), 
-          () => setSelectedProvider('all')
-        )}
+        {/* Featured Hospitals Section */}
+        {featuredHospitals.length > 0 && renderFeaturedHospitalsSection(featuredHospitals)}
 
         {/* Top Hospitals Section */}
         {topRatedHospitals.length > 0 && renderTopHospitalsSection(topRatedHospitals)}
 
         {/* Nearby Hospitals Section */}
         {renderNearbyHospitals()}
+
+        {/* All Hospitals Section */}
+        {renderProviderGrid(
+          groupedProviders.hospitals, 
+          getSectionTitle(), 
+          () => setSelectedProvider('all')
+        )}
 
         {filteredProviders.length === 0 && renderEmptyState()}
       </View>
@@ -937,7 +949,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
         
         {/* Enhanced Header with Gradient */}
         <LinearGradient
-          colors={['#7c3aed', '#8b5cf6', '#a855f7']}
+          colors={['#1e40af', '#3b82f6', '#60a5fa']}
           style={styles.ehrHeaderGradient}
         >
           <View style={styles.ehrHeaderContent}>
@@ -1666,6 +1678,142 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
 
 
 
+  // Featured Hospitals Section Renderer
+  const renderFeaturedHospitalsSection = (featuredHospitals: any[]) => {
+    return (
+      <View style={styles.topHospitalsSection}>
+        <View style={styles.topHospitalsSectionHeader}>
+          <View style={styles.topHospitalsHeaderLeft}>
+            <View style={styles.topHospitalsIconContainer}>
+              <LinearGradient
+                colors={['#8b5cf6', '#7c3aed', '#6d28d9']}
+                style={styles.topHospitalsIcon}
+              >
+                <Ionicons name="sparkles" size={20} color="#ffffff" />
+              </LinearGradient>
+            </View>
+            <View style={styles.topHospitalsTitleContainer}>
+              <Text style={styles.topHospitalsSectionTitle}>Featured Hospitals</Text>
+              <Text style={styles.topHospitalsSectionSubtitle}>
+                Premium healthcare providers with excellent services
+              </Text>
+            </View>
+          </View>
+          <View style={[styles.topHospitalsRatingBadge, { backgroundColor: '#f3e8ff' }]}>
+            <Ionicons name="star" size={12} color="#8b5cf6" />
+            <Text style={[styles.topHospitalsRatingText, { color: '#6d28d9' }]}>4.7+</Text>
+          </View>
+        </View>
+
+        <View style={styles.topHospitalsContainer}>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.topHospitalsScrollContent}
+            style={styles.topHospitalsScroll}
+          >
+            {featuredHospitals.map((hospital, index) => (
+              <View key={hospital.id} style={styles.topHospitalCard}>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('HospitalDetails', { hospital })}
+                  style={styles.topHospitalTouchable}
+                  activeOpacity={0.9}
+                  {...(Platform.OS === 'web' && {
+                    onMouseEnter: (e: any) => {
+                      e.currentTarget.parentElement.style.boxShadow = '0 16px 40px rgba(139, 92, 246, 0.4), 0 0 0 3px rgba(139, 92, 246, 0.2)';
+                      e.currentTarget.parentElement.style.transform = 'translateY(-6px) scale(1.02)';
+                      e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                      e.currentTarget.parentElement.style.borderRadius = '20px';
+                    },
+                    onMouseLeave: (e: any) => {
+                      e.currentTarget.parentElement.style.boxShadow = '';
+                      e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
+                    },
+                  })}
+                >
+                  <LinearGradient
+                    colors={['#ffffff', '#faf5ff', '#f3e8ff']}
+                    style={styles.topHospitalGradient}
+                  >
+                    {/* Featured Badge */}
+                    <View style={{
+                      position: 'absolute',
+                      top: 8,
+                      right: 8,
+                      backgroundColor: '#8b5cf6',
+                      paddingHorizontal: 8,
+                      paddingVertical: 4,
+                      borderRadius: 8,
+                      zIndex: 10,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      gap: 4,
+                    }}>
+                      <Ionicons name="sparkles" size={10} color="#ffffff" />
+                      <Text style={{ fontSize: 10, fontWeight: '700', color: '#ffffff' }}>FEATURED</Text>
+                    </View>
+
+                    {/* Hospital Image */}
+                    <View style={styles.topHospitalImageContainer}>
+                      <Image
+                        source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
+                        style={styles.topHospitalImage}
+                      />
+                      <View style={[styles.topHospitalRating, { backgroundColor: '#8b5cf6' }]}>
+                        <Ionicons name="star" size={14} color="#ffffff" />
+                        <Text style={[styles.topHospitalRatingValue, { color: '#ffffff' }]}>{hospital.rating}</Text>
+                      </View>
+                    </View>
+
+                    {/* Hospital Content */}
+                    <View style={styles.topHospitalContent}>
+                      <Text style={styles.topHospitalName} numberOfLines={2}>
+                        {hospital.name}
+                      </Text>
+                      <Text style={styles.topHospitalSpecialization} numberOfLines={1}>
+                        {hospital.specialization}
+                      </Text>
+                      
+                      <View style={styles.topHospitalLocationRow}>
+                        <Ionicons name="location-outline" size={12} color="#64748b" />
+                        <Text style={styles.topHospitalLocation} numberOfLines={1}>
+                          {hospital.address.split(',')[0]}
+                        </Text>
+                      </View>
+
+                      {hospital.visitorsCount && (
+                        <View style={styles.topHospitalVisitorsRow}>
+                          <Ionicons name="people-outline" size={12} color="#8b5cf6" />
+                          <Text style={styles.topHospitalVisitorsText}>
+                            {hospital.visitorsCount >= 1000 
+                              ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
+                              : hospital.visitorsCount} visitors
+                          </Text>
+                        </View>
+                      )}
+
+                      {/* Features */}
+                      <View style={styles.topHospitalFeatures}>
+                        <View style={styles.topHospitalFeatureTag}>
+                          <Ionicons name="time-outline" size={10} color="#10b981" />
+                          <Text style={styles.topHospitalFeatureText}>24/7</Text>
+                        </View>
+                        <View style={styles.topHospitalFeatureTag}>
+                          <Ionicons name="shield-checkmark-outline" size={10} color="#8b5cf6" />
+                          <Text style={styles.topHospitalFeatureText}>Premium</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    );
+  };
+
   // Top Hospitals Section Renderer
   const renderTopHospitalsSection = (topHospitals: any[]) => {
     return (
@@ -1683,13 +1831,13 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
             <View style={styles.topHospitalsTitleContainer}>
               <Text style={styles.topHospitalsSectionTitle}>Top Hospitals</Text>
               <Text style={styles.topHospitalsSectionSubtitle}>
-                Highest rated hospitals in Vijayawada
+                Highly rated hospitals in Vijayawada
               </Text>
             </View>
           </View>
           <View style={styles.topHospitalsRatingBadge}>
             <Ionicons name="star" size={12} color="#fbbf24" />
-            <Text style={styles.topHospitalsRatingText}>4.8+</Text>
+            <Text style={styles.topHospitalsRatingText}>4.5+</Text>
           </View>
         </View>
 
@@ -1919,7 +2067,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       >
         {/* Enhanced Header Section */}
         <LinearGradient
-          colors={['#f8fafc', '#f1f5f9', '#e2e8f0']}
+          colors={['#1e40af', '#3b82f6', '#60a5fa']}
           style={styles.categoriesHeaderGradient}
         >
           <View style={styles.categoriesHeaderContent}>

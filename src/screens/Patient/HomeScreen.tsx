@@ -1486,7 +1486,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               number: '50+',
               label: 'HOSPITALS',
               gradient: ['#ffffff', '#ffffff'] as [string, string],
-              iconGradient: ['#f4f6fb', '#f4f6fb'] as [string, string],
+              iconGradient: ['#ffffff', '#ffffff'] as [string, string],
+              iconColor: '#000000',
               shadowColor: '#d1d5db',
             },
             {
@@ -1494,7 +1495,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               number: '200+',
               label: 'DOCTORS',
               gradient: ['#ffffff', '#ffffff'] as [string, string],
-              iconGradient: ['#f4f6fb', '#f4f6fb'] as [string, string],
+              iconGradient: ['#ffffff', '#ffffff'] as [string, string],
+              iconColor: '#000000',
               shadowColor: '#d1d5db',
             },
           ].map((stat, index) => (
@@ -1565,31 +1567,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                     elevation: 6,
                   }}
                 >
-                  <Ionicons name={stat.icon as any} size={32} color="#ffffff" />
+                  <Ionicons name={stat.icon as any} size={32} color={(stat as any).iconColor || "#000000"} />
                 </LinearGradient>
                 
                 <Text style={{
                   fontSize: 36,
                   fontWeight: '900',
-                  color: '#ffffff',
+                  color: '#000000',
                   marginBottom: 6,
-                  textShadowColor: 'rgba(0, 0, 0, 0.3)',
-                  textShadowOffset: { width: 0, height: 2 },
-                  textShadowRadius: 4,
                 }}>
                   {stat.number}
                 </Text>
                 
                 <Text style={{
                   fontSize: 16,
-                  color: 'rgba(255, 255, 255, 0.9)',
+                  color: '#000000',
                   textAlign: 'center',
                   fontWeight: '700',
                   letterSpacing: 0.8,
                   textTransform: 'uppercase',
-                  textShadowColor: 'rgba(0, 0, 0, 0.2)',
-                  textShadowOffset: { width: 0, height: 1 },
-                  textShadowRadius: 2,
                 }}>
                   {stat.label}
                 </Text>
@@ -1726,165 +1722,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             );
           })}
         </ScrollView>
-      </Animated.View>
-
-      {/* Enhanced Nearby Hospitals */}
-      <Animated.View 
-        style={[
-          styles.hospitalsSection,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY: slideAnim }],
-          },
-        ]}
-      >
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Nearby Hospitals</Text>
-          <Text style={styles.sectionSubtitle}>
-            Book appointments with top-rated hospitals
-          </Text>
-        </View>
-
-        <View style={styles.nearbyHospitalsContainer}>
-          <View style={styles.hospitalsList}>
-            {/* Create rows of 4 cards each - show only 2 rows initially (8 cards) */}
-            {Array.from({ 
-              length: showAllHospitals 
-                ? Math.ceil(hospitalsList.slice(1).length / 4) 
-                : Math.min(2, Math.ceil(hospitalsList.slice(1).length / 4))
-            }, (_, rowIndex) => (
-              <View key={rowIndex} style={styles.hospitalsRow}>
-                {hospitalsList.slice(1).slice(rowIndex * 4, (rowIndex + 1) * 4).map((hospital) => (
-                  <View key={hospital.id} style={styles.nearbyHospitalCard}>
-                    <TouchableOpacity
-                      onPress={() => handleHospitalPress(hospital)}
-                      style={styles.nearbyHospitalTouchable}
-                      activeOpacity={0.8}
-                      {...(Platform.OS === 'web' && {
-                        onMouseEnter: (e: any) => {
-                          e.currentTarget.parentElement.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(59, 130, 246, 0.15)';
-                          e.currentTarget.parentElement.style.transform = 'translateY(-6px) scale(1.02)';
-                          e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                          e.currentTarget.parentElement.style.borderRadius = '16px';
-                        },
-                        onMouseLeave: (e: any) => {
-                          e.currentTarget.parentElement.style.boxShadow = '';
-                          e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
-                        },
-                      })}
-                    >
-                      <LinearGradient
-                        colors={['#ffffff', '#f8fafc']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={styles.nearbyHospitalGradient}
-                      >
-                        {/* Hospital Image */}
-                        <View style={styles.nearbyHospitalImageContainer}>
-                          <Image
-                            source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
-                            style={styles.nearbyHospitalImage}
-                            defaultSource={require('../../../assets/image.png')}
-                          />
-                          <View style={styles.nearbyRatingBadge}>
-                            <Ionicons name="star" size={12} color="#FFC107" />
-                            <Text style={styles.nearbyRatingText}>{hospital.rating}</Text>
-                          </View>
-                          <View style={styles.nearbyDistanceBadge}>
-                            <Ionicons name="location" size={10} color="#fff" />
-                            <Text style={styles.nearbyDistanceText}>
-                              {(Math.random() * 5 + 0.5).toFixed(1)} km
-                            </Text>
-                          </View>
-                        </View>
-
-                        {/* Hospital Content */}
-                        <View style={styles.nearbyHospitalContent}>
-                          <View style={styles.nearbyHospitalInfo}>
-                            <Text style={styles.nearbyHospitalName} numberOfLines={2}>
-                              {hospital.name}
-                            </Text>
-                            <Text style={styles.nearbyHospitalSpecialization} numberOfLines={1}>
-                              {hospital.specialization}
-                            </Text>
-                            
-                            <View style={styles.nearbyHospitalLocationRow}>
-                              <Ionicons name="location-outline" size={12} color={colors.textSecondary} />
-                              <Text style={styles.nearbyHospitalLocation} numberOfLines={1}>
-                                {hospital.address}
-                              </Text>
-                            </View>
-
-                            {hospital.visitorsCount && (
-                              <View style={styles.nearbyHospitalVisitorsRow}>
-                                <Ionicons name="people-outline" size={12} color={colors.primary} />
-                                <Text style={styles.nearbyHospitalVisitorsText}>
-                                  {hospital.visitorsCount >= 1000 
-                                    ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
-                                    : hospital.visitorsCount} visitors
-                                </Text>
-                              </View>
-                            )}
-
-                            <View style={styles.nearbyHospitalFeatures}>
-                              <View style={styles.nearbyFeatureTag}>
-                                <Ionicons name="time-outline" size={10} color={colors.success} />
-                                <Text style={styles.nearbyFeatureText}>24/7</Text>
-                              </View>
-                            </View>
-                          </View>
-
-                          {/* Travel Time Display */}
-                          <View style={styles.travelTimeContainer}>
-                            <View style={styles.travelTimeInfo}>
-                              <Ionicons name="time-outline" size={16} color={colors.primary} />
-                              <Text style={styles.travelTimeText}>
-                                {calculateTravelTime(hospital.id)} min
-                              </Text>
-                            </View>
-                            <TouchableOpacity 
-                              style={styles.directionsButton}
-                              onPress={() => handleHospitalPress(hospital)}
-                            >
-                              <Ionicons name="navigate-outline" size={14} color={colors.primary} />
-                              <Text style={styles.directionsText}>Directions</Text>
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </LinearGradient>
-                    </TouchableOpacity>
-                  </View>
-                ))}
-              </View>
-            ))}
-          </View>
-          
-          {/* View All Button */}
-          {!showAllHospitals && hospitalsList.slice(1).length > 8 && (
-            <View style={styles.viewAllContainer}>
-              <TouchableOpacity 
-                style={styles.viewAllButton}
-                onPress={() => setShowAllHospitals(true)}
-              >
-                <Text style={styles.viewAllText}>View All Hospitals</Text>
-                <Ionicons name="chevron-down" size={16} color={colors.primary} />
-              </TouchableOpacity>
-            </View>
-          )}
-          
-          {/* Show Less Button */}
-          {showAllHospitals && (
-            <View style={styles.viewAllContainer}>
-              <TouchableOpacity 
-                style={styles.viewAllButton}
-                onPress={() => setShowAllHospitals(false)}
-              >
-                <Text style={styles.viewAllText}>Show Less</Text>
-                <Ionicons name="chevron-up" size={16} color={colors.primary} />
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
       </Animated.View>
 
       {/* Enhanced Professional Footer */}
