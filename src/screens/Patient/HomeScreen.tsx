@@ -1487,7 +1487,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               label: 'HOSPITALS',
               gradient: ['#ffffff', '#ffffff'] as [string, string],
               iconGradient: ['#ffffff', '#ffffff'] as [string, string],
-              iconColor: '#000000',
+              iconColor: '#3B82F6',
               shadowColor: '#d1d5db',
             },
             {
