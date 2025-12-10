@@ -22,7 +22,7 @@ interface MyBookingsScreenProps {
 
 type ActiveTab = 'search' | 'ehr' | 'appointments' | 'categories';
 type FilterCategory = 'all' | 'cardiology' | 'neurology' | 'orthopedics' | 'pediatrics' | 'dermatology' | 'gastroenterology' | 'radiology' | 'pathology';
-type ProviderType = 'all' | 'topRated' | 'lowToHigh' | 'highToLow' | 'rating' | 'arogyaSree' | 'insurance' | 'visitors';
+type ProviderType = 'all' | 'visitors' | 'lowToHigh' | 'highToLow' | 'rating' | 'arogyaSree' | 'insurance';
 
 
 export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, navigation }) => {
@@ -44,6 +44,8 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   // EHR records state
   const [showAllRecords, setShowAllRecords] = useState(false);
   const [displayedRecordsCount, setDisplayedRecordsCount] = useState(3);
+  // Nearby hospitals state
+  const [showAllNearbyHospitals, setShowAllNearbyHospitals] = useState(false);
   
   // Utility function to ensure doctor name is displayed correctly
   const formatDoctorName = (name: string) => {
@@ -267,9 +269,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     allProviders = [...hospitalsWithType];
     
     // Apply filtering based on selected provider type
-    if (selectedProvider === 'topRated') {
-      // Sort by rating (highest first)
-      allProviders = allProviders.sort((a, b) => b.rating - a.rating);
+    if (selectedProvider === 'visitors') {
+      // Sort by visitor count (highest first)
+      allProviders = allProviders.sort((a, b) => (b.visitorsCount || 0) - (a.visitorsCount || 0));
     } else if (selectedProvider === 'lowToHigh') {
       // Sort by OP Fee (Low to High) - using a mock OP fee based on rating
       allProviders = allProviders.sort((a, b) => {
@@ -299,7 +301,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       // Filter for insurance claim hospitals (mock implementation)
       allProviders = allProviders.filter(h => 
         h.rating >= 3.8 || // Assume higher-rated hospitals accept insurance
-        h.rating >= 4.5 // Highly rated hospitals likely accept insurance
+        h.visitorsCount >= 5000 // Popular hospitals likely accept insurance
       );
     }
 
@@ -450,7 +452,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           {/* New Filter Options */}
           {[
             { key: 'all', label: 'All Hospitals', icon: 'apps' },
-            { key: 'topRated', label: 'Rating', icon: 'star' },
+            { key: 'visitors', label: 'Rating', icon: 'people' },
             { key: 'lowToHigh', label: 'Low→High [OP Fee]', icon: 'arrow-up' },
             { key: 'highToLow', label: 'High→Low [OP Fee]', icon: 'arrow-down' },
             { key: 'rating', label: 'Rating', icon: 'star' },
@@ -745,9 +747,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const renderEmptyState = () => {
     const getEmptyStateText = () => {
       switch (selectedProvider) {
-        case 'topRated':
+        case 'visitors':
           return {
-            title: 'No Top Rated Hospitals Found',
+            title: 'No Hospitals Found by Rating',
             subtitle: 'Try adjusting your search or other filters'
           };
         case 'rating':
@@ -853,8 +855,8 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
 
     const getSectionTitle = () => {
       switch (selectedProvider) {
-        case 'topRated':
-          return 'Top Rated Hospitals';
+        case 'visitors':
+          return 'Hospitals by Rating';
         case 'rating':
           return 'Hospitals by Rating';
         case 'lowToHigh':
@@ -878,6 +880,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
 
         {/* Top Hospitals Section */}
         {topRatedHospitals.length > 0 && renderTopHospitalsSection(topRatedHospitals)}
+
+        {/* Frequently Visited Hospitals Section */}
+        {renderFrequentlyVisitedHospitals()}
 
         {/* Nearby Hospitals Section */}
         {renderNearbyHospitals()}
@@ -1699,10 +1704,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               </Text>
             </View>
           </View>
-          <View style={[styles.topHospitalsRatingBadge, { backgroundColor: '#f3e8ff' }]}>
-            <Ionicons name="star" size={12} color="#8b5cf6" />
-            <Text style={[styles.topHospitalsRatingText, { color: '#6d28d9' }]}>4.7+</Text>
-          </View>
         </View>
 
         <View style={styles.topHospitalsContainer}>
@@ -1782,7 +1783,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                           <Text style={styles.topHospitalVisitorsText}>
                             {hospital.visitorsCount >= 1000 
                               ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
-                              : hospital.visitorsCount} visitors
+                              : hospital.visitorsCount} rating
                           </Text>
                         </View>
                       )}
@@ -1797,22 +1798,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                           <Ionicons name="shield-checkmark-outline" size={10} color="#8b5cf6" />
                           <Text style={styles.topHospitalFeatureText}>Premium</Text>
                         </View>
-                      </View>
-
-                      <View style={styles.nearbyTravelTimeContainer}>
-                        <View style={styles.nearbyTravelTimeInfo}>
-                          <Ionicons name="time-outline" size={16} color="#8b5cf6" />
-                          <Text style={styles.nearbyTravelTimeText}>
-                            {Math.floor(Math.random() * 20) + 5} min
-                          </Text>
-                        </View>
-                        <TouchableOpacity 
-                          style={styles.nearbyDirectionsButton}
-                          onPress={() => navigation.navigate('BookAppointment', { hospital })}
-                        >
-                          <Ionicons name="navigate-outline" size={14} color="#8b5cf6" />
-                          <Text style={styles.nearbyDirectionsText}>Directions</Text>
-                        </TouchableOpacity>
                       </View>
                     </View>
                   </View>
@@ -1845,10 +1830,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 Highly rated hospitals in Vijayawada
               </Text>
             </View>
-          </View>
-          <View style={styles.topHospitalsRatingBadge}>
-            <Ionicons name="star" size={12} color="#fbbf24" />
-            <Text style={styles.topHospitalsRatingText}>4.5+</Text>
           </View>
         </View>
 
@@ -1907,11 +1888,13 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                         </Text>
                       </View>
 
-                      {hospital.rating && (
+                      {hospital.visitorsCount && (
                         <View style={styles.topHospitalVisitorsRow}>
-                          <Ionicons name="star" size={12} color="#f59e0b" />
+                          <Ionicons name="people-outline" size={12} color="#3b82f6" />
                           <Text style={styles.topHospitalVisitorsText}>
-                            {hospital.rating} rating
+                            {hospital.visitorsCount >= 1000 
+                              ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
+                              : hospital.visitorsCount} rating
                           </Text>
                         </View>
                       )}
@@ -1928,22 +1911,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                         </View>
                       </View>
 
-                      <View style={styles.nearbyTravelTimeContainer}>
-                        <View style={styles.nearbyTravelTimeInfo}>
-                          <Ionicons name="time-outline" size={16} color="#fbbf24" />
-                          <Text style={styles.nearbyTravelTimeText}>
-                            {Math.floor(Math.random() * 20) + 5} min
-                          </Text>
-                        </View>
-                        <TouchableOpacity 
-                          style={styles.nearbyDirectionsButton}
-                          onPress={() => navigation.navigate('BookAppointment', { hospital })}
-                        >
-                          <Ionicons name="navigate-outline" size={14} color="#fbbf24" />
-                          <Text style={styles.nearbyDirectionsText}>Directions</Text>
-                        </TouchableOpacity>
-                      </View>
-
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -1955,8 +1922,114 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     );
   };
 
+  const renderFrequentlyVisitedHospitals = () => {
+    // Demo data for frequently visited hospitals - single row (4 hospitals)
+    const frequentHospitals = hospitals.slice(0, 4);
+    
+    return (
+      <View style={styles.frequentlyVisitedSection}>
+        <View style={styles.frequentlyVisitedHeader}>
+          <View style={styles.frequentlyVisitedTitleRow}>
+            <View style={styles.frequentlyVisitedIconContainer}>
+              <LinearGradient
+                colors={['#10b981', '#059669']}
+                style={styles.frequentlyVisitedIcon}
+              >
+                <Ionicons name="time" size={20} color="#ffffff" />
+              </LinearGradient>
+            </View>
+            <View>
+              <Text style={styles.frequentlyVisitedTitle}>Frequently Visited Hospitals</Text>
+              <Text style={styles.frequentlyVisitedSubtitle}>Your recently accessed healthcare providers</Text>
+            </View>
+          </View>
+        </View>
+
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.frequentlyVisitedScrollContent}
+        >
+          {frequentHospitals.map((hospital, index) => (
+            <Animated.View
+              key={hospital.id}
+              style={[
+                {
+                  opacity: fadeAnim,
+                  transform: [
+                    { translateY: slideAnim },
+                    { scale: scaleAnim }
+                  ],
+                }
+              ]}
+            >
+              <TouchableOpacity
+                style={styles.frequentlyVisitedCard}
+                onPress={() => navigation.navigate('BookAppointment', { hospital })}
+                activeOpacity={0.8}
+                {...(Platform.OS === 'web' && {
+                  onMouseEnter: (e: any) => {
+                    e.currentTarget.style.transform = 'translateY(-8px) scale(1.03)';
+                    e.currentTarget.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                    e.currentTarget.style.boxShadow = '0 12px 24px rgba(16, 185, 129, 0.15)';
+                  },
+                  onMouseLeave: (e: any) => {
+                    e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                    e.currentTarget.style.boxShadow = '';
+                  },
+                })}
+              >
+              <View style={styles.frequentlyVisitedCardContent}>
+                <View style={styles.frequentlyVisitedImageContainer}>
+                  <Image
+                    source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
+                    style={styles.frequentlyVisitedImage}
+                  />
+                  <View style={styles.frequentVisitBadge}>
+                    <Ionicons name="checkmark-circle" size={14} color="#10b981" />
+                    <Text style={styles.frequentVisitBadgeText}>Visited</Text>
+                  </View>
+                </View>
+                <View style={styles.frequentlyVisitedInfo}>
+                  <Text style={styles.frequentlyVisitedName} numberOfLines={2}>
+                    {hospital.name}
+                  </Text>
+                  <Text style={styles.frequentlyVisitedSpecialty} numberOfLines={1}>
+                    {hospital.specialization}
+                  </Text>
+                  <View style={styles.frequentlyVisitedRatingRow}>
+                    <Ionicons name="star" size={14} color="#fbbf24" />
+                    <Text style={styles.frequentlyVisitedRating}>{hospital.rating}</Text>
+                    <Text style={styles.frequentlyVisitedDivider}>•</Text>
+                    <Ionicons name="location" size={12} color="#64748b" />
+                    <Text style={styles.frequentlyVisitedLocation} numberOfLines={1}>
+                      {hospital.address.split(',')[0]}
+                    </Text>
+                  </View>
+                  <View style={styles.frequentlyVisitedFeatures}>
+                    <View style={styles.frequentFeatureTag}>
+                      <Ionicons name="time-outline" size={10} color="#10b981" />
+                      <Text style={styles.frequentFeatureText}>24/7</Text>
+                    </View>
+                    <View style={styles.frequentFeatureTag}>
+                      <Ionicons name="shield-checkmark-outline" size={10} color="#8b5cf6" />
+                      <Text style={styles.frequentFeatureText}>Premium</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </TouchableOpacity>
+            </Animated.View>
+          ))}
+        </ScrollView>
+      </View>
+    );
+  };
+
   const renderNearbyHospitals = () => {
-    const nearbyHospitals = hospitals.slice(0, 16); // Show 16 hospitals (4 rows of 4)
+    const allNearbyHospitals = hospitals.slice(0, 16); // All 16 hospitals (4 rows of 4)
+    const initialRows = 2; // Show only 2 rows initially
+    const hospitalsToShow = showAllNearbyHospitals ? allNearbyHospitals : allNearbyHospitals.slice(0, initialRows * 4);
     
     return (
       <View style={styles.nearbySection}>
@@ -1970,10 +2043,10 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
         <View style={styles.nearbyHospitalsContainer}>
           <View style={styles.nearbyHospitalsList}>
             {Array.from({ 
-              length: Math.ceil(nearbyHospitals.length / 4) 
+              length: Math.ceil(hospitalsToShow.length / 4) 
             }, (_, rowIndex) => (
               <View key={rowIndex} style={styles.nearbyHospitalsRow}>
-                {nearbyHospitals.slice(rowIndex * 4, (rowIndex + 1) * 4).map((hospital) => (
+                {hospitalsToShow.slice(rowIndex * 4, (rowIndex + 1) * 4).map((hospital) => (
                   <View key={hospital.id} style={styles.nearbyHospitalCard}>
                     <TouchableOpacity
                       onPress={() => navigation.navigate('BookAppointment', { hospital })}
@@ -2024,11 +2097,13 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                               </Text>
                             </View>
 
-                            {hospital.rating && (
+                            {hospital.visitorsCount && (
                               <View style={styles.nearbyHospitalVisitorsRow}>
-                                <Ionicons name="star" size={12} color="#f59e0b" />
+                                <Ionicons name="people-outline" size={12} color="#3b82f6" />
                                 <Text style={styles.nearbyHospitalVisitorsText}>
-                                  {hospital.rating} rating
+                                  {hospital.visitorsCount >= 1000 
+                                    ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
+                                    : hospital.visitorsCount} rating
                                 </Text>
                               </View>
                             )}
@@ -2040,22 +2115,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                               </View>
                             </View>
                           </View>
-
-                          <View style={styles.nearbyTravelTimeContainer}>
-                            <View style={styles.nearbyTravelTimeInfo}>
-                              <Ionicons name="time-outline" size={16} color="#3b82f6" />
-                              <Text style={styles.nearbyTravelTimeText}>
-                                {Math.floor(Math.random() * 20) + 5} min
-                              </Text>
-                            </View>
-                            <TouchableOpacity 
-                              style={styles.nearbyDirectionsButton}
-                              onPress={() => navigation.navigate('BookAppointment', { hospital })}
-                            >
-                              <Ionicons name="navigate-outline" size={14} color="#3b82f6" />
-                              <Text style={styles.nearbyDirectionsText}>Directions</Text>
-                            </TouchableOpacity>
-                          </View>
                         </View>
                       </View>
                     </TouchableOpacity>
@@ -2064,6 +2123,20 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               </View>
             ))}
           </View>
+          
+          {/* Load More Button */}
+          {!showAllNearbyHospitals && allNearbyHospitals.length > initialRows * 4 && (
+            <View style={styles.loadMoreContainer}>
+              <TouchableOpacity
+                style={styles.loadMoreButton}
+                onPress={() => setShowAllNearbyHospitals(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.loadMoreText}>Load More</Text>
+                <Ionicons name="chevron-down" size={20} color="#3b82f6" />
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </View>
     );
@@ -2289,13 +2362,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     >
       {/* Tab Navigation */}
       {renderTabNavigation()}
-      
-      {/* Filters - Show only for search tab */}
-      {activeTab === 'search' && (
-        <>
-          {renderFilters()}
-        </>
-      )}
       
       {/* Content based on active tab */}
       {activeTab === 'search' && renderSearchContent()}
@@ -2923,6 +2989,7 @@ const styles = StyleSheet.create({
   // Grid Layout Styles
   providerSection: {
     marginBottom: 24,
+    marginTop: 32,
   },
   providerRow: {
     flexDirection: 'row',
@@ -2960,11 +3027,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     backgroundColor: '#ffffff',
-    shadowColor: '#1e293b',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 6,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
   },
   compactCardGradient: {
     padding: 12,
@@ -4742,7 +4809,7 @@ const styles = StyleSheet.create({
   },
   categoriesDescription: {
     fontSize: 16,
-    color: '#64748b',
+    color: '#ffffff',
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 24,
@@ -4796,6 +4863,145 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#94a3b8',
     fontWeight: '600',
+  },
+  
+  // Frequently Visited Hospitals Styles
+  frequentlyVisitedSection: {
+    marginTop: 24,
+    marginBottom: 24,
+  },
+  frequentlyVisitedHeader: {
+    paddingHorizontal: 20,
+    marginBottom: 16,
+  },
+  frequentlyVisitedTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  frequentlyVisitedIconContainer: {
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  frequentlyVisitedIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  frequentlyVisitedTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 2,
+  },
+  frequentlyVisitedSubtitle: {
+    fontSize: 13,
+    color: '#64748b',
+    fontWeight: '500',
+  },
+  frequentlyVisitedScrollContent: {
+    paddingHorizontal: 20,
+    gap: 16,
+  },
+  frequentlyVisitedCard: {
+    width: 280,
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 3,
+    overflow: 'hidden',
+  },
+  frequentlyVisitedCardContent: {
+    flex: 1,
+  },
+  frequentlyVisitedImageContainer: {
+    width: '100%',
+    height: 120,
+    position: 'relative',
+  },
+  frequentlyVisitedImage: {
+    width: '100%',
+    height: '100%',
+  },
+  frequentVisitBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#ffffff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  frequentVisitBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#10b981',
+  },
+  frequentlyVisitedInfo: {
+    padding: 12,
+  },
+  frequentlyVisitedName: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 4,
+  },
+  frequentlyVisitedSpecialty: {
+    fontSize: 13,
+    color: '#64748b',
+    marginBottom: 8,
+    fontWeight: '500',
+  },
+  frequentlyVisitedRatingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    gap: 4,
+  },
+  frequentlyVisitedRating: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#1e293b',
+  },
+  frequentlyVisitedDivider: {
+    fontSize: 13,
+    color: '#cbd5e1',
+    marginHorizontal: 4,
+  },
+  frequentlyVisitedLocation: {
+    fontSize: 12,
+    color: '#64748b',
+    flex: 1,
+    fontWeight: '500',
+  },
+  frequentlyVisitedFeatures: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  frequentFeatureTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f1f5f9',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    gap: 4,
+  },
+  frequentFeatureText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#64748b',
   },
   
   // Nearby Hospitals Styles
@@ -4973,6 +5179,34 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#3b82f6',
     fontWeight: '600',
+  },
+  
+  // Load More Button Styles
+  loadMoreContainer: {
+    alignItems: 'center',
+    paddingVertical: 24,
+    paddingHorizontal: 20,
+  },
+  loadMoreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: '#3b82f6',
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  loadMoreText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#3b82f6',
   },
 
   // Enhanced Professional EHR Modal Styles
@@ -5715,12 +5949,12 @@ const styles = StyleSheet.create({
   categoriesMainTitle: {
     fontSize: 24,
     fontWeight: '800',
-    color: '#1f2937',
+    color: '#ffffff',
     marginBottom: 4,
   },
   categoriesHeaderSubtitle: {
     fontSize: 16,
-    color: '#6b7280',
+    color: '#ffffff',
     fontWeight: '500',
   },
   categoriesHeaderBadge: {

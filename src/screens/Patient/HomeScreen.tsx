@@ -88,11 +88,13 @@ const EnhancedHospitalCard: React.FC<{
               <Ionicons name="location-outline" size={14} color={colors.textSecondary} />
               <Text style={styles.hospitalLocation} numberOfLines={1}>{hospital.address}</Text>
             </View>
-            {hospital.rating && (
+            {hospital.visitorsCount && (
               <View style={styles.hospitalVisitorsRow}>
-                <Ionicons name="star" size={14} color={colors.warning} />
+                <Ionicons name="people-outline" size={14} color={colors.primary} />
                 <Text style={styles.hospitalVisitorsText}>
-                  {hospital.rating} rating
+                  {hospital.visitorsCount >= 1000 
+                    ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
+                    : hospital.visitorsCount} rating
                 </Text>
               </View>
             )}
@@ -572,7 +574,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
         contentContainerStyle={[
           {
             flexGrow: 1,
-            paddingBottom: 80,
+            paddingBottom: 0,
             paddingTop: 0,
             marginTop: 0,
           }
@@ -614,7 +616,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               borderTopRightRadius: 0,
               borderBottomLeftRadius: 32,
               borderBottomRightRadius: 32,
-              overflow: 'hidden',
+              overflow: 'visible',
+              position: 'relative',
             }}
           >
             {/* Shimmer overlay */}
@@ -806,9 +809,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                 width: '100%',
                 gap: 16,
                 position: 'relative',
+                zIndex: 1000,
               }}>
                 {/* Location - Clickable */}
-                <View style={{ position: 'relative' }}>
+                <View style={{ position: 'relative', zIndex: 1001 }}>
                   <TouchableOpacity
                     style={{
                       flexDirection: 'row',
@@ -846,7 +850,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   {showLocationDropdown && (
                     <View style={{
                       position: 'absolute',
-                      top: 50,
+                      bottom: 50,
                       left: 0,
                       backgroundColor: '#ffffff',
                       borderRadius: 12,
@@ -856,7 +860,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                       shadowRadius: 8,
                       elevation: 8,
                       minWidth: 220,
-                      zIndex: 1000,
+                      zIndex: 1002,
                     }}>
                       <TouchableOpacity
                         style={{
@@ -1009,72 +1013,69 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   >
                     <View
                       style={{
-                        padding: 24,
-                        alignItems: 'center',
                         position: 'relative',
-                        minHeight: 140,
-                        justifyContent: 'center',
+                        minHeight: 160,
                         backgroundColor: '#ffffff',
+                        overflow: 'hidden',
                       }}
                     >
-                      {/* Background Pattern */}
+                      {/* Top-right curved section - decorative only */}
                       <View style={{
                         position: 'absolute',
-                        top: -20,
-                        right: -20,
-                        width: 80,
-                        height: 80,
-                        borderRadius: 40,
+                        top: 0,
+                        right: 0,
+                        width: 100,
+                        height: 100,
+                        borderBottomLeftRadius: 100,
                         backgroundColor: `${action.iconColor}15`,
                       }} />
-                      <View style={{
-                        position: 'absolute',
-                        bottom: -30,
-                        left: -30,
-                        width: 60,
-                        height: 60,
-                        borderRadius: 30,
-                        backgroundColor: `${action.iconColor}10`,
-                      }} />
                       
-                      {/* Icon Container */}
+                      {/* Content Container */}
                       <View style={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: 20,
-                        backgroundColor: `${action.iconColor}20`,
+                        padding: 24,
+                        paddingTop: 28,
                         alignItems: 'center',
                         justifyContent: 'center',
-                        marginBottom: 16,
-                        borderWidth: 1,
-                        borderColor: `${action.iconColor}30`,
                       }}>
-                        <Ionicons 
-                          name={action.icon as any} 
-                          size={28} 
-                          color={action.iconColor} 
-                        />
+                        {/* Icon - positioned separately, not inside curve */}
+                        <View style={{
+                          width: 64,
+                          height: 64,
+                          borderRadius: 20,
+                          backgroundColor: `${action.iconColor}20`,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          marginBottom: 16,
+                          borderWidth: 1,
+                          borderColor: `${action.iconColor}30`,
+                        }}>
+                          <Ionicons 
+                            name={action.icon as any} 
+                            size={32} 
+                            color={action.iconColor} 
+                          />
+                        </View>
+                        
+                        <Text style={{
+                          fontSize: 18,
+                          fontWeight: '700',
+                          color: '#1f2937',
+                          marginBottom: 6,
+                          textAlign: 'center',
+                        }}>
+                          {action.title}
+                        </Text>
+                        
+                        <Text style={{
+                          fontSize: 14,
+                          color: '#6b7280',
+                          fontWeight: '500',
+                          lineHeight: 20,
+                          textAlign: 'center',
+                        }}>
+                          {action.subtitle}
+                        </Text>
                       </View>
-                      
-                      <Text style={{
-                        fontSize: 18,
-                        fontWeight: '700',
-                        color: '#1f2937',
-                        marginBottom: 6,
-                        textAlign: 'center',
-                      }}>
-                        {action.title}
-                      </Text>
-                      
-                      <Text style={{
-                        fontSize: 14,
-                        color: '#6b7280',
-                        textAlign: 'center',
-                        fontWeight: '500',
-                        lineHeight: 20,
-                      }}>
-                        {action.subtitle}
-                      </Text>
                       
                       {/* Shimmer effect */}
                       <Animated.View style={[
@@ -1379,20 +1380,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                           </Text>
                         </View>
                         
-                        {item.rating && (
+                        {item.visitorsCount && (
                           <View style={{
                             flexDirection: 'row',
                             alignItems: 'center',
                             gap: 4,
                             marginBottom: 8,
                           }}>
-                            <Ionicons name="star" size={14} color="#f59e0b" />
+                            <Ionicons name="people-outline" size={14} color="#6b7280" />
                             <Text style={{
                               fontSize: 12,
                               color: '#6b7280',
                               fontWeight: '500',
                             }}>
-                              {item.rating} rating
+                              {item.visitorsCount >= 1000 
+                                ? `${(item.visitorsCount / 1000).toFixed(1)}K` 
+                                : item.visitorsCount} rating
                             </Text>
                           </View>
                         )}
@@ -1459,7 +1462,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               label: 'DOCTORS',
               gradient: ['#ffffff', '#ffffff'] as [string, string],
               iconGradient: ['#ffffff', '#ffffff'] as [string, string],
-              iconColor: '#000000',
+              iconColor: '#3B82F6',
               shadowColor: '#d1d5db',
             },
           ].map((stat, index) => (
@@ -1585,6 +1588,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             const hasDiscount = discount > 0;
             const discountedPrice = hasDiscount ? calculateDiscountedPrice(medicine.price, discount) : medicine.price;
             
+            // Generate random delivery date (1-7 days from now)
+            const daysToAdd = Math.floor(Math.random() * 7) + 1;
+            const deliveryDate = new Date();
+            deliveryDate.setDate(deliveryDate.getDate() + daysToAdd);
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const dayName = dayNames[deliveryDate.getDay()];
+            const dateStr = deliveryDate.getDate();
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthName = monthNames[deliveryDate.getMonth()];
+            const deliveryText = `Get by ${dayName}, ${dateStr} ${monthName}`;
+            
             return (
               <TouchableOpacity
                 key={medicine.id}
@@ -1607,11 +1621,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                     resizeMode="cover"
                   />
                 )}
-                {hasDiscount && (
-                  <View style={styles.discountBadge}>
-                    <Text style={styles.discountText}>{discount}% OFF</Text>
-                  </View>
-                )}
                 <View style={styles.medicinePreviewContent}>
                   <Text style={styles.medicinePreviewName} numberOfLines={2}>{medicine.name}</Text>
                   <Text style={styles.medicinePreviewCategory}>{medicine.category}</Text>
@@ -1625,6 +1634,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                     ) : (
                       <Text style={styles.medicinePreviewPrice}>{medicine.price}</Text>
                     )}
+                  </View>
+                  
+                  {hasDiscount && (
+                    <View style={styles.discountPercentageContainer}>
+                      <Text style={styles.discountPercentageText}>{discount}% off</Text>
+                    </View>
+                  )}
+                  
+                  <View style={styles.deliveryInfoContainer}>
+                    <Ionicons name="time-outline" size={12} color="#10b981" />
+                    <Text style={styles.deliveryText}>{deliveryText}</Text>
                   </View>
                 </View>
               </Card>
@@ -1683,11 +1703,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                     resizeMode="cover"
                   />
                 )}
-                {hasDiscount && (
-                  <View style={styles.discountBadge}>
-                    <Text style={styles.discountText}>{discount}% OFF</Text>
-                  </View>
-                )}
                 <View style={styles.testPreviewContent}>
                   <Text style={styles.testPreviewName} numberOfLines={2}>{test.name}</Text>
                   <Text style={styles.testPreviewCategory}>{test.category}</Text>
@@ -1702,6 +1717,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                       <Text style={styles.testPreviewPrice}>{test.price}</Text>
                     )}
                   </View>
+                  
+                  {hasDiscount && (
+                    <View style={styles.discountPercentageContainer}>
+                      <Text style={styles.discountPercentageText}>{discount}% off</Text>
+                    </View>
+                  )}
                   
                   <View style={styles.testPreviewMeta}>
                     <Ionicons name="time-outline" size={14} color={colors.textSecondary} />
@@ -2526,6 +2547,33 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     letterSpacing: 0.3,
   },
+  discountTextGreen: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#10b981',
+    letterSpacing: 0.3,
+  },
+  discountPercentageContainer: {
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  discountPercentageText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#10b981',
+    letterSpacing: 0.3,
+  },
+  deliveryInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  deliveryText: {
+    fontSize: 11,
+    color: '#6b7280',
+    fontWeight: '600',
+  },
   priceContainer: {
     marginBottom: spacing.xs,
   },
@@ -2846,6 +2894,7 @@ const styles = StyleSheet.create({
   // Enhanced Professional Footer Styles
   footer: {
     marginTop: 32,
+    marginBottom: 0,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: -8 },
     shadowOpacity: 0.15,
