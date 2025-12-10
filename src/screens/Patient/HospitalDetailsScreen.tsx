@@ -51,7 +51,7 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
         onBackPress={handleBackPress}
       />
       
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
         {/* Hero Section */}
         <View style={styles.heroSection}>
           {hospital.image ? (
@@ -87,7 +87,7 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
         {/* Quick Info Cards */}
         <View style={styles.quickInfoSection}>
           <LinearGradient
-            colors={['#4facfe', '#00f2fe']}
+            colors={['#3B82F6', '#60A5FA']}
             style={styles.gradientInfoCard}
           >
             <View style={styles.infoIconContainer}>

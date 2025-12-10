@@ -11,13 +11,16 @@ html, body {
 #root {
   min-height: 100vh;
   width: 100vw;
-  overflow-x: hidden;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Ensure scroll containers work properly on web */
 [data-testid="scroll-view"] {
   height: 100% !important;
   overflow-y: auto !important;
+  overflow-x: hidden !important;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -25,14 +28,14 @@ html, body {
 .rn-scrollview, .react-native-scrollview {
   height: 100% !important;
   overflow-y: auto !important;
+  overflow-x: hidden !important;
 }
 
 /* Web-specific tab navigation improvements */
 @media (min-width: 768px) {
   /* Tab bar responsive design for web */
   [role="tablist"] {
-    max-width: 800px !important;
-    margin: 0 auto !important;
+    width: 100% !important;
     border-radius: 12px 12px 0 0 !important;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
   }
@@ -58,9 +61,7 @@ html, body {
 /* Main container responsive layout */
 @media (min-width: 1024px) {
   #root {
-    max-width: 1200px;
-    margin: 0 auto;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
   }
 }
 
@@ -72,7 +73,6 @@ button, [role="button"] {
 
 button:hover, [role="button"]:hover {
   transform: translateY(-1px) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 button:active, [role="button"]:active {
@@ -99,24 +99,30 @@ input.search-input-no-outline:focus {
   border-color: transparent !important;
 }
 
-/* Webkit scrollbar styling */
+/* Webkit scrollbar styling - hidden but functional */
+/* Hide scrollbar for all elements while maintaining scroll */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 0px;
+  height: 0px;
+  display: none;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  transition: background 0.2s ease;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
+  background: transparent;
+}
+
+/* Hide scrollbar for Firefox */
+* {
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
 }
 
 /* Responsive navigation container */
@@ -447,25 +453,26 @@ input.search-input-no-outline:focus {
   overflow-x: hidden;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .registration-scroll-container::-webkit-scrollbar {
-  width: 8px;
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 .registration-scroll-container::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+  background: transparent;
 }
 
 .registration-scroll-container::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-  transition: background 0.2s ease;
+  background: transparent;
 }
 
 .registration-scroll-container::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.4);
+  background: transparent;
 }
 
 /* Fix for registration form content */

@@ -96,8 +96,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     ...(Platform.OS === 'web' && {
-      minHeight: '100vh' as any,
       fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif' as any,
+      minHeight: '100vh' as any,
+      height: 'auto' as any,
     }),
   },
 });

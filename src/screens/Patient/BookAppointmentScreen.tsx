@@ -473,7 +473,7 @@ export const BookAppointmentScreen: React.FC<BookAppointmentScreenProps> = ({
       >
         <ScrollView 
           style={styles.content} 
-          showsVerticalScrollIndicator={false}
+          showsVerticalScrollIndicator={true}
           contentContainerStyle={styles.scrollContainer}
         >
           <Animated.View
@@ -1227,12 +1227,12 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: colors.primary,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -1329,12 +1329,12 @@ const styles = StyleSheet.create({
   feeGradient: {
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
-    shadowColor: colors.primary,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
   },
@@ -1505,12 +1505,12 @@ const styles = StyleSheet.create({
   submitButton: {
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
-    shadowColor: colors.primary,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 6,
     },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 6,
     marginTop: spacing.md,
@@ -2160,12 +2160,12 @@ const styles = StyleSheet.create({
     flex: 1.5,
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
-    shadowColor: colors.primary,
+    shadowColor: colors.shadow,
     shadowOffset: {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 4,
   },

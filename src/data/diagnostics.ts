@@ -314,5 +314,65 @@ export const diagnosticTests: DiagnosticTest[] = [
     description: "Tests to measure lung capacity and function",
     requirements: "Avoid bronchodilators before test",
     image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 21,
+    name: "Bone Density Scan (DEXA)",
+    category: "Radiology",
+    price: "₹2200",
+    duration: "30 mins",
+    description: "Scan to measure bone mineral density",
+    requirements: "Avoid calcium supplements 24 hours before",
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 22,
+    name: "D-Dimer Test",
+    category: "Pathology",
+    price: "₹550",
+    duration: "25 mins",
+    description: "Blood test to detect blood clotting problems",
+    requirements: "No special preparation needed",
+    image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 23,
+    name: "Allergy Panel Test",
+    category: "Pathology",
+    price: "₹3500",
+    duration: "40 mins",
+    description: "Comprehensive test for common allergens",
+    requirements: "Stop antihistamines 3 days before",
+    image: "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 24,
+    name: "Ferritin Test",
+    category: "Pathology",
+    price: "₹480",
+    duration: "20 mins",
+    description: "Blood test to check iron storage levels",
+    requirements: "12-hour fasting recommended",
+    image: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 25,
+    name: "Upper GI Endoscopy",
+    category: "Gastroenterology",
+    price: "₹3800",
+    duration: "50 mins",
+    description: "Examination of upper digestive tract",
+    requirements: "8-hour fasting, arrange transport",
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center"
+  },
+  {
+    id: 26,
+    name: "Troponin Test",
+    category: "Cardiology",
+    price: "₹850",
+    duration: "30 mins",
+    description: "Blood test to detect heart muscle damage",
+    requirements: "No special preparation needed",
+    image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center"
   }
 ];

@@ -359,5 +359,83 @@ export const medicines: Medicine[] = [
     prescription: false,
     dosage: "5-10ml twice daily or as directed",
     image: getMedicineImage(20, 'Antihistamine')
+  },
+  {
+    id: 21,
+    name: "Clopidogrel 75mg",
+    category: "Cardiovascular",
+    price: "₹48",
+    stock: 95,
+    description: "Antiplatelet medication to prevent blood clots",
+    manufacturer: "Sun Pharma",
+    expiryDate: "Jul 2026",
+    prescription: true,
+    dosage: "1 tablet once daily",
+    image: getMedicineImage(1, 'Cardiovascular')
+  },
+  {
+    id: 22,
+    name: "Gabapentin 300mg",
+    category: "Neuropathic Pain",
+    price: "₹65",
+    stock: 70,
+    description: "Medication for nerve pain and seizures",
+    manufacturer: "Cipla",
+    expiryDate: "Dec 2026",
+    prescription: true,
+    dosage: "1 capsule 3 times daily",
+    image: getMedicineImage(2, 'Neuropathic Pain')
+  },
+  {
+    id: 23,
+    name: "Ranitidine 150mg",
+    category: "Gastric",
+    price: "₹28",
+    stock: 130,
+    description: "H2 blocker for heartburn and ulcers",
+    manufacturer: "Dr. Reddy's",
+    expiryDate: "Sep 2026",
+    prescription: false,
+    dosage: "1 tablet twice daily",
+    image: getMedicineImage(3, 'Gastric')
+  },
+  {
+    id: 24,
+    name: "Levothyroxine 100mcg",
+    category: "Thyroid",
+    price: "₹42",
+    stock: 88,
+    description: "Thyroid hormone replacement medication",
+    manufacturer: "Abbott",
+    expiryDate: "Nov 2026",
+    prescription: true,
+    dosage: "1 tablet once daily before breakfast",
+    image: getMedicineImage(5, 'Thyroid')
+  },
+  {
+    id: 25,
+    name: "Montelukast 10mg",
+    category: "Respiratory",
+    price: "₹52",
+    stock: 115,
+    description: "Leukotriene receptor antagonist for asthma",
+    manufacturer: "Lupin",
+    expiryDate: "Aug 2026",
+    prescription: true,
+    dosage: "1 tablet once daily at bedtime",
+    image: getMedicineImage(15, 'Respiratory')
+  },
+  {
+    id: 26,
+    name: "Pantoprazole 40mg",
+    category: "Gastric",
+    price: "₹38",
+    stock: 102,
+    description: "Proton pump inhibitor for gastric ulcers",
+    manufacturer: "Torrent",
+    expiryDate: "Jun 2027",
+    prescription: true,
+    dosage: "1 tablet once daily before meals",
+    image: getMedicineImage(1, 'Gastric')
   }
 ];

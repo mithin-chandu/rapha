@@ -77,8 +77,6 @@ const PatientTabs: React.FC<PatientNavigatorProps> = ({
           paddingBottom: 12,
           paddingTop: 12,
           paddingHorizontal: 16,
-          maxWidth: 600,
-          alignSelf: 'center' as const,
         };
       } else {
         return {
@@ -87,8 +85,6 @@ const PatientTabs: React.FC<PatientNavigatorProps> = ({
           paddingBottom: 16,
           paddingTop: 16,
           paddingHorizontal: 24,
-          maxWidth: 800,
-          alignSelf: 'center' as const,
         };
       }
     }
@@ -208,7 +204,6 @@ const PatientTabs: React.FC<PatientNavigatorProps> = ({
           }
 
           [role="tab"]:hover {
-            background-color: rgba(59, 130, 246, 0.08) !important;
             transform: translateY(-2px) !important;
           }
 
@@ -267,7 +262,6 @@ const PatientTabs: React.FC<PatientNavigatorProps> = ({
             }
 
             [role="tab"]:hover {
-              background-color: rgba(59, 130, 246, 0.1) !important;
               transform: translateY(-3px) !important;
             }
           }
@@ -285,9 +279,7 @@ const PatientTabs: React.FC<PatientNavigatorProps> = ({
             }
 
             [role="tab"]:hover {
-              background-color: rgba(59, 130, 246, 0.12) !important;
               transform: translateY(-4px) !important;
-              box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2) !important;
             }
 
             [role="tab"][aria-selected="true"]::before {

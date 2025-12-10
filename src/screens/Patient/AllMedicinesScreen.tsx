@@ -305,7 +305,7 @@ export const AllMedicinesScreen: React.FC<AllMedicinesScreenProps> = ({ navigati
             numColumns={numColumns}
             key={numColumns}
             contentContainerStyle={styles.medicinesGrid}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
           />
         ) : (

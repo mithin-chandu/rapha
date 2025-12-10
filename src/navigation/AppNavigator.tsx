@@ -464,19 +464,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     margin: 0,
     padding: 0,
+    ...(Platform.OS === 'web' && {
+      minHeight: '100vh' as any,
+      height: 'auto' as any,
+    }),
   },
 });
 
 const webStyles = StyleSheet.create({
   container: {
     flex: 1,
-    maxWidth: Platform.OS === 'web' ? 1200 : undefined,
-    alignSelf: 'center',
     width: '100%',
     margin: 0,
     padding: 0,
     ...(Platform.OS === 'web' && {
       minHeight: '100vh' as any,
+      overflow: 'visible' as any,
     }),
   },
 });

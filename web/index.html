@@ -8,23 +8,38 @@
   <link rel="stylesheet" href="/web.css" />
   <style>
     /* Inline critical CSS for immediate application */
-    html, body, #root {
+    html, body {
       min-height: 100vh !important;
-      height: 100vh !important;
+      height: 100% !important;
       margin: 0 !important;
       padding: 0 !important;
       overflow-x: hidden !important;
+      overflow-y: auto !important;
       background-color: #f8fafc !important;
+      position: relative !important;
     }
     
     #root {
-      width: 100vw !important;
+      min-height: 100vh !important;
+      height: auto !important;
+      width: 100% !important;
+      overflow: visible !important;
+      display: flex !important;
+      flex-direction: column !important;
     }
     
     /* Ensure React Native ScrollView works on web */
     .react-native-scrollview {
       overflow-y: auto !important;
       -webkit-overflow-scrolling: touch;
+      flex: 1;
+    }
+    
+    /* Fix for React Navigation */
+    div[role="navigation"] {
+      flex: 1;
+      min-height: 100vh;
+      overflow: visible;
     }
   </style>
 </head>

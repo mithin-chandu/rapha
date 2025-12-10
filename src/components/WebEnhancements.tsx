@@ -21,6 +21,33 @@ export const WebEnhancements: React.FC<WebEnhancementsProps> = ({ children }) =>
         }
         
         styleElement.textContent = `
+          /* Critical page structure fixes */
+          html, body {
+            height: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+          }
+          
+          #root {
+            min-height: 100vh;
+            height: auto;
+            width: 100%;
+            overflow: visible;
+            display: flex;
+            flex-direction: column;
+          }
+          
+          /* React Navigation Container fixes */
+          .react-navigation-container {
+            flex: 1;
+            min-height: 100vh;
+            height: auto;
+            overflow: visible;
+          }
+          
           /* Enhanced tab navigation for web */
           .rn-tab-bar {
             box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1) !important;
@@ -35,7 +62,6 @@ export const WebEnhancements: React.FC<WebEnhancementsProps> = ({ children }) =>
           }
           
           .rn-tab-button:hover {
-            background-color: rgba(59, 130, 246, 0.05) !important;
             transform: translateY(-2px) !important;
           }
           
@@ -59,8 +85,7 @@ export const WebEnhancements: React.FC<WebEnhancementsProps> = ({ children }) =>
           /* Responsive layout adjustments */
           @media (min-width: 768px) {
             .rn-navigation-container {
-              max-width: 800px !important;
-              margin: 0 auto !important;
+              width: 100% !important;
               border-radius: 12px !important;
               overflow: hidden !important;
               box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
@@ -70,7 +95,7 @@ export const WebEnhancements: React.FC<WebEnhancementsProps> = ({ children }) =>
           
           @media (min-width: 1024px) {
             .rn-navigation-container {
-              max-width: 1000px !important;
+              width: 100% !important;
             }
           }
           
@@ -100,12 +125,11 @@ export const WebEnhancements: React.FC<WebEnhancementsProps> = ({ children }) =>
           
           /* Improved card shadows */
           .rn-card {
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1) !important;
-            transition: box-shadow 0.2s ease !important;
+            transition: transform 0.2s ease !important;
           }
           
           .rn-card:hover {
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+            transform: translateY(-2px) !important;
           }
           
           /* Loading states */
@@ -118,24 +142,16 @@ export const WebEnhancements: React.FC<WebEnhancementsProps> = ({ children }) =>
             50% { opacity: 0.7; }
           }
           
-          /* Custom scrollbar for better UX */
+          /* Hide scrollbar while maintaining functionality */
+          .rn-scrollview {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+          }
+          
           .rn-scrollview::-webkit-scrollbar {
-            width: 8px !important;
-          }
-          
-          .rn-scrollview::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.05) !important;
-            border-radius: 4px !important;
-          }
-          
-          .rn-scrollview::-webkit-scrollbar-thumb {
-            background: rgba(0, 0, 0, 0.2) !important;
-            border-radius: 4px !important;
-            transition: background 0.2s ease !important;
-          }
-          
-          .rn-scrollview::-webkit-scrollbar-thumb:hover {
-            background: rgba(0, 0, 0, 0.3) !important;
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
           }
         `;
         

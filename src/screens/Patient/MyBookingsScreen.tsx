@@ -945,7 +945,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     };
 
     return (
-      <ScrollView style={styles.ehrContainer} showsVerticalScrollIndicator={false} bounces={true}>
+      <ScrollView style={styles.ehrContainer} showsVerticalScrollIndicator={true} bounces={true}>
         
         {/* Enhanced Header with Gradient */}
         <LinearGradient
@@ -1720,21 +1720,16 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                   activeOpacity={0.9}
                   {...(Platform.OS === 'web' && {
                     onMouseEnter: (e: any) => {
-                      e.currentTarget.parentElement.style.boxShadow = '0 16px 40px rgba(139, 92, 246, 0.4), 0 0 0 3px rgba(139, 92, 246, 0.2)';
                       e.currentTarget.parentElement.style.transform = 'translateY(-6px) scale(1.02)';
                       e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
                       e.currentTarget.parentElement.style.borderRadius = '20px';
                     },
                     onMouseLeave: (e: any) => {
-                      e.currentTarget.parentElement.style.boxShadow = '';
                       e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
                     },
                   })}
                 >
-                  <LinearGradient
-                    colors={['#ffffff', '#faf5ff', '#f3e8ff']}
-                    style={styles.topHospitalGradient}
-                  >
+                  <View style={styles.topHospitalGradient}>
                     {/* Featured Badge */}
                     <View style={{
                       position: 'absolute',
@@ -1803,8 +1798,24 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                           <Text style={styles.topHospitalFeatureText}>Premium</Text>
                         </View>
                       </View>
+
+                      <View style={styles.nearbyTravelTimeContainer}>
+                        <View style={styles.nearbyTravelTimeInfo}>
+                          <Ionicons name="time-outline" size={16} color="#8b5cf6" />
+                          <Text style={styles.nearbyTravelTimeText}>
+                            {Math.floor(Math.random() * 20) + 5} min
+                          </Text>
+                        </View>
+                        <TouchableOpacity 
+                          style={styles.nearbyDirectionsButton}
+                          onPress={() => navigation.navigate('BookAppointment', { hospital })}
+                        >
+                          <Ionicons name="navigate-outline" size={14} color="#8b5cf6" />
+                          <Text style={styles.nearbyDirectionsText}>Directions</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
-                  </LinearGradient>
+                  </View>
                 </TouchableOpacity>
               </View>
             ))}
@@ -1856,21 +1867,16 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                   activeOpacity={0.9}
                   {...(Platform.OS === 'web' && {
                     onMouseEnter: (e: any) => {
-                      e.currentTarget.parentElement.style.boxShadow = '0 16px 40px rgba(251, 191, 36, 0.4), 0 0 0 3px rgba(251, 191, 36, 0.2)';
                       e.currentTarget.parentElement.style.transform = 'translateY(-6px) scale(1.02)';
                       e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
                       e.currentTarget.parentElement.style.borderRadius = '20px';
                     },
                     onMouseLeave: (e: any) => {
-                      e.currentTarget.parentElement.style.boxShadow = '';
                       e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
                     },
                   })}
                 >
-                  <LinearGradient
-                    colors={['#ffffff', '#fefce8', '#fef3c7']}
-                    style={styles.topHospitalGradient}
-                  >
+                  <View style={styles.topHospitalGradient}>
 
 
                     {/* Hospital Image */}
@@ -1924,9 +1930,24 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                         </View>
                       </View>
 
+                      <View style={styles.nearbyTravelTimeContainer}>
+                        <View style={styles.nearbyTravelTimeInfo}>
+                          <Ionicons name="time-outline" size={16} color="#fbbf24" />
+                          <Text style={styles.nearbyTravelTimeText}>
+                            {Math.floor(Math.random() * 20) + 5} min
+                          </Text>
+                        </View>
+                        <TouchableOpacity 
+                          style={styles.nearbyDirectionsButton}
+                          onPress={() => navigation.navigate('BookAppointment', { hospital })}
+                        >
+                          <Ionicons name="navigate-outline" size={14} color="#fbbf24" />
+                          <Text style={styles.nearbyDirectionsText}>Directions</Text>
+                        </TouchableOpacity>
+                      </View>
 
                     </View>
-                  </LinearGradient>
+                  </View>
                 </TouchableOpacity>
               </View>
             ))}
@@ -1962,13 +1983,11 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       activeOpacity={0.8}
                       {...(Platform.OS === 'web' && {
                         onMouseEnter: (e: any) => {
-                          e.currentTarget.parentElement.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(59, 130, 246, 0.2)';
                           e.currentTarget.parentElement.style.transform = 'translateY(-4px) scale(1.02)';
                           e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
                           e.currentTarget.parentElement.style.borderRadius = '16px';
                         },
                         onMouseLeave: (e: any) => {
-                          e.currentTarget.parentElement.style.boxShadow = '';
                           e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
                         },
                       })}
@@ -2887,8 +2906,8 @@ const styles = StyleSheet.create({
   filterChipActive: {
     backgroundColor: '#dbeafe',
     borderColor: '#3b82f6',
-    shadowColor: '#3b82f6',
-    shadowOpacity: 0.15,
+    shadowColor: '#64748b',
+    shadowOpacity: 0.08,
   },
   filterChipText: {
     fontSize: 14,
@@ -4823,11 +4842,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 16,
     padding: 12,
-    shadowColor: '#1e293b',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
   },
   nearbyHospitalImageContainer: {
     position: 'relative',
@@ -5528,17 +5544,15 @@ const styles = StyleSheet.create({
   },
   topHospitalTouchable: {
     width: '100%',
-    height: 240,
+    height: 320,
   },
   topHospitalGradient: {
     flex: 1,
     borderRadius: 16,
     padding: 12,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 6,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
   },
   topHospitalPremiumBadge: {
     position: 'absolute',

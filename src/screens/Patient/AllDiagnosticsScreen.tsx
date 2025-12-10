@@ -312,7 +312,7 @@ export const AllDiagnosticsScreen: React.FC<AllDiagnosticsScreenProps> = ({ navi
             numColumns={numColumns}
             key={numColumns}
             contentContainerStyle={styles.testsGrid}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
             ItemSeparatorComponent={() => <View style={{ height: spacing.md }} />}
           />
         ) : (

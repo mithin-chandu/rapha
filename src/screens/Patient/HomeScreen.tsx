@@ -57,23 +57,16 @@ const EnhancedHospitalCard: React.FC<{
         style={styles.enhancedHospitalTouchable}
         {...(Platform.OS === 'web' && {
           onMouseEnter: (e: any) => {
-            e.currentTarget.style.boxShadow = '0 8px 32px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(59, 130, 246, 0.1)';
             e.currentTarget.style.transform = 'translateY(-4px)';
             e.currentTarget.style.transition = 'all 0.3s ease';
             e.currentTarget.style.borderRadius = '16px';
           },
           onMouseLeave: (e: any) => {
-            e.currentTarget.style.boxShadow = '';
             e.currentTarget.style.transform = 'translateY(0)';
           },
         })}
       >
-        <LinearGradient
-          colors={['#ffffff', '#f8fafc']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.enhancedHospitalGradient}
-        >
+        <View style={styles.enhancedHospitalGradient}>
           {/* Hospital Image */}
           <View style={styles.hospitalImageContainer}>
             <Image
@@ -106,7 +99,7 @@ const EnhancedHospitalCard: React.FC<{
               </View>
             )}
           </View>
-        </LinearGradient>
+        </View>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -503,29 +496,47 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
       {Platform.OS === 'web' && (
         <style dangerouslySetInnerHTML={{
           __html: `
-            body, html, #root {
+            body, html {
               margin: 0 !important;
               padding: 0 !important;
-              height: 100vh !important;
-              width: 100vw !important;
-              overflow: hidden !important;
+              min-height: 100vh !important;
+              width: 100% !important;
+              overflow-x: hidden !important;
+              overflow-y: auto !important;
               background-color: #f8fafc !important;
             }
-            .home-scroll::-webkit-scrollbar {
-              display: none;
+            #root {
+              margin: 0 !important;
+              padding: 0 !important;
+              min-height: 100vh !important;
+              width: 100vw !important;
+              overflow: visible !important;
+              background-color: #f8fafc !important;
             }
             .home-scroll {
-              -ms-overflow-style: none;
-              scrollbar-width: none;
+              overflow-y: auto !important;
+              overflow-x: hidden !important;
+              min-height: 100% !important;
+              -ms-overflow-style: none !important;
+              scrollbar-width: none !important;
+            }
+            .home-scroll::-webkit-scrollbar {
+              display: none !important;
+              width: 0 !important;
+              height: 0 !important;
             }
             .featured-hospitals-scroll {
               overflow-x: auto !important;
               overflow-y: hidden !important;
               -webkit-overflow-scrolling: touch !important;
               scroll-snap-type: x mandatory !important;
+              -ms-overflow-style: none !important;
+              scrollbar-width: none !important;
             }
             .featured-hospitals-scroll::-webkit-scrollbar {
-              display: none;
+              display: none !important;
+              width: 0 !important;
+              height: 0 !important;
             }
             .hospital-card-snap {
               scroll-snap-align: start !important;
@@ -576,7 +587,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             colors={["#3b82f6"]}
           />
         }
-        showsVerticalScrollIndicator={Platform.OS !== 'web'}
+        showsVerticalScrollIndicator={true}
         bounces={Platform.OS === 'ios'}
         {...(Platform.OS === 'web' && { className: 'home-scroll' })}
       >
@@ -599,10 +610,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               paddingVertical: 0,
               paddingTop: 16,
               paddingBottom: 40,
-              marginHorizontal: 16,
-              marginTop: 16,
-              borderTopLeftRadius: 32,
-              borderTopRightRadius: 32,
+              marginHorizontal: 0,
+              marginTop: 0,
+              borderTopLeftRadius: 0,
+              borderTopRightRadius: 0,
               borderBottomLeftRadius: 32,
               borderBottomRightRadius: 32,
               overflow: 'hidden',
@@ -716,20 +727,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   backgroundColor: 'rgba(255, 255, 255, 0.3)',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  marginRight: 12,
                   borderWidth: 1,
                   borderColor: 'rgba(255, 255, 255, 0.4)',
                 }}>
                   <Ionicons name="person" size={20} color="#ffffff" />
                 </View>
-                <Text style={{
-                  fontSize: 16,
-                  fontWeight: '600',
-                  color: '#ffffff',
-                  flex: 1,
-                }} numberOfLines={1}>
-                  {userData.name.split(' ')[0]}
-                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -740,8 +742,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               {
                 paddingHorizontal: 24,
                 marginTop: 32,
-                maxWidth: 1200,
-                alignSelf: 'center',
                 width: '100%',
               },
               {
@@ -806,7 +806,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                 flexDirection: 'row',
                 alignItems: 'center',
                 width: '100%',
-                maxWidth: 800,
                 gap: 16,
                 position: 'relative',
               }}>
@@ -1112,8 +1111,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             paddingHorizontal: 24,
             marginBottom: 32,
             marginTop: 32,
-            maxWidth: 1200,
-            alignSelf: 'center',
             width: '100%',
           },
           {
@@ -1226,8 +1223,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
         <View style={{
           paddingHorizontal: 24,
           marginBottom: 20,
-          maxWidth: 1200,
-          alignSelf: 'center',
           width: '100%',
         }}>
           <Text style={{
@@ -1249,30 +1244,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
           </Text>
         </View>
         
-        <View style={{
-          backgroundColor: '#ffffff',
-          margin: 24,
-          padding: 24,
-          borderRadius: 20,
-          shadowColor: '#000000',
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.1,
-          shadowRadius: 20,
-          elevation: 8,
-          maxWidth: 1200,
-          alignSelf: 'center',
-          width: '100%',
-          borderWidth: 1,
-          borderColor: '#f1f5f9',
-        }}>
-          <View style={[
-            {
-              height: 260,
-              overflow: 'visible',
-            },
-            Platform.OS === 'web' ? ({ overflowX: 'auto', overflowY: 'hidden' } as any) : {},
-          ]}>
-            <FlatList
+        <View style={[
+          {
+            height: 260,
+            overflow: 'visible',
+            paddingHorizontal: 24,
+          },
+          Platform.OS === 'web' ? ({ overflowX: 'auto', overflowY: 'hidden' } as any) : {},
+        ]}>
+          <FlatList
               ref={hospitalScrollRef}
               data={hospitals}
               horizontal
@@ -1293,12 +1273,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   marginRight: 16,
                   borderRadius: 16,
                   overflow: 'hidden',
-                  shadowColor: '#000000',
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: 0.08,
-                  shadowRadius: 12,
-                  elevation: 6,
                   backgroundColor: '#ffffff',
+                  borderWidth: 1,
+                  borderColor: '#e5e7eb',
                 }}>
                   <TouchableOpacity
                     onPress={() => handleHospitalPress(item)}
@@ -1306,23 +1283,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                     activeOpacity={0.9}
                     {...(Platform.OS === 'web' && {
                       onMouseEnter: (e: any) => {
-                        e.currentTarget.parentElement.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.3), 0 0 0 2px rgba(59, 130, 246, 0.15)';
                         e.currentTarget.parentElement.style.transform = 'translateY(-6px) scale(1.02)';
                         e.currentTarget.parentElement.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
                         e.currentTarget.parentElement.style.borderRadius = '16px';
                       },
                       onMouseLeave: (e: any) => {
-                        e.currentTarget.parentElement.style.boxShadow = '';
                         e.currentTarget.parentElement.style.transform = 'translateY(0) scale(1)';
                       },
                     })}
                   >
-                    <LinearGradient
-                      colors={['#ffffff', '#f8fafc']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={{ width: '100%', height: '100%' }}
-                    >
+                    <View style={{ width: '100%', height: '100%', backgroundColor: '#ffffff' }}>
                       {/* Hospital Image */}
                       <View style={{
                         height: 120,
@@ -1432,7 +1402,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                         )}
                         
                       </View>
-                    </LinearGradient>
+                    </View>
                   </TouchableOpacity>
                 </View>
               )}
@@ -1453,7 +1423,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               }}
             />
           </View>
-        </View>
       </Animated.View>
 
       {/* Enhanced Quick Stats */}
@@ -1462,8 +1431,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
           {
             paddingHorizontal: 24,
             marginBottom: 32,
-            maxWidth: 1200,
-            alignSelf: 'center',
             width: '100%',
           },
           {
@@ -1617,13 +1584,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.horizontalScroll}
         >
-          {medicines.slice(0, 6).map((medicine, index) => {
+          {medicines.slice(0, 12).map((medicine, index) => {
             const discount = getDiscount(medicine.id, 'medicines');
             const hasDiscount = discount > 0;
             const discountedPrice = hasDiscount ? calculateDiscountedPrice(medicine.price, discount) : medicine.price;
             
             return (
-              <Card key={medicine.id} variant="elevated" padding="md" style={styles.medicinePreviewCard}>
+              <TouchableOpacity
+                key={medicine.id}
+                activeOpacity={0.9}
+                {...(Platform.OS === 'web' && {
+                  onMouseEnter: (e: any) => {
+                    e.currentTarget.style.transform = 'translateY(-8px)';
+                    e.currentTarget.style.transition = 'all 0.3s ease';
+                  },
+                  onMouseLeave: (e: any) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  },
+                })}
+              >
+                <Card key={medicine.id} variant="elevated" padding="md" style={styles.medicinePreviewCard}>
                 {medicine.image && (
                   <Image 
                     source={{ uri: medicine.image }} 
@@ -1652,6 +1632,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   </View>
                 </View>
               </Card>
+              </TouchableOpacity>
             );
           })}
         </ScrollView>
@@ -1679,13 +1660,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.horizontalScroll}
         >
-          {diagnosticTests.slice(0, 6).map((test, index) => {
+          {diagnosticTests.slice(0, 12).map((test, index) => {
             const discount = getDiscount(test.id, 'diagnostics');
             const hasDiscount = discount > 0;
             const discountedPrice = hasDiscount ? calculateDiscountedPrice(test.price, discount) : test.price;
             
             return (
-              <Card key={test.id} variant="elevated" padding="md" style={styles.testPreviewCard}>
+              <TouchableOpacity
+                key={test.id}
+                activeOpacity={0.9}
+                {...(Platform.OS === 'web' && {
+                  onMouseEnter: (e: any) => {
+                    e.currentTarget.style.transform = 'translateY(-8px)';
+                    e.currentTarget.style.transition = 'all 0.3s ease';
+                  },
+                  onMouseLeave: (e: any) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  },
+                })}
+              >
+                <Card key={test.id} variant="elevated" padding="md" style={styles.testPreviewCard}>
                 {test.image && (
                   <Image 
                     source={{ uri: test.image }} 
@@ -1719,6 +1713,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                   </View>
                 </View>
               </Card>
+              </TouchableOpacity>
             );
           })}
         </ScrollView>
@@ -1861,8 +1856,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.backgroundSecondary,
     ...(Platform.OS === 'web' && {
-      minHeight: '100vh',
+      height: '100vh',
       overflowX: 'hidden',
+      overflowY: 'hidden',
     } as any),
   },
   
@@ -2037,8 +2033,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     ...(Platform.OS === 'web' && ({
       paddingHorizontal: spacing.md,
-      maxWidth: 1200,
-      alignSelf: 'center',
       width: '100%',
     } as any)),
   },
@@ -2147,8 +2141,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     ...(Platform.OS === 'web' && ({
       paddingHorizontal: spacing.md,
-      maxWidth: 1200,
-      alignSelf: 'center',
       width: '100%',
     } as any)),
   },
@@ -2184,8 +2176,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     ...shadows.sm,
     ...(Platform.OS === 'web' && ({
-      maxWidth: 1200,
-      alignSelf: 'center',
       width: 'calc(100% - 32px)',
     } as any)),
   },
@@ -2216,9 +2206,9 @@ const styles = StyleSheet.create({
     marginRight: spacing.md,
     borderRadius: 24,
     overflow: 'hidden',
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#60a5fa', // Light blue border for individual cards
-    ...shadows.sm,
+    borderColor: '#e5e7eb',
     ...(Platform.OS === 'web' && ({
       cursor: 'pointer',
       transition: 'all 0.2s ease',
@@ -2233,6 +2223,7 @@ const styles = StyleSheet.create({
   
   enhancedHospitalGradient: {
     width: '100%',
+    backgroundColor: '#ffffff',
   },
   
   hospitalImageContainer: {
@@ -2361,8 +2352,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     ...(Platform.OS === 'web' && ({
       paddingHorizontal: spacing.md,
-      maxWidth: 1200,
-      alignSelf: 'center',
       width: '100%',
     } as any)),
   },
@@ -2566,8 +2555,6 @@ const styles = StyleSheet.create({
   hospitalsSection: {
     marginBottom: spacing.xl,
     ...(Platform.OS === 'web' && ({
-      maxWidth: 1200,
-      alignSelf: 'center',
       width: '100%',
     } as any)),
   },
@@ -2597,8 +2584,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     ...shadows.sm,
     ...(Platform.OS === 'web' && ({
-      maxWidth: 1200,
-      alignSelf: 'center',
       width: 'calc(100% - 32px)',
     } as any)),
   },
@@ -2899,8 +2884,6 @@ const styles = StyleSheet.create({
     opacity: 0.3,
   },
   footerContent: {
-    maxWidth: 1200,
-    alignSelf: 'center',
     width: '100%',
     zIndex: 1,
   },
