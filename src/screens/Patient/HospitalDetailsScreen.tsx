@@ -115,8 +115,8 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
             <View style={styles.infoIconContainer}>
               <Ionicons name="people" size={24} color="#333" />
             </View>
-            <Text style={[styles.infoCardTitle, { color: '#555' }]}>Visitors</Text>
-            <Text style={[styles.infoCardText, { color: '#333' }]}>{hospital.visitorsCount?.toLocaleString() || 'N/A'}</Text>
+            <Text style={[styles.infoCardTitle, { color: '#555' }]}>Rating</Text>
+            <Text style={[styles.infoCardText, { color: '#333' }]}>{hospital.rating || 'N/A'}</Text>
           </LinearGradient>
         </View>
 

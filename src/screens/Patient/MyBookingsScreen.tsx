@@ -22,7 +22,7 @@ interface MyBookingsScreenProps {
 
 type ActiveTab = 'search' | 'ehr' | 'appointments' | 'categories';
 type FilterCategory = 'all' | 'cardiology' | 'neurology' | 'orthopedics' | 'pediatrics' | 'dermatology' | 'gastroenterology' | 'radiology' | 'pathology';
-type ProviderType = 'all' | 'visitors' | 'lowToHigh' | 'highToLow' | 'rating' | 'arogyaSree' | 'insurance';
+type ProviderType = 'all' | 'topRated' | 'lowToHigh' | 'highToLow' | 'rating' | 'arogyaSree' | 'insurance' | 'visitors';
 
 
 export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, navigation }) => {
@@ -267,9 +267,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     allProviders = [...hospitalsWithType];
     
     // Apply filtering based on selected provider type
-    if (selectedProvider === 'visitors') {
-      // Sort by visitor count (highest first)
-      allProviders = allProviders.sort((a, b) => (b.visitorsCount || 0) - (a.visitorsCount || 0));
+    if (selectedProvider === 'topRated') {
+      // Sort by rating (highest first)
+      allProviders = allProviders.sort((a, b) => b.rating - a.rating);
     } else if (selectedProvider === 'lowToHigh') {
       // Sort by OP Fee (Low to High) - using a mock OP fee based on rating
       allProviders = allProviders.sort((a, b) => {
@@ -299,7 +299,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       // Filter for insurance claim hospitals (mock implementation)
       allProviders = allProviders.filter(h => 
         h.rating >= 3.8 || // Assume higher-rated hospitals accept insurance
-        h.visitorsCount >= 5000 // Popular hospitals likely accept insurance
+        h.rating >= 4.5 // Highly rated hospitals likely accept insurance
       );
     }
 
@@ -450,7 +450,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           {/* New Filter Options */}
           {[
             { key: 'all', label: 'All Hospitals', icon: 'apps' },
-            { key: 'visitors', label: 'Visitors', icon: 'people' },
+            { key: 'topRated', label: 'Rating', icon: 'star' },
             { key: 'lowToHigh', label: 'Low→High [OP Fee]', icon: 'arrow-up' },
             { key: 'highToLow', label: 'High→Low [OP Fee]', icon: 'arrow-down' },
             { key: 'rating', label: 'Rating', icon: 'star' },
@@ -745,9 +745,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const renderEmptyState = () => {
     const getEmptyStateText = () => {
       switch (selectedProvider) {
-        case 'visitors':
+        case 'topRated':
           return {
-            title: 'No Hospitals Found by Visitors',
+            title: 'No Top Rated Hospitals Found',
             subtitle: 'Try adjusting your search or other filters'
           };
         case 'rating':
@@ -853,8 +853,8 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
 
     const getSectionTitle = () => {
       switch (selectedProvider) {
-        case 'visitors':
-          return 'Hospitals by Visitors';
+        case 'topRated':
+          return 'Top Rated Hospitals';
         case 'rating':
           return 'Hospitals by Rating';
         case 'lowToHigh':
@@ -1907,13 +1907,11 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                         </Text>
                       </View>
 
-                      {hospital.visitorsCount && (
+                      {hospital.rating && (
                         <View style={styles.topHospitalVisitorsRow}>
-                          <Ionicons name="people-outline" size={12} color="#3b82f6" />
+                          <Ionicons name="star" size={12} color="#f59e0b" />
                           <Text style={styles.topHospitalVisitorsText}>
-                            {hospital.visitorsCount >= 1000 
-                              ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
-                              : hospital.visitorsCount} visitors
+                            {hospital.rating} rating
                           </Text>
                         </View>
                       )}
@@ -2026,13 +2024,11 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                               </Text>
                             </View>
 
-                            {hospital.visitorsCount && (
+                            {hospital.rating && (
                               <View style={styles.nearbyHospitalVisitorsRow}>
-                                <Ionicons name="people-outline" size={12} color="#3b82f6" />
+                                <Ionicons name="star" size={12} color="#f59e0b" />
                                 <Text style={styles.nearbyHospitalVisitorsText}>
-                                  {hospital.visitorsCount >= 1000 
-                                    ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
-                                    : hospital.visitorsCount} visitors
+                                  {hospital.rating} rating
                                 </Text>
                               </View>
                             )}

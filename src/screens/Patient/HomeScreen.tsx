@@ -88,13 +88,11 @@ const EnhancedHospitalCard: React.FC<{
               <Ionicons name="location-outline" size={14} color={colors.textSecondary} />
               <Text style={styles.hospitalLocation} numberOfLines={1}>{hospital.address}</Text>
             </View>
-            {hospital.visitorsCount && (
+            {hospital.rating && (
               <View style={styles.hospitalVisitorsRow}>
-                <Ionicons name="people-outline" size={14} color={colors.primary} />
+                <Ionicons name="star" size={14} color={colors.warning} />
                 <Text style={styles.hospitalVisitorsText}>
-                  {hospital.visitorsCount >= 1000 
-                    ? `${(hospital.visitorsCount / 1000).toFixed(1)}K` 
-                    : hospital.visitorsCount} visitors
+                  {hospital.rating} rating
                 </Text>
               </View>
             )}
@@ -1381,22 +1379,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                           </Text>
                         </View>
                         
-                        {item.visitorsCount && (
+                        {item.rating && (
                           <View style={{
                             flexDirection: 'row',
                             alignItems: 'center',
                             gap: 4,
                             marginBottom: 8,
                           }}>
-                            <Ionicons name="people-outline" size={14} color="#6b7280" />
+                            <Ionicons name="star" size={14} color="#f59e0b" />
                             <Text style={{
                               fontSize: 12,
                               color: '#6b7280',
                               fontWeight: '500',
                             }}>
-                              {item.visitorsCount >= 1000 
-                                ? `${(item.visitorsCount / 1000).toFixed(1)}K` 
-                                : item.visitorsCount} visitors
+                              {item.rating} rating
                             </Text>
                           </View>
                         )}
