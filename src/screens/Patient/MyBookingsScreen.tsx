@@ -62,76 +62,229 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   // Professional Categories data with enhanced icons and colors
   const categories = [
     { 
-      key: 'cardiology' as FilterCategory, 
-      label: 'Cardiology', 
+      key: 'covid' as FilterCategory, 
+      label: 'COVID', 
+      icon: 'shield-checkmark', 
+      color: '#dc2626', 
+      bgColor: '#fef2f2',
+      gradient: ['#fee2e2', '#fecaca'],
+      description: 'COVID Care & Testing'
+    },
+    { 
+      key: 'skinHair' as FilterCategory, 
+      label: 'Skin & Hair', 
+      icon: 'color-palette', 
+      color: '#8b5cf6', 
+      bgColor: '#f5f3ff',
+      gradient: ['#ede9fe', '#ddd6fe'],
+      description: 'Dermatology & Hair Care'
+    },
+    { 
+      key: 'womensHealth' as FilterCategory, 
+      label: "Women's Health", 
+      icon: 'woman', 
+      color: '#ec4899', 
+      bgColor: '#fdf2f8',
+      gradient: ['#fce7f3', '#fbcfe8'],
+      description: 'Women\'s Healthcare'
+    },
+    { 
+      key: 'generalPhysician' as FilterCategory, 
+      label: 'General Physician', 
+      icon: 'medical', 
+      color: '#0891b2', 
+      bgColor: '#ecfeff',
+      gradient: ['#cffafe', '#a5f3fc'],
+      description: 'General Medicine'
+    },
+    { 
+      key: 'dentalCare' as FilterCategory, 
+      label: 'Dental Care', 
+      icon: 'happy', 
+      color: '#f97316', 
+      bgColor: '#fff7ed',
+      gradient: ['#fed7aa', '#fdba74'],
+      description: 'Dental & Oral Care'
+    },
+    { 
+      key: 'bonesJoints' as FilterCategory, 
+      label: 'Bones & Joints', 
+      icon: 'fitness', 
+      color: '#6366f1', 
+      bgColor: '#eef2ff',
+      gradient: ['#e0e7ff', '#c7d2fe'],
+      description: 'Orthopedics'
+    },
+    { 
+      key: 'mentalWellness' as FilterCategory, 
+      label: 'Mental Wellness', 
+      icon: 'chatbubble-ellipses', 
+      color: '#10b981', 
+      bgColor: '#ecfdf5',
+      gradient: ['#d1fae5', '#a7f3d0'],
+      description: 'Mental Health & Counseling'
+    },
+    { 
+      key: 'earNoseThroat' as FilterCategory, 
+      label: 'Ear, Nose, Throat', 
+      icon: 'ear', 
+      color: '#f59e0b', 
+      bgColor: '#fffbeb',
+      gradient: ['#fef3c7', '#fde68a'],
+      description: 'ENT Specialist'
+    },
+    { 
+      key: 'sexualHealth' as FilterCategory, 
+      label: 'Sexual Health', 
+      icon: 'male-female', 
+      color: '#a855f7', 
+      bgColor: '#faf5ff',
+      gradient: ['#f3e8ff', '#e9d5ff'],
+      description: 'Sexual Health & Wellness'
+    },
+    { 
+      key: 'childSpecialist' as FilterCategory, 
+      label: 'Child Specialist', 
+      icon: 'body', 
+      color: '#fb923c', 
+      bgColor: '#fff7ed',
+      gradient: ['#fed7aa', '#fdba74'],
+      description: 'Pediatrics'
+    },
+    { 
+      key: 'homeopathy' as FilterCategory, 
+      label: 'Homeopathy', 
+      icon: 'flask', 
+      color: '#8b5cf6', 
+      bgColor: '#f5f3ff',
+      gradient: ['#ede9fe', '#ddd6fe'],
+      description: 'Homeopathic Treatment'
+    },
+    { 
+      key: 'digestiveIssues' as FilterCategory, 
+      label: 'Digestive Issues', 
+      icon: 'nutrition', 
+      color: '#f97316', 
+      bgColor: '#fff7ed',
+      gradient: ['#fed7aa', '#fdba74'],
+      description: 'Gastroenterology'
+    },
+    { 
+      key: 'eyeSpecialist' as FilterCategory, 
+      label: 'Eye Specialist', 
+      icon: 'eye', 
+      color: '#6366f1', 
+      bgColor: '#eef2ff',
+      gradient: ['#e0e7ff', '#c7d2fe'],
+      description: 'Ophthalmology'
+    },
+    { 
+      key: 'heart' as FilterCategory, 
+      label: 'Heart', 
       icon: 'heart', 
       color: '#dc2626', 
       bgColor: '#fef2f2',
       gradient: ['#fee2e2', '#fecaca'],
-      description: 'Heart & Cardiovascular'
+      description: 'Cardiology'
     },
     { 
-      key: 'neurology' as FilterCategory, 
-      label: 'Neurology', 
-      icon: 'pulse', 
+      key: 'physiotherapy' as FilterCategory, 
+      label: 'Physiotherapy', 
+      icon: 'accessibility', 
       color: '#7c3aed', 
       bgColor: '#f5f3ff',
       gradient: ['#ede9fe', '#ddd6fe'],
-      description: 'Brain & Nervous System'
+      description: 'Physical Therapy'
     },
     { 
-      key: 'orthopedics' as FilterCategory, 
-      label: 'Orthopedics', 
-      icon: 'fitness', 
+      key: 'brainNerves' as FilterCategory, 
+      label: 'Brain and Nerves', 
+      icon: 'git-network', 
+      color: '#8b5cf6', 
+      bgColor: '#faf5ff',
+      gradient: ['#f3e8ff', '#e9d5ff'],
+      description: 'Neurology'
+    },
+    { 
+      key: 'lungsBreathing' as FilterCategory, 
+      label: 'Lungs and Breathing', 
+      icon: 'partly-sunny', 
+      color: '#06b6d4', 
+      bgColor: '#ecfeff',
+      gradient: ['#cffafe', '#a5f3fc'],
+      description: 'Pulmonology'
+    },
+    { 
+      key: 'kidneyIssues' as FilterCategory, 
+      label: 'Kidney Issues', 
+      icon: 'water', 
+      color: '#ec4899', 
+      bgColor: '#fdf2f8',
+      gradient: ['#fce7f3', '#fbcfe8'],
+      description: 'Nephrology'
+    },
+    { 
+      key: 'generalSurgery' as FilterCategory, 
+      label: 'General Surgery', 
+      icon: 'cut', 
+      color: '#64748b', 
+      bgColor: '#f8fafc',
+      gradient: ['#f1f5f9', '#e2e8f0'],
+      description: 'Surgical Procedures'
+    },
+    { 
+      key: 'diabetesManagement' as FilterCategory, 
+      label: 'Diabetes Management', 
+      icon: 'pulse', 
+      color: '#3b82f6', 
+      bgColor: '#eff6ff',
+      gradient: ['#dbeafe', '#bfdbfe'],
+      description: 'Diabetes Care'
+    },
+    { 
+      key: 'ayurveda' as FilterCategory, 
+      label: 'Ayurveda', 
+      icon: 'leaf', 
       color: '#059669', 
       bgColor: '#ecfdf5',
       gradient: ['#d1fae5', '#a7f3d0'],
-      description: 'Bones & Joints'
+      description: 'Ayurvedic Treatment'
     },
     { 
-      key: 'pediatrics' as FilterCategory, 
-      label: 'Pediatrics', 
-      icon: 'happy', 
+      key: 'cancer' as FilterCategory, 
+      label: 'Cancer', 
+      icon: 'medkit', 
       color: '#f59e0b', 
       bgColor: '#fffbeb',
       gradient: ['#fef3c7', '#fde68a'],
-      description: 'Children\'s Healthcare'
+      description: 'Oncology'
     },
     { 
-      key: 'dermatology' as FilterCategory, 
-      label: 'Dermatology', 
-      icon: 'sunny', 
-      color: '#ea580c', 
-      bgColor: '#fff7ed',
-      gradient: ['#fed7aa', '#fdba74'],
-      description: 'Skin & Beauty'
-    },
-    { 
-      key: 'gastroenterology' as FilterCategory, 
-      label: 'Gastroenterology', 
-      icon: 'nutrition', 
-      color: '#0891b2', 
+      key: 'urinaryIssues' as FilterCategory, 
+      label: 'Urinary Issues', 
+      icon: 'body', 
+      color: '#06b6d4', 
       bgColor: '#ecfeff',
       gradient: ['#cffafe', '#a5f3fc'],
-      description: 'Digestive System'
+      description: 'Urology'
     },
     { 
-      key: 'radiology' as FilterCategory, 
-      label: 'Radiology', 
-      icon: 'scan', 
-      color: '#2563eb', 
-      bgColor: '#eff6ff',
-      gradient: ['#dbeafe', '#bfdbfe'],
-      description: 'Medical Imaging'
+      key: 'veterinary' as FilterCategory, 
+      label: 'Veterinary', 
+      icon: 'paw', 
+      color: '#8b5cf6', 
+      bgColor: '#f5f3ff',
+      gradient: ['#ede9fe', '#ddd6fe'],
+      description: 'Pet Care'
     },
     { 
-      key: 'pathology' as FilterCategory, 
-      label: 'Pathology', 
-      icon: 'flask', 
-      color: '#9333ea', 
-      bgColor: '#faf5ff',
-      gradient: ['#f3e8ff', '#e9d5ff'],
-      description: 'Lab Tests & Analysis'
+      key: 'dietNutrition' as FilterCategory, 
+      label: 'Diet & Nutrition', 
+      icon: 'restaurant', 
+      color: '#dc2626', 
+      bgColor: '#fef2f2',
+      gradient: ['#fee2e2', '#fecaca'],
+      description: 'Nutrition & Dietetics'
     },
   ];
 
@@ -1001,7 +1154,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 <Text style={styles.ehrQuickStatNumber}>
                   {ehrRecords.filter(r => r.status === 'Active').length}
                 </Text>
-                <Text style={styles.ehrQuickStatLabel}>Active</Text>
+                <Text style={styles.ehrQuickStatLabel}>Critical</Text>
               </View>
               
               <View style={styles.ehrQuickStatItem}>
@@ -1325,37 +1478,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               </View>
             </View>
           )}
-
-          {/* Health Categories Grid */}
-          <View style={[styles.ehrSection, { marginBottom: 40 }]}>
-            <View style={styles.ehrSectionHeader}>
-              <View style={styles.ehrSectionHeaderLeft}>
-                <View style={[styles.ehrSectionIcon, { backgroundColor: '#f3f4f6' }]}>
-                  <Ionicons name="grid-outline" size={20} color="#4b5563" />
-                </View>
-                <Text style={styles.ehrSectionTitle}>Health Categories</Text>
-              </View>
-            </View>
-            
-            <View style={styles.ehrCategoriesGrid}>
-              {[
-                { icon: 'heart-outline', name: 'Cardiology', count: 3, color: '#dc2626', bgColor: '#fee2e2' },
-                { icon: 'medical-outline', name: 'General', count: 5, color: '#3b82f6', bgColor: '#dbeafe' },
-                { icon: 'flask-outline', name: 'Lab Tests', count: 8, color: '#059669', bgColor: '#d1fae5' },
-                { icon: 'eye-outline', name: 'Radiology', count: 2, color: '#7c3aed', bgColor: '#ede9fe' },
-                { icon: 'fitness-outline', name: 'Physical', count: 4, color: '#f59e0b', bgColor: '#fef3c7' },
-                { icon: 'bandage-outline', name: 'Surgery', count: 1, color: '#dc2626', bgColor: '#fee2e2' },
-              ].map((category, index) => (
-                <TouchableOpacity key={index} style={styles.ehrCategoryCard}>
-                  <View style={[styles.ehrCategoryIcon, { backgroundColor: category.bgColor }]}>
-                    <Ionicons name={category.icon as any} size={20} color={category.color} />
-                  </View>
-                  <Text style={styles.ehrCategoryName}>{category.name}</Text>
-                  <Text style={styles.ehrCategoryCount}>{category.count} records</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
           
         </View>
       </ScrollView>
@@ -1771,9 +1893,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       </Text>
                       
                       <View style={styles.topHospitalLocationRow}>
-                        <Ionicons name="location-outline" size={12} color="#64748b" />
-                        <Text style={styles.topHospitalLocation} numberOfLines={1}>
-                          {hospital.address.split(',')[0]}
+                        <Ionicons name="location-outline" size={12} color="#64748b" style={{ marginTop: 2 }} />
+                        <Text style={styles.topHospitalLocation} numberOfLines={2}>
+                          {hospital.address}
                         </Text>
                       </View>
 
@@ -1882,9 +2004,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       </Text>
                       
                       <View style={styles.topHospitalLocationRow}>
-                        <Ionicons name="location-outline" size={12} color="#64748b" />
-                        <Text style={styles.topHospitalLocation} numberOfLines={1}>
-                          {hospital.address.split(',')[0]}
+                        <Ionicons name="location-outline" size={12} color="#64748b" style={{ marginTop: 2 }} />
+                        <Text style={styles.topHospitalLocation} numberOfLines={2}>
+                          {hospital.address}
                         </Text>
                       </View>
 
@@ -2002,8 +2124,8 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                     <Text style={styles.frequentlyVisitedRating}>{hospital.rating}</Text>
                     <Text style={styles.frequentlyVisitedDivider}>•</Text>
                     <Ionicons name="location" size={12} color="#64748b" />
-                    <Text style={styles.frequentlyVisitedLocation} numberOfLines={1}>
-                      {hospital.address.split(',')[0]}
+                    <Text style={styles.frequentlyVisitedLocation} numberOfLines={2}>
+                      {hospital.address}
                     </Text>
                   </View>
                   <View style={styles.frequentlyVisitedFeatures}>
@@ -2069,15 +2191,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                             source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
                             style={styles.nearbyHospitalImage}
                           />
-                          <View style={styles.nearbyRatingBadge}>
+                          <View style={styles.nearbyRatingBadgeTopRight}>
                             <Ionicons name="star" size={12} color="#FFC107" />
                             <Text style={styles.nearbyRatingText}>{hospital.rating}</Text>
-                          </View>
-                          <View style={styles.nearbyDistanceBadge}>
-                            <Ionicons name="location" size={10} color="#fff" />
-                            <Text style={styles.nearbyDistanceText}>
-                              {(Math.random() * 5 + 0.5).toFixed(1)} km
-                            </Text>
                           </View>
                         </View>
 
@@ -2091,8 +2207,8 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                             </Text>
                             
                             <View style={styles.nearbyHospitalLocationRow}>
-                              <Ionicons name="location-outline" size={12} color="#64748b" />
-                              <Text style={styles.nearbyHospitalLocation} numberOfLines={1}>
+                              <Ionicons name="location-outline" size={12} color="#64748b" style={{ marginTop: 2 }} />
+                              <Text style={styles.nearbyHospitalLocation} numberOfLines={2}>
                                 {hospital.address}
                               </Text>
                             </View>
@@ -2114,6 +2230,25 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                                 <Text style={styles.nearbyFeatureText}>24/7</Text>
                               </View>
                             </View>
+
+                            {/* Travel Time and Directions */}
+                            <View style={styles.nearbyTravelTimeContainer}>
+                              <View style={styles.nearbyTravelTimeInfo}>
+                                <Ionicons name="car-outline" size={14} color="#3b82f6" />
+                                <Text style={styles.nearbyTravelTimeText}>
+                                  {Math.floor(Math.random() * 15) + 5} min
+                                </Text>
+                              </View>
+                              <TouchableOpacity 
+                                style={styles.nearbyDirectionsButton}
+                                onPress={() => {
+                                  // Handle directions
+                                }}
+                              >
+                                <Ionicons name="navigate-outline" size={12} color="#3b82f6" />
+                                <Text style={styles.nearbyDirectionsText}>Directions</Text>
+                              </TouchableOpacity>
+                            </View>
                           </View>
                         </View>
                       </View>
@@ -2124,16 +2259,22 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
             ))}
           </View>
           
-          {/* Load More Button */}
-          {!showAllNearbyHospitals && allNearbyHospitals.length > initialRows * 4 && (
+          {/* Load More / Show Less Button */}
+          {allNearbyHospitals.length > initialRows * 4 && (
             <View style={styles.loadMoreContainer}>
               <TouchableOpacity
                 style={styles.loadMoreButton}
-                onPress={() => setShowAllNearbyHospitals(true)}
+                onPress={() => setShowAllNearbyHospitals(!showAllNearbyHospitals)}
                 activeOpacity={0.8}
               >
-                <Text style={styles.loadMoreText}>Load More</Text>
-                <Ionicons name="chevron-down" size={20} color="#3b82f6" />
+                <Text style={styles.loadMoreText}>
+                  {showAllNearbyHospitals ? 'Show Less' : 'Load More'}
+                </Text>
+                <Ionicons 
+                  name={showAllNearbyHospitals ? "chevron-up" : "chevron-down"} 
+                  size={20} 
+                  color="#3b82f6" 
+                />
               </TouchableOpacity>
             </View>
           )}
@@ -2213,15 +2354,11 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           <View style={styles.enhancedCategoriesGrid}>
             {categories.map((category, index) => {
               const isSelected = selectedCategory === category.key;
-              const isEvenIndex = index % 2 === 0;
               
               return (
                 <Animated.View
                   key={category.key}
-                  style={[
-                    styles.enhancedCategoryCard,
-                    isEvenIndex ? styles.categoryCardLeft : styles.categoryCardRight,
-                  ]}
+                  style={styles.enhancedCategoryCard}
                 >
                   <TouchableOpacity
                     activeOpacity={0.8}
@@ -2247,7 +2384,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                     })}
                   >
                     <LinearGradient
-                      colors={isSelected ? ['#3b82f6', '#2563eb'] : (category as any).gradient}
+                      colors={isSelected ? ['#1e3a8a', '#1e40af'] : ['#3b82f6', '#60a5fa']}
                       style={[
                         styles.enhancedCategoryGradient,
                         isSelected && styles.enhancedCategoryGradientActive
@@ -2263,12 +2400,12 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       {/* Category Icon */}
                       <View style={[
                         styles.enhancedCategoryIconContainer,
-                        { backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : (category as any).bgColor }
+                        { backgroundColor: 'rgba(255,255,255,0.95)' }
                       ]}>
                         <Ionicons 
                           name={(category as any).icon as any} 
-                          size={28} 
-                          color={isSelected ? '#ffffff' : (category as any).color} 
+                          size={22} 
+                          color={isSelected ? '#1e40af' : '#3b82f6'} 
                         />
                       </View>
 
@@ -2276,14 +2413,14 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       <View style={styles.enhancedCategoryContent}>
                         <Text style={[
                           styles.enhancedCategoryTitle,
-                          isSelected && styles.enhancedCategoryTitleActive
+                          { color: '#ffffff' }
                         ]} numberOfLines={1}>
                           {category.label}
                         </Text>
                         
                         <Text style={[
                           styles.enhancedCategoryDescription,
-                          isSelected && styles.enhancedCategoryDescriptionActive
+                          { color: 'rgba(255,255,255,0.9)' }
                         ]} numberOfLines={2}>
                           {(category as any).description}
                         </Text>
@@ -2292,7 +2429,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       {/* Doctor Count Badge */}
                       <View style={[
                         styles.enhancedCategoryBadge,
-                        { backgroundColor: isSelected ? 'rgba(255,255,255,0.2)' : (category as any).color }
+                        { backgroundColor: isSelected ? '#1e3a8a' : 'rgba(0,0,0,0.3)' }
                       ]}>
                         <Ionicons 
                           name="people" 
@@ -3049,9 +3186,6 @@ const styles = StyleSheet.create({
   compactImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
   },
   compactIcon: {
     width: 36,
@@ -4930,6 +5064,7 @@ const styles = StyleSheet.create({
   frequentlyVisitedImage: {
     width: '100%',
     height: '100%',
+    resizeMode: 'cover' as 'cover',
   },
   frequentVisitBadge: {
     position: 'absolute',
@@ -5054,10 +5189,7 @@ const styles = StyleSheet.create({
   nearbyHospitalImage: {
     width: '100%',
     height: 180,
-    borderRadius: 12,
-    backgroundColor: '#f1f5f9',
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
+    resizeMode: 'cover' as 'cover',
   },
   nearbyRatingBadge: {
     position: 'absolute',
@@ -5093,17 +5225,53 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#ffffff',
   },
+  nearbyRatingBadgeTopRight: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
+  },
   nearbyHospitalContent: {
     gap: 12,
   },
   nearbyHospitalInfo: {
     gap: 6,
   },
+  nearbyHospitalNameRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 4,
+    gap: 8,
+  },
   nearbyHospitalName: {
     fontSize: 14,
     fontWeight: '700',
     color: '#000000',
     lineHeight: 18,
+    marginBottom: 4,
+  },
+  nearbyRatingBadgeRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: '#fffbeb',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#fef3c7',
   },
   nearbyHospitalSpecialization: {
     fontSize: 12,
@@ -5816,7 +5984,7 @@ const styles = StyleSheet.create({
   topHospitalImage: {
     width: '100%',
     height: '100%',
-    resizeMode: 'cover',
+    resizeMode: 'cover' as 'cover',
   },
   topHospitalRating: {
     position: 'absolute',
@@ -5853,7 +6021,7 @@ const styles = StyleSheet.create({
   },
   topHospitalLocationRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: 6,
     gap: 4,
   },
@@ -5861,6 +6029,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6b7280',
     flex: 1,
+    lineHeight: 16,
   },
   topHospitalVisitorsRow: {
     flexDirection: 'row',
@@ -6001,28 +6170,27 @@ const styles = StyleSheet.create({
   enhancedCategoriesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    gap: 8,
+    gap: 12,
     marginBottom: 32,
     paddingHorizontal: 8,
-    minHeight: 400,
   },
   enhancedCategoryCard: {
-    width: Platform.OS === 'web' 
-      ? '46%' 
-      : (Dimensions.get('window').width - 80) / 2,
-    backgroundColor: '#ffffff',
+    width: (Platform.OS === 'web' 
+      ? 'calc(25% - 9px)' 
+      : (Dimensions.get('window').width - 80) / 4) as any,
+    backgroundColor: '#3b82f6',
     borderRadius: 16,
     overflow: 'hidden',
-    shadowColor: '#000000',
+    shadowColor: '#1e40af',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.3,
     shadowRadius: 12,
     elevation: 6,
     borderWidth: 1,
-    borderColor: '#f1f5f9',
-    marginBottom: 12,
+    borderColor: '#2563eb',
+    marginBottom: 8,
   },
   categoryCardLeft: {
     alignSelf: 'flex-start',
@@ -6036,14 +6204,14 @@ const styles = StyleSheet.create({
   },
   enhancedCategoryTouchable: {
     width: '100%',
-    minHeight: 200,
+    minHeight: 140,
   },
   enhancedCategoryTouchableActive: {
     transform: [{ scale: 0.98 }],
   },
   enhancedCategoryGradient: {
     flex: 1,
-    padding: 20,
+    padding: 12,
     position: 'relative',
   },
   enhancedCategoryGradientActive: {
@@ -6061,12 +6229,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   enhancedCategoryIconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 20,
+    width: 48,
+    height: 48,
+    borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
+    marginBottom: 10,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -6077,19 +6245,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   enhancedCategoryTitle: {
-    fontSize: 18,
+    fontSize: 15,
     fontWeight: '700',
     color: '#1f2937',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   enhancedCategoryTitleActive: {
     color: '#3b82f6',
   },
   enhancedCategoryDescription: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#6b7280',
-    lineHeight: 20,
-    marginBottom: 16,
+    lineHeight: 16,
+    marginBottom: 8,
   },
   enhancedCategoryDescriptionActive: {
     color: '#4b5563',

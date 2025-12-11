@@ -82,7 +82,7 @@ const EHRScreen: React.FC = () => {
       
       {/* Enhanced Header with Gradient */}
       <LinearGradient
-        colors={['#7c3aed', '#8b5cf6', '#a855f7']}
+        colors={['#1e40af', '#3b82f6', '#60a5fa']}
         style={styles.ehrHeaderGradient}
       >
         <View style={styles.ehrHeaderContent}>
@@ -129,7 +129,7 @@ const EHRScreen: React.FC = () => {
               <Text style={styles.ehrQuickStatNumber}>
                 {ehrRecords.filter(r => r.status === 'Active').length}
               </Text>
-              <Text style={styles.ehrQuickStatLabel}>Active</Text>
+              <Text style={styles.ehrQuickStatLabel}>Critical</Text>
             </View>
             
             <View style={styles.ehrQuickStatItem}>

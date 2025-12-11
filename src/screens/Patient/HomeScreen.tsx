@@ -669,14 +669,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={{
-                  fontSize: 39,
-                  fontWeight: '600',
+                  fontSize: 56,
+                  fontWeight: '700',
                   color: '#ffffff',
-                  letterSpacing: 0,
+                  letterSpacing: 1,
                   textShadowColor: 'rgba(0, 0, 0, 0.5)',
                   textShadowOffset: { width: 0, height: 3 },
                   textShadowRadius: 6,
-                  lineHeight: 40,
+                  lineHeight: 60,
                 }}>
                   Rapha
                 </Text>
@@ -807,9 +807,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                 flexDirection: 'row',
                 alignItems: 'center',
                 width: '100%',
+                maxWidth: 900,
                 gap: 16,
                 position: 'relative',
                 zIndex: 1000,
+                alignSelf: 'center',
               }}>
                 {/* Location - Clickable */}
                 <View style={{ position: 'relative', zIndex: 1001 }}>
@@ -1366,16 +1368,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                         
                         <View style={{
                           flexDirection: 'row',
-                          alignItems: 'center',
+                          alignItems: 'flex-start',
                           gap: 4,
                           marginBottom: 6,
                         }}>
-                          <Ionicons name="location-outline" size={14} color="#4b5563" />
+                          <Ionicons name="location-outline" size={14} color="#4b5563" style={{ marginTop: 2 }} />
                           <Text style={{
                             fontSize: 12,
                             color: '#4b5563',
                             flex: 1,
-                          }} numberOfLines={1}>
+                            lineHeight: 16,
+                          }} numberOfLines={2}>
                             {item.address}
                           </Text>
                         </View>
