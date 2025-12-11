@@ -1885,7 +1885,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
 
                     {/* Hospital Content */}
                     <View style={styles.topHospitalContent}>
-                      <Text style={styles.topHospitalName} numberOfLines={2}>
+                      <Text style={styles.topHospitalName} numberOfLines={3}>
                         {hospital.name}
                       </Text>
                       <Text style={styles.topHospitalSpecialization} numberOfLines={1}>
@@ -5937,17 +5937,17 @@ const styles = StyleSheet.create({
     paddingRight: 24,
   },
   topHospitalCard: {
-    width: 280,
+    width: 300,
     marginRight: 16,
   },
   topHospitalTouchable: {
     width: '100%',
-    height: 320,
+    minHeight: 320,
   },
   topHospitalGradient: {
     flex: 1,
     borderRadius: 16,
-    padding: 12,
+    padding: 10,
     backgroundColor: '#ffffff',
     borderWidth: 1,
     borderColor: '#e5e7eb',
@@ -5973,10 +5973,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   topHospitalImageContainer: {
-    height: 100,
+    height: 90,
     borderRadius: 12,
     overflow: 'hidden',
-    marginBottom: 12,
+    marginBottom: 10,
     position: 'relative',
     borderWidth: 2,
     borderColor: '#e5e7eb',
@@ -6005,37 +6005,39 @@ const styles = StyleSheet.create({
   },
   topHospitalContent: {
     flex: 1,
+    minHeight: 0,
+    justifyContent: 'flex-start',
   },
   topHospitalName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
     color: '#000000',
-    marginBottom: 6,
-    lineHeight: 20,
+    marginBottom: 4,
+    lineHeight: 18,
   },
   topHospitalSpecialization: {
-    fontSize: 13,
+    fontSize: 11,
     color: '#4b5563',
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   topHospitalLocationRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 6,
-    gap: 4,
+    marginBottom: 3,
+    gap: 3,
   },
   topHospitalLocation: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#6b7280',
     flex: 1,
-    lineHeight: 16,
+    lineHeight: 14,
   },
   topHospitalVisitorsRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
-    gap: 4,
+    marginBottom: 6,
+    gap: 3,
   },
   topHospitalVisitorsText: {
     fontSize: 11,
@@ -6044,20 +6046,20 @@ const styles = StyleSheet.create({
   },
   topHospitalFeatures: {
     flexDirection: 'row',
-    gap: 6,
-    marginBottom: 12,
+    gap: 4,
+    marginBottom: 0,
   },
   topHospitalFeatureTag: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f1f5f9',
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
     borderRadius: 6,
-    gap: 3,
+    gap: 2,
   },
   topHospitalFeatureText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '600',
     color: '#475569',
   },

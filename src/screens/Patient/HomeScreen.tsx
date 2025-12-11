@@ -1247,7 +1247,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
         
         <View style={[
           {
-            height: 260,
+            height: 300,
             overflow: 'visible',
             paddingHorizontal: 24,
           },
@@ -1259,7 +1259,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               horizontal
               showsHorizontalScrollIndicator={false}
               pagingEnabled={false}
-              snapToInterval={280}
+              snapToInterval={320}
               snapToAlignment="start"
               decelerationRate="fast"
               scrollEnabled={true}
@@ -1268,8 +1268,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
               contentInsetAdjustmentBehavior="never"
               renderItem={({ item }) => (
                 <View style={{
-                  width: 280,
-                  height: 240,
+                  width: 320,
+                  height: 280,
                   marginHorizontal: 8,
                   marginRight: 16,
                   borderRadius: 16,
@@ -1296,7 +1296,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                     <View style={{ width: '100%', height: '100%', backgroundColor: '#ffffff' }}>
                       {/* Hospital Image */}
                       <View style={{
-                        height: 120,
+                        height: 130,
                         position: 'relative',
                         backgroundColor: '#f1f5f9',
                         borderWidth: 2,
@@ -1349,11 +1349,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                         flex: 1,
                       }}>
                         <Text style={{
-                          fontSize: 16,
+                          fontSize: 17,
                           fontWeight: '700',
                           color: '#000000',
-                          marginBottom: 4,
-                        }} numberOfLines={1}>
+                          marginBottom: 6,
+                          lineHeight: 22,
+                        }} numberOfLines={2}>
                           {item.name}
                         </Text>
                         
@@ -1413,10 +1414,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                 paddingHorizontal: 8,
                 paddingRight: 32,
               }}
-              style={{ flexGrow: 0, height: 240 }}
+              style={{ flexGrow: 0, height: 280 }}
               onScroll={(event) => {
                 const contentOffset = event.nativeEvent.contentOffset.x;
-                const index = Math.round(contentOffset / 280);
+                const index = Math.round(contentOffset / 320);
                 setCurrentHospitalIndex(Math.max(0, Math.min(index, hospitals.length - 1)));
               }}
               scrollEventThrottle={16}

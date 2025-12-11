@@ -87,10 +87,12 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
                   <Ionicons name="medical" size={28} color={colors.primary} />
                 </View>
                 <View style={styles.headerInfo}>
-                  <Text style={styles.featuredHospitalName} numberOfLines={1}>
+                  <Text style={styles.featuredHospitalName} numberOfLines={2}>
                     {hospital.name}
                   </Text>
-                  <Text style={styles.featuredSpecialization}>{hospital.specialization}</Text>
+                  <Text style={styles.featuredSpecialization} numberOfLines={1}>
+                    {hospital.specialization}
+                  </Text>
                 </View>
               </View>
 
@@ -324,15 +326,17 @@ const styles = StyleSheet.create({
   },
   headerInfo: {
     flex: 1,
+    minWidth: 0,
   },
   featuredHospitalName: {
-    fontSize: fontSize.xl,
+    fontSize: fontSize.lg,
     fontWeight: '700',
     color: colors.textPrimary,
     marginBottom: spacing.xs,
+    flexWrap: 'wrap',
   },
   featuredSpecialization: {
-    fontSize: fontSize.md,
+    fontSize: fontSize.sm,
     color: colors.primary,
     fontWeight: '600',
   },
