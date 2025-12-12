@@ -526,3 +526,28 @@ select:focus {
   overflow-y: auto !important;
   flex-grow: 1 !important;
 }
+
+/* Image Carousel Navigation Arrows - Only show on hover */
+[data-testid*="carousel"],
+[role*="image-container"],
+.image-carousel-container {
+  position: relative;
+}
+
+/* Ensure navigation buttons have smooth transitions */
+[role*="button"][class*="nav"] {
+  transition: opacity 0.2s ease, visibility 0.2s ease !important;
+}
+
+/* Card image containers with hover detection */
+[class*="ImageContainer"],
+[class*="image-container"] {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Ensure smooth hover transitions for card images */
+[class*="ImageContainer"]:hover,
+[class*="image-container"]:hover {
+  transition: all 0.3s ease !important;
+}

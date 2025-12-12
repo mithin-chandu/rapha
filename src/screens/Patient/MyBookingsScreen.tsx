@@ -46,12 +46,61 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const [displayedRecordsCount, setDisplayedRecordsCount] = useState(3);
   // Nearby hospitals state
   const [showAllNearbyHospitals, setShowAllNearbyHospitals] = useState(false);
+  // Image carousel state - track current image index for each hospital
+  const [currentImageIndices, setCurrentImageIndices] = useState<{ [key: number]: number }>({});
+  // Hovered card state for showing/hiding arrows
+  const [hoveredCardId, setHoveredCardId] = useState<number | null>(null);
   
   // Utility function to ensure doctor name is displayed correctly
   const formatDoctorName = (name: string) => {
     // If name already starts with "Dr.", return as is
     // Otherwise, add "Dr." prefix
     return name.startsWith('Dr.') ? name : `Dr. ${name}`;
+  };
+
+  // Image carousel helper functions
+  const getCurrentImageIndex = (hospitalId: number) => {
+    return currentImageIndices[hospitalId] || 0;
+  };
+
+  const handlePreviousImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    setCurrentImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  const handleNextImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    setCurrentImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  const getCurrentImage = (hospital: Hospital): string | any => {
+    const images = hospital.images;
+    if (!images || images.length === 0) {
+      return hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center';
+    }
+    const currentIndex = getCurrentImageIndex(hospital.id);
+    return images[currentIndex];
+  };
+
+  const getImageSource = (item: Hospital | any) => {
+    const currentImg = getCurrentImage(item);
+    return typeof currentImg === 'string' ? { uri: currentImg } : currentImg;
   };
   
   // Animation references
@@ -267,15 +316,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
       bgColor: '#ecfeff',
       gradient: ['#cffafe', '#a5f3fc'],
       description: 'Urology'
-    },
-    { 
-      key: 'veterinary' as FilterCategory, 
-      label: 'Veterinary', 
-      icon: 'paw', 
-      color: '#8b5cf6', 
-      bgColor: '#f5f3ff',
-      gradient: ['#ede9fe', '#ddd6fe'],
-      description: 'Pet Care'
     },
     { 
       key: 'dietNutrition' as FilterCategory, 
@@ -687,14 +727,60 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           }
           style={styles.compactCardGradient}
         >
-          {/* Card Image */}
-          <View style={styles.compactImageContainer}>
-            {item.image ? (
-              <Image 
-                source={{ uri: item.image }} 
-                style={styles.compactImage}
-                resizeMode="cover"
-              />
+          {/* Card Image with Carousel */}
+          <View style={styles.compactImageContainer}
+            {...(Platform.OS === 'web' && {
+              onMouseEnter: () => setHoveredCardId(item.id),
+              onMouseLeave: () => setHoveredCardId(null),
+            })}
+          >
+            {item.image || (item.images && item.images.length > 0) ? (
+              <>
+                <Image 
+                  source={getImageSource(item)}
+                  style={styles.compactImage}
+                  resizeMode="cover"
+                />
+                
+                {/* Image Navigation Arrows */}
+                {item.images && item.images.length > 1 && (
+                  <>
+                    {hoveredCardId === item.id && (
+                      <TouchableOpacity
+                        style={[styles.imageNavButton, styles.imageNavButtonLeft, { width: 24, height: 24 }]}
+                        onPress={(e) => handlePreviousImage(item.id, item, e)}
+                        activeOpacity={0.7}
+                      >
+                        <Ionicons name="chevron-back" size={16} color="#ffffff" />
+                      </TouchableOpacity>
+                    )}
+                    
+                    {hoveredCardId === item.id && (
+                      <TouchableOpacity
+                        style={[styles.imageNavButton, styles.imageNavButtonRight, { width: 24, height: 24 }]}
+                        onPress={(e) => handleNextImage(item.id, item, e)}
+                        activeOpacity={0.7}
+                      >
+                        <Ionicons name="chevron-forward" size={16} color="#ffffff" />
+                      </TouchableOpacity>
+                    )}
+                    
+                    {/* Image Indicator Dots */}
+                    <View style={[styles.imageIndicators, { bottom: 6 }]}>
+                      {item.images.map((_: any, idx: number) => (
+                        <View
+                          key={idx}
+                          style={[
+                            styles.imageIndicatorDot,
+                            { width: 4, height: 4 },
+                            getCurrentImageIndex(item.id) === idx && styles.imageIndicatorDotActive
+                          ]}
+                        />
+                      ))}
+                    </View>
+                  </>
+                )}
+              </>
             ) : (
               <View style={[
                 styles.compactIcon,
@@ -957,7 +1043,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const renderProviderGrid = (providers: any[], title: string, onViewAll: () => void) => {
     if (providers.length === 0) return null;
     
-    const displayProviders = providers.slice(0, 8); // Show 8 items (2 rows of 4)
+    const displayProviders = providers; // Show all items
     const rows = [];
     
     for (let i = 0; i < displayProviders.length; i += 4) {
@@ -1871,12 +1957,56 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       <Text style={{ fontSize: 10, fontWeight: '700', color: '#ffffff' }}>FEATURED</Text>
                     </View>
 
-                    {/* Hospital Image */}
-                    <View style={styles.topHospitalImageContainer}>
+                    {/* Hospital Image with Carousel */}
+                    <View style={styles.topHospitalImageContainer}
+                      {...(Platform.OS === 'web' && {
+                        onMouseEnter: () => setHoveredCardId(hospital.id),
+                        onMouseLeave: () => setHoveredCardId(null),
+                      })}
+                    >
                       <Image
-                        source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
+                        source={getImageSource(hospital)}
                         style={styles.topHospitalImage}
                       />
+                      
+                      {/* Image Navigation Arrows */}
+                      {hospital.images && hospital.images.length > 1 && (
+                        <>
+                          {hoveredCardId === hospital.id && (
+                            <TouchableOpacity
+                              style={[styles.imageNavButton, styles.imageNavButtonLeft]}
+                              onPress={(e) => handlePreviousImage(hospital.id, hospital, e)}
+                              activeOpacity={0.7}
+                            >
+                              <Ionicons name="chevron-back" size={20} color="#ffffff" />
+                            </TouchableOpacity>
+                          )}
+                          
+                          {hoveredCardId === hospital.id && (
+                            <TouchableOpacity
+                              style={[styles.imageNavButton, styles.imageNavButtonRight]}
+                              onPress={(e) => handleNextImage(hospital.id, hospital, e)}
+                              activeOpacity={0.7}
+                            >
+                              <Ionicons name="chevron-forward" size={20} color="#ffffff" />
+                            </TouchableOpacity>
+                          )}
+                          
+                          {/* Image Indicator Dots */}
+                          <View style={styles.imageIndicators}>
+                            {hospital.images.map((_: any, idx: number) => (
+                              <View
+                                key={idx}
+                                style={[
+                                  styles.imageIndicatorDot,
+                                  getCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
+                                ]}
+                              />
+                            ))}
+                          </View>
+                        </>
+                      )}
+                      
                       <View style={[styles.topHospitalRating, { backgroundColor: '#8b5cf6' }]}>
                         <Ionicons name="star" size={14} color="#ffffff" />
                         <Text style={[styles.topHospitalRatingValue, { color: '#ffffff' }]}>{hospital.rating}</Text>
@@ -1982,12 +2112,56 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                   <View style={styles.topHospitalGradient}>
 
 
-                    {/* Hospital Image */}
-                    <View style={styles.topHospitalImageContainer}>
+                    {/* Hospital Image with Carousel */}
+                    <View style={styles.topHospitalImageContainer}
+                      {...(Platform.OS === 'web' && {
+                        onMouseEnter: () => setHoveredCardId(hospital.id),
+                        onMouseLeave: () => setHoveredCardId(null),
+                      })}
+                    >
                       <Image
-                        source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
+                        source={getImageSource(hospital)}
                         style={styles.topHospitalImage}
                       />
+                      
+                      {/* Image Navigation Arrows */}
+                      {hospital.images && hospital.images.length > 1 && (
+                        <>
+                          {hoveredCardId === hospital.id && (
+                            <TouchableOpacity
+                              style={[styles.imageNavButton, styles.imageNavButtonLeft]}
+                              onPress={(e) => handlePreviousImage(hospital.id, hospital, e)}
+                              activeOpacity={0.7}
+                            >
+                              <Ionicons name="chevron-back" size={20} color="#ffffff" />
+                            </TouchableOpacity>
+                          )}
+                          
+                          {hoveredCardId === hospital.id && (
+                            <TouchableOpacity
+                              style={[styles.imageNavButton, styles.imageNavButtonRight]}
+                              onPress={(e) => handleNextImage(hospital.id, hospital, e)}
+                              activeOpacity={0.7}
+                            >
+                              <Ionicons name="chevron-forward" size={20} color="#ffffff" />
+                            </TouchableOpacity>
+                          )}
+                          
+                          {/* Image Indicator Dots */}
+                          <View style={styles.imageIndicators}>
+                            {hospital.images.map((_: any, idx: number) => (
+                              <View
+                                key={idx}
+                                style={[
+                                  styles.imageIndicatorDot,
+                                  getCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
+                                ]}
+                              />
+                            ))}
+                          </View>
+                        </>
+                      )}
+                      
                       <View style={styles.topHospitalRating}>
                         <Ionicons name="star" size={14} color="#fbbf24" />
                         <Text style={styles.topHospitalRatingValue}>{hospital.rating}</Text>
@@ -2102,11 +2276,55 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 })}
               >
               <View style={styles.frequentlyVisitedCardContent}>
-                <View style={styles.frequentlyVisitedImageContainer}>
+                <View style={styles.frequentlyVisitedImageContainer}
+                  {...(Platform.OS === 'web' && {
+                    onMouseEnter: () => setHoveredCardId(hospital.id),
+                    onMouseLeave: () => setHoveredCardId(null),
+                  })}
+                >
                   <Image
-                    source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
+                    source={getImageSource(hospital)}
                     style={styles.frequentlyVisitedImage}
                   />
+                  
+                  {/* Image Navigation Arrows */}
+                  {hospital.images && hospital.images.length > 1 && (
+                    <>
+                      {hoveredCardId === hospital.id && (
+                        <TouchableOpacity
+                          style={[styles.imageNavButton, styles.imageNavButtonLeft]}
+                          onPress={(e) => handlePreviousImage(hospital.id, hospital, e)}
+                          activeOpacity={0.7}
+                        >
+                          <Ionicons name="chevron-back" size={18} color="#ffffff" />
+                        </TouchableOpacity>
+                      )}
+                      
+                      {hoveredCardId === hospital.id && (
+                        <TouchableOpacity
+                          style={[styles.imageNavButton, styles.imageNavButtonRight]}
+                          onPress={(e) => handleNextImage(hospital.id, hospital, e)}
+                          activeOpacity={0.7}
+                        >
+                          <Ionicons name="chevron-forward" size={18} color="#ffffff" />
+                        </TouchableOpacity>
+                      )}
+                      
+                      {/* Image Indicator Dots */}
+                      <View style={styles.imageIndicators}>
+                        {hospital.images.map((_, idx) => (
+                          <View
+                            key={idx}
+                            style={[
+                              styles.imageIndicatorDot,
+                              getCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
+                            ]}
+                          />
+                        ))}
+                      </View>
+                    </>
+                  )}
+                  
                   <View style={styles.frequentVisitBadge}>
                     <Ionicons name="checkmark-circle" size={14} color="#10b981" />
                     <Text style={styles.frequentVisitBadgeText}>Visited</Text>
@@ -2186,11 +2404,56 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       })}
                     >
                       <View style={styles.nearbyHospitalGradient}>
-                        <View style={styles.nearbyHospitalImageContainer}>
+                        <View style={styles.nearbyHospitalImageContainer}
+                          {...(Platform.OS === 'web' && {
+                            onMouseEnter: () => setHoveredCardId(hospital.id),
+                            onMouseLeave: () => setHoveredCardId(null),
+                          })}
+                        >
                           <Image
-                            source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
+                            source={getImageSource(hospital)}
                             style={styles.nearbyHospitalImage}
                           />
+                          
+                          {/* Image Navigation Arrows */}
+                          {hospital.images && hospital.images.length > 1 && (
+                            <>
+                              {hoveredCardId === hospital.id && (
+                                <TouchableOpacity
+                                  style={[styles.imageNavButton, styles.imageNavButtonLeft, { width: 28, height: 28 }]}
+                                  onPress={(e) => handlePreviousImage(hospital.id, hospital, e)}
+                                  activeOpacity={0.7}
+                                >
+                                  <Ionicons name="chevron-back" size={16} color="#ffffff" />
+                                </TouchableOpacity>
+                              )}
+                              
+                              {hoveredCardId === hospital.id && (
+                                <TouchableOpacity
+                                  style={[styles.imageNavButton, styles.imageNavButtonRight, { width: 28, height: 28 }]}
+                                  onPress={(e) => handleNextImage(hospital.id, hospital, e)}
+                                  activeOpacity={0.7}
+                                >
+                                  <Ionicons name="chevron-forward" size={16} color="#ffffff" />
+                                </TouchableOpacity>
+                              )}
+                              
+                              {/* Image Indicator Dots */}
+                              <View style={[styles.imageIndicators, { bottom: 4 }]}>
+                                {hospital.images.map((_, idx) => (
+                                  <View
+                                    key={idx}
+                                    style={[
+                                      styles.imageIndicatorDot,
+                                      { width: 5, height: 5 },
+                                      getCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
+                                    ]}
+                                  />
+                                ))}
+                              </View>
+                            </>
+                          )}
+                          
                           <View style={styles.nearbyRatingBadgeTopRight}>
                             <Ionicons name="star" size={12} color="#FFC107" />
                             <Text style={styles.nearbyRatingText}>{hospital.rating}</Text>
@@ -2295,8 +2558,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
         bounces={true}
       >
         {/* Enhanced Header Section */}
-        <LinearGradient
-          colors={['#1e40af', '#3b82f6', '#60a5fa']}
+        <View
           style={styles.categoriesHeaderGradient}
         >
           <View style={styles.categoriesHeaderContent}>
@@ -2304,10 +2566,10 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               <View style={styles.categoriesHeaderLeft}>
                 <View style={styles.categoriesMainIconContainer}>
                   <LinearGradient
-                    colors={['#3b82f6', '#2563eb']}
+                    colors={['#dbeafe', '#bfdbfe']}
                     style={styles.categoriesMainIcon}
                   >
-                    <Ionicons name="medical" size={32} color="#ffffff" />
+                    <Ionicons name="medical" size={32} color="#2563eb" />
                   </LinearGradient>
                 </View>
                 <View style={styles.categoriesHeaderTextContainer}>
@@ -2326,30 +2588,10 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               Discover specialized healthcare services. Select a category to find expert doctors and hospitals in that specialty.
             </Text>
           </View>
-        </LinearGradient>
+        </View>
 
         {/* Enhanced Categories Grid */}
         <View style={styles.categoriesMainContent}>
-          <View style={styles.categoriesStatsRow}>
-            <View style={styles.categoriesStatItem}>
-              <View style={styles.categoriesStatIcon}>
-                <Ionicons name="people" size={16} color="#3b82f6" />
-              </View>
-              <Text style={styles.categoriesStatText}>500+ Doctors</Text>
-            </View>
-            <View style={styles.categoriesStatItem}>
-              <View style={styles.categoriesStatIcon}>
-                <Ionicons name="medical" size={16} color="#059669" />
-              </View>
-              <Text style={styles.categoriesStatText}>24/7 Available</Text>
-            </View>
-            <View style={styles.categoriesStatItem}>
-              <View style={styles.categoriesStatIcon}>
-                <Ionicons name="shield-checkmark" size={16} color="#dc2626" />
-              </View>
-              <Text style={styles.categoriesStatText}>Verified Experts</Text>
-            </View>
-          </View>
 
           <View style={styles.enhancedCategoriesGrid}>
             {categories.map((category, index) => {
@@ -3827,10 +4069,12 @@ const styles = StyleSheet.create({
   // Quick Stats
   quickStatsContainer: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 20,
     gap: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   quickStatItem: {
     flex: 1,
@@ -3840,7 +4084,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#dbeafe',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
@@ -3848,12 +4092,12 @@ const styles = StyleSheet.create({
   quickStatNumber: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 4,
   },
   quickStatLabel: {
     fontSize: 12,
-    color: '#bfdbfe',
+    color: '#64748b',
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -4274,10 +4518,12 @@ const styles = StyleSheet.create({
   // Quick Stats
   ehrQuickStats: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 16,
     gap: 8,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   ehrQuickStatItem: {
     flex: 1,
@@ -4287,7 +4533,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: '#dbeafe',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
@@ -4295,12 +4541,12 @@ const styles = StyleSheet.create({
   ehrQuickStatNumber: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 4,
   },
   ehrQuickStatLabel: {
     fontSize: 12,
-    color: '#c4b5fd',
+    color: '#64748b',
     fontWeight: '600',
     textTransform: 'uppercase',
   },
@@ -4943,10 +5189,11 @@ const styles = StyleSheet.create({
   },
   categoriesDescription: {
     fontSize: 16,
-    color: '#ffffff',
-    textAlign: 'center',
+    color: '#64748b',
+    textAlign: 'left',
     marginBottom: 24,
     lineHeight: 24,
+    fontWeight: '500',
   },
   categoriesGrid: {
     flexDirection: 'row',
@@ -5058,8 +5305,10 @@ const styles = StyleSheet.create({
   },
   frequentlyVisitedImageContainer: {
     width: '100%',
-    height: 120,
+    height: 160,
     position: 'relative',
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   frequentlyVisitedImage: {
     width: '100%',
@@ -5185,6 +5434,8 @@ const styles = StyleSheet.create({
   nearbyHospitalImageContainer: {
     position: 'relative',
     marginBottom: 12,
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   nearbyHospitalImage: {
     width: '100%',
@@ -5973,8 +6224,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   topHospitalImageContainer: {
-    height: 90,
-    borderRadius: 12,
+    height: 160,
+    borderRadius: 24,
     overflow: 'hidden',
     marginBottom: 10,
     position: 'relative',
@@ -6086,9 +6337,10 @@ const styles = StyleSheet.create({
   categoriesHeaderGradient: {
     paddingTop: 20,
     paddingBottom: 30,
-    borderRadius: 24,
+    borderRadius: 0,
     margin: 16,
-    overflow: 'hidden',
+    overflow: 'visible',
+    backgroundColor: 'transparent',
   },
   categoriesHeaderContent: {
     paddingHorizontal: 20,
@@ -6113,19 +6365,20 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#dbeafe',
   },
   categoriesHeaderTextContainer: {
     flex: 1,
   },
   categoriesMainTitle: {
     fontSize: 24,
-    fontWeight: '800',
-    color: '#ffffff',
+    fontWeight: '700',
+    color: '#1a202c',
     marginBottom: 4,
   },
   categoriesHeaderSubtitle: {
     fontSize: 16,
-    color: '#ffffff',
+    color: '#4b5563',
     fontWeight: '500',
   },
   categoriesHeaderBadge: {
@@ -6321,5 +6574,51 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     paddingHorizontal: 32,
     lineHeight: 20,
+  },
+  
+  // Image Carousel Navigation Styles
+  imageNavButton: {
+    position: 'absolute',
+    top: '50%',
+    transform: [{ translateY: -16 }],
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  imageNavButtonLeft: {
+    left: 8,
+  },
+  imageNavButtonRight: {
+    right: 8,
+  },
+  imageIndicators: {
+    position: 'absolute',
+    bottom: 8,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+    zIndex: 10,
+  },
+  imageIndicatorDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  imageIndicatorDotActive: {
+    backgroundColor: '#ffffff',
+    width: 20,
   },
 });

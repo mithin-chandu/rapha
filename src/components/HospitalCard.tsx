@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Animated, Image, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize, shadows, fontWeight } from '../utils/colors';
@@ -21,6 +21,8 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
   showBookButton = true,
 }) => {
   const scaleAnim = React.useRef(new Animated.Value(1)).current;
+  const [currentImageIndex, setCurrentImageIndex] = React.useState(0);
+  const [showNavButtons, setShowNavButtons] = React.useState(false);
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -38,6 +40,68 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
 
   const handlePress = () => {
     onPress(hospital);
+  };
+
+  const handleNextImage = () => {
+    if (hospital.images && hospital.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % hospital.images!.length);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (hospital.images && hospital.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + hospital.images!.length) % hospital.images!.length);
+    }
+  };
+
+  const renderImageCarousel = () => {
+    if (!hospital.images || hospital.images.length === 0) {
+      return (
+        <View style={styles.imagePlaceholder}>
+          <Ionicons name="image" size={40} color={colors.textSecondary} />
+        </View>
+      );
+    }
+
+    // Show nav buttons by default on web, on demand on mobile
+    const shouldShowButtons = Platform.OS === 'web' || showNavButtons;
+
+    return (
+      <View style={styles.imageContainer}>
+        <Image
+          source={hospital.images[currentImageIndex]}
+          style={styles.carouselImage}
+          resizeMode="cover"
+        />
+        
+        {hospital.images.length > 1 && (
+          <>
+            {shouldShowButtons && (
+              <>
+                <TouchableOpacity
+                  style={[styles.navButton, styles.prevButton]}
+                  onPress={handlePrevImage}
+                >
+                  <Ionicons name="chevron-back" size={24} color={colors.textWhite} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.navButton, styles.nextButton]}
+                  onPress={handleNextImage}
+                >
+                  <Ionicons name="chevron-forward" size={24} color={colors.textWhite} />
+                </TouchableOpacity>
+              </>
+            )}
+            
+            <View style={styles.imageIndicator}>
+              <Text style={styles.imageIndicatorText}>
+                {currentImageIndex + 1} / {hospital.images.length}
+              </Text>
+            </View>
+          </>
+        )}
+      </View>
+    );
   };
 
   const getAvailabilityStatus = () => {
@@ -62,24 +126,8 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
           activeOpacity={0.9}
         >
           <Card variant="elevated" padding="none" shadow="lg" style={styles.featuredCard}>
-            {/* Hero Image Placeholder */}
-            <LinearGradient
-              colors={[colors.primary, colors.primaryLight]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.heroSection}
-            >
-              <View style={styles.heroContent}>
-                <View style={styles.availabilityBadge}>
-                  <View style={[styles.statusDot, { backgroundColor: availability.color }]} />
-                  <Text style={styles.availabilityText}>{availability.text}</Text>
-                </View>
-                <View style={styles.ratingBadge}>
-                  <Ionicons name="star" size={14} color={colors.warning} />
-                  <Text style={styles.ratingText}>{hospital.rating}</Text>
-                </View>
-              </View>
-            </LinearGradient>
+            {/* Image Carousel */}
+            {renderImageCarousel()}
 
             <View style={styles.featuredContent}>
               <View style={styles.headerRow}>
@@ -184,24 +232,27 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
         onPressOut={handlePressOut}
         activeOpacity={0.9}
       >
-        <Card variant="elevated" padding="lg" shadow="md" style={styles.defaultCard}>
-          <View style={styles.cardHeader}>
-            <View style={styles.hospitalIcon}>
-              <Ionicons name="medical" size={24} color={colors.primary} />
-            </View>
-            <View style={styles.headerBadges}>
-              <View style={styles.availabilityIndicator}>
-                <View style={[styles.statusDot, { backgroundColor: availability.color }]} />
-                <Text style={styles.statusText}>{availability.text}</Text>
-              </View>
-              <View style={styles.ratingContainer}>
-                <Ionicons name="star" size={14} color={colors.warning} />
-                <Text style={styles.rating}>{hospital.rating}</Text>
-              </View>
-            </View>
-          </View>
+        <Card variant="elevated" padding="none" shadow="md" style={styles.defaultCard}>
+          {/* Image Carousel */}
+          {renderImageCarousel()}
           
           <View style={styles.cardContent}>
+            <View style={styles.cardHeader}>
+              <View style={styles.hospitalIcon}>
+                <Ionicons name="medical" size={24} color={colors.primary} />
+              </View>
+              <View style={styles.headerBadges}>
+                <View style={styles.availabilityIndicator}>
+                  <View style={[styles.statusDot, { backgroundColor: colors.success }]} />
+                  <Text style={styles.statusText}>Open</Text>
+                </View>
+                <View style={styles.ratingContainer}>
+                  <Ionicons name="star" size={14} color={colors.warning} />
+                  <Text style={styles.rating}>{hospital.rating}</Text>
+                </View>
+              </View>
+            </View>
+            
             <Text style={styles.hospitalName}>{hospital.name}</Text>
             <Text style={styles.specialization}>{hospital.specialization}</Text>
             
@@ -534,5 +585,56 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.borderLight,
     paddingTop: spacing.lg,
+  },
+
+  // Image Carousel styles
+  imagePlaceholder: {
+    height: 300,
+    backgroundColor: colors.backgroundSecondary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  imageContainer: {
+    position: 'relative',
+    height: 300,
+    overflow: 'hidden',
+    backgroundColor: colors.backgroundSecondary,
+  },
+  carouselImage: {
+    width: '100%',
+    height: '100%',
+  },
+  navButton: {
+    position: 'absolute',
+    top: '50%',
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  prevButton: {
+    left: spacing.md,
+    marginTop: -22,
+  },
+  nextButton: {
+    right: spacing.md,
+    marginTop: -22,
+  },
+  imageIndicator: {
+    position: 'absolute',
+    bottom: spacing.md,
+    right: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+  },
+  imageIndicatorText: {
+    fontSize: fontSize.xs,
+    color: colors.textWhite,
+    fontWeight: '600',
   },
 });

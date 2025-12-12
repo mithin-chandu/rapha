@@ -1,0 +1,354 @@
+export interface Hospital {
+  id: number;
+  name: string;
+  specialization: string;
+  address: string;
+  rating: number;
+  image?: string;
+  images?: any[]; // Array of 5 images from different categories
+  description?: string;
+  visitorsCount?: number;
+}
+
+export const hospitals: Hospital[] = [
+  {
+    id: 1,
+    name: "Manipal Hospital Vijayawada",
+    specialization: "Cardiology, Neurology",
+    address: "NH-5, Tadepalli, Vijayawada, Andhra Pradesh",
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H1.jpg'),
+      require('../../assets/Interior Images/I1.jpg'),
+      require('../../assets/Interior Rooms Images/IR1.jpeg'),
+      require('../../assets/Operation Theatre Images/O1.webp'),
+      require('../../assets/Parking Area Images/P1.jpg')
+    ],
+    description: "Leading healthcare provider with state-of-the-art facilities and experienced medical professionals.",
+    visitorsCount: 12500
+  },
+  {
+    id: 2,
+    name: "Ramesh Hospitals",
+    specialization: "Orthopedics, General Medicine",
+    address: "Governorpet, Vijayawada, Andhra Pradesh",
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H2.jpg'),
+      require('../../assets/Interior Images/I2.webp'),
+      require('../../assets/Interior Rooms Images/IR2.jpg'),
+      require('../../assets/Operation Theatre Images/O2.jpg'),
+      require('../../assets/Parking Area Images/P2.jpg')
+    ],
+    description: "Comprehensive healthcare services with focus on orthopedic care and general medicine.",
+    visitorsCount: 8900
+  },
+  {
+    id: 3,
+    name: "Andhra Hospital",
+    specialization: "Pediatrics, Gynecology",
+    address: "Suryaraopet, Vijayawada, Andhra Pradesh",
+    rating: 4.7,
+    image: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H3.jpg'),
+      require('../../assets/Interior Images/I3.webp'),
+      require('../../assets/Interior Rooms Images/IR3.jpg'),
+      require('../../assets/Operation Theatre Images/O3.jpg'),
+      require('../../assets/Parking Area Images/P3.webp')
+    ],
+    description: "Specialized care for women and children with modern medical equipment.",
+    visitorsCount: 11200
+  },
+  {
+    id: 4,
+    name: "Vijaya Hospital",
+    specialization: "Emergency Care, Surgery",
+    address: "Benz Circle, Vijayawada, Andhra Pradesh",
+    rating: 4.5,
+    image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H4.jpeg'),
+      require('../../assets/Interior Images/I4.jpg'),
+      require('../../assets/Interior Rooms Images/IR4.jpg'),
+      require('../../assets/Operation Theatre Images/O4.jpg'),
+      require('../../assets/Parking Area Images/P4.jpg')
+    ],
+    description: "24/7 emergency services with expert surgical team and critical care units.",
+    visitorsCount: 9800
+  },
+  {
+    id: 5,
+    name: "Apollo Hospitals Vijayawada",
+    specialization: "Oncology, Cardiology",
+    address: "PWD Colony, Vijayawada, Andhra Pradesh",
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H5.jpg'),
+      require('../../assets/Interior Images/I5.jpg'),
+      require('../../assets/Interior Rooms Images/IR5.jpg'),
+      require('../../assets/Operation Theatre Images/O5.jpg'),
+      require('../../assets/Parking Area Images/P5.webp')
+    ],
+    description: "Premier cancer care and cardiac treatment center with international standards.",
+    visitorsCount: 15600
+  },
+  {
+    id: 6,
+    name: "Krishna Institute of Medical Sciences (KIMS)",
+    specialization: "Neurosurgery, Transplant",
+    address: "Minister Road, Secunderabad, Vijayawada, Andhra Pradesh",
+    rating: 4.7,
+    image:  "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H6.jpg'),
+      require('../../assets/Interior Images/I6.jpg'),
+      require('../../assets/Interior Rooms Images/IR6.webp'),
+      require('../../assets/Operation Theatre Images/O6.jpg'),
+      require('../../assets/Parking Area Images/P6.jpg')
+    ],
+    description: "Advanced neurosurgical procedures and organ transplant services.",
+    visitorsCount: 10400
+  },
+  {
+    id: 7,
+    name: "Medicover Hospitals Vijayawada",
+    specialization: "Gastroenterology, Urology",
+    address: "Benz Circle, Vijayawada, Andhra Pradesh",
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H7.jpg'),
+      require('../../assets/Interior Images/I7.webp'),
+      require('../../assets/Interior Rooms Images/IR7.webp'),
+      require('../../assets/Operation Theatre Images/O7.jpg'),
+      require('../../assets/Parking Area Images/P7.jpg')
+    ],
+    description: "Specialized digestive and urological care with minimally invasive procedures.",
+    visitorsCount: 7800
+  },
+  {
+    id: 8,
+    name: "Max Cure Hospitals",
+    specialization: "Dermatology, Plastic Surgery",
+    address: "Madhuranagar, Vijayawada, Andhra Pradesh",
+    rating: 4.5,
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H8.jpeg'),
+      require('../../assets/Interior Images/I8.webp'),
+      require('../../assets/Interior Rooms Images/IR8.jpg'),
+      require('../../assets/Operation Theatre Images/O8.jpg'),
+      require('../../assets/Parking Area Images/P8.jpeg')
+    ],
+    description: "Cosmetic and reconstructive surgery with dermatological expertise.",
+    visitorsCount: 6700
+  },
+  {
+    id: 9,
+    name: "Government General Hospital Vijayawada",
+    specialization: "Research, Multi-Specialty",
+    address: "Hospital Road, Vijayawada, Andhra Pradesh",
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H9.webp'),
+      require('../../assets/Interior Images/I9.jpg'),
+      require('../../assets/Interior Rooms Images/IR9.jpg'),
+      require('../../assets/Operation Theatre Images/O9.webp'),
+      require('../../assets/Parking Area Images/P9.jpg')
+    ],
+    description: "Premier medical institute with cutting-edge research and treatment facilities.",
+    visitorsCount: 18500
+  },
+  {
+    id: 10,
+    name: "Sterling Hospital",
+    specialization: "Robotic Surgery, ICU",
+    address: "Ring Road, Vijayawada, Andhra Pradesh",
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H10.jpg'),
+      require('../../assets/Interior Images/I10.jpg'),
+      require('../../assets/Interior Rooms Images/IR10.webp'),
+      require('../../assets/Operation Theatre Images/O10.webp'),
+      require('../../assets/Parking Area Images/P10.jpg')
+    ],
+    description: "State-of-the-art robotic surgical procedures and intensive care units.",
+    visitorsCount: 14200
+  },
+  {
+    id: 11,
+    name: "Narayana Multispeciality Hospital",
+    specialization: "Cardiac Surgery, Pediatrics",
+    address: "Kanuru, Vijayawada, Andhra Pradesh",
+    rating: 4.7,
+    image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H11.jpg'),
+      require('../../assets/Interior Images/I11.jpg'),
+      require('../../assets/Interior Rooms Images/IR11.jpg'),
+      require('../../assets/Operation Theatre Images/O11.jpg'),
+      require('../../assets/Parking Area Images/P11.jpg')
+    ],
+    description: "Affordable cardiac surgery and comprehensive pediatric care services.",
+    visitorsCount: 13400
+  },
+  {
+    id: 12,
+    name: "Rainbow Children's Hospital Vijayawada",
+    specialization: "Liver Transplant, Nephrology",
+    address: "Auto Nagar, Vijayawada, Andhra Pradesh",
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1632833239869-a37e3a5806d2?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H12.jpg'),
+      require('../../assets/Interior Images/I12.webp'),
+      require('../../assets/Interior Rooms Images/IR12.webp'),
+      require('../../assets/Operation Theatre Images/O12.jpg'),
+      require('../../assets/Parking Area Images/P12.webp')
+    ],
+    description: "Leading liver transplant center with advanced kidney care facilities.",
+    visitorsCount: 9600
+  },
+  {
+    id: 13,
+    name: "Andhra Hospitals",
+    specialization: "Pediatric Care, NICU",
+    address: "Patamatalanka, Vijayawada, Andhra Pradesh",
+    rating: 4.6,
+    image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H13.webp'),
+      require('../../assets/Interior Images/I13.jpg'),
+      require('../../assets/Interior Rooms Images/IR13.jpeg'),
+      require('../../assets/Operation Theatre Images/O13.jpg'),
+      require('../../assets/Parking Area Images/P13.jpg')
+    ],
+    description: "Specialized pediatric care with advanced neonatal intensive care unit.",
+    visitorsCount: 8300
+  },
+  {
+    id: 14,
+    name: "Sai Balaji Multi Specialty Hospital",
+    specialization: "Liver Transplant, Gastroenterology",
+    address: "Gandhinagar, Vijayawada, Andhra Pradesh",
+    rating: 4.5,
+    image: "https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H14.jpeg'),
+      require('../../assets/Interior Images/I14.jpeg'),
+      require('../../assets/Interior Rooms Images/IR14.jpg'),
+      require('../../assets/Operation Theatre Images/O14.jpg'),
+      require('../../assets/Parking Area Images/P14.jpeg')
+    ],
+    description: "Advanced liver transplant and gastroenterology services with expert care.",
+    visitorsCount: 7500
+  },
+  {
+    id: 15,
+    name: "Continental Hospitals Vijayawada",
+    specialization: "Emergency Care, Maternity",
+    address: "Labbipet, Vijayawada, Andhra Pradesh",
+    rating: 4.4,
+    image: "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H15.jpg'),
+      require('../../assets/Interior Images/I15.jpg'),
+      require('../../assets/Interior Rooms Images/IR15.jpg'),
+      require('../../assets/Operation Theatre Images/O15.jpg'),
+      require('../../assets/Parking Area Images/P15.jpg')
+    ],
+    description: "Comprehensive emergency services and specialized maternity care.",
+    visitorsCount: 6900
+  },
+  {
+    id: 16,
+    name: "Bhavani Hospital",
+    specialization: "General Medicine, Surgery",
+    address: "Eluru Road, Vijayawada, Andhra Pradesh",
+    rating: 4.3,
+    image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H16.jpeg'),
+      require('../../assets/Interior Images/I16.jpg'),
+      require('../../assets/Interior Rooms Images/IR16.jpg'),
+      require('../../assets/Operation Theatre Images/O16.webp'),
+      require('../../assets/Parking Area Images/P16.jpg')
+    ],
+    description: "Established hospital providing general medical and surgical services.",
+    visitorsCount: 5800
+  },
+  {
+    id: 17,
+    name: "Care Hospital Vijayawada",
+    specialization: "Cardiac Speciality, Interventional",
+    address: "Health City, Vijayawada, Andhra Pradesh",
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H17.webp'),
+      require('../../assets/Interior Images/I17.jpg'),
+      require('../../assets/Interior Rooms Images/IR17.jpg'),
+      require('../../assets/Operation Theatre Images/O17.jpg'),
+      require('../../assets/Parking Area Images/P17.jpg')
+    ],
+    description: "Premier cardiac care institute with interventional cardiology expertise.",
+    visitorsCount: 12800
+  },
+  {
+    id: 18,
+    name: "VJ's Children's Hospital",
+    specialization: "Cancer Care, Radiology",
+    address: "One Town, Vijayawada, Andhra Pradesh",
+    rating: 4.5,
+    image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H18.jpg'),
+      require('../../assets/Interior Images/I18.jpg'),
+      require('../../assets/Interior Rooms Images/IR18.jpg'),
+      require('../../assets/Operation Theatre Images/O18.jpg'),
+      require('../../assets/Parking Area Images/P18.webp')
+    ],
+    description: "Advanced cancer treatment and diagnostic radiology services.",
+    visitorsCount: 8700
+  },
+  {
+    id: 19,
+    name: "Amaravathi Hospital",
+    specialization: "Nephrology, Urology",
+    address: "Amaravathi Road, Vijayawada, Andhra Pradesh",
+    rating: 4.4,
+    image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('./../assets/Hospital Images/H19.webp'),
+      require('../../assets/Interior Images/I19.jpg'),
+      require('../../assets/Interior Rooms Images/IR19.jpg'),
+      require('../../assets/Operation Theatre Images/O19.avif'),
+      require('../../assets/Parking Area Images/P19.webp')
+    ],
+    description: "Specialized kidney and urological care with dialysis facilities.",
+    visitorsCount: 7200
+  },
+  {
+    id: 20,
+    name: "Lotus Hospital Vijayawada",
+    specialization: "Oncology, Gastroenterology",
+    address: "Kanuru, Vijayawada, Andhra Pradesh",
+    rating: 4.7,
+    image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center",
+    images: [
+      require('../../assets/Hospital Images/H20.jpg'),
+      require('../../assets/Interior Images/I20.JPG'),
+      require('../../assets/Interior Rooms Images/IR20.jpg'),
+      require('../../assets/Operation Theatre Images/O20.webp'),
+      require('../../assets/Parking Area Images/P20.jpg')
+    ],
+    description: "Comprehensive cancer care and advanced gastroenterology treatments.",
+    visitorsCount: 11700
+  }
+];

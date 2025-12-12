@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
 import { colors, spacing, borderRadius, fontSize } from '../../utils/colors';
 import { Header } from '../../components/Header';
 import { DoctorCard } from '../../components/DoctorCard';
+import { ImageCarousel } from '../../components/ImageCarousel';
 import { Hospital } from '../../data/hospitals';
 import { doctors, Doctor } from '../../data/doctors';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,6 +24,8 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
 }) => {
   const { hospital } = route.params;
   const [hospitalDoctors, setHospitalDoctors] = useState<Doctor[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showImageNavButtons, setShowImageNavButtons] = useState(false);
 
   useEffect(() => {
     // Filter doctors by hospital ID
@@ -41,6 +44,18 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
 
   const handleBackPress = () => {
     navigation.goBack();
+  };
+
+  const handleNextImage = () => {
+    if (hospital.images && hospital.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % hospital.images!.length);
+    }
+  };
+
+  const handlePrevImage = () => {
+    if (hospital.images && hospital.images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + hospital.images!.length) % hospital.images!.length);
+    }
   };
 
   return (
@@ -83,6 +98,65 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
             <Text style={styles.specialization}>{hospital.specialization}</Text>
           </LinearGradient>
         </View>
+
+        {/* Hospital Images Gallery */}
+        {hospital.images && hospital.images.length > 0 && (
+          <View style={styles.gallerySection}>
+            <View
+              style={styles.imageCarouselContainer}
+            >
+              <Image
+                source={hospital.images[currentImageIndex]}
+                style={styles.galleryImage}
+                resizeMode="cover"
+              />
+
+              {hospital.images.length > 1 && (
+                <>
+                  <TouchableOpacity
+                    style={[styles.navButton, styles.prevButton]}
+                    onPress={handlePrevImage}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons name="chevron-back" size={24} color="#fff" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.navButton, styles.nextButton]}
+                    onPress={handleNextImage}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons name="chevron-forward" size={24} color="#fff" />
+                  </TouchableOpacity>
+                  
+                  <View style={styles.imageIndicator}>
+                    <Text style={styles.imageIndicatorText}>
+                      {currentImageIndex + 1} / {hospital.images.length}
+                    </Text>
+                  </View>
+                </>
+              )}
+            </View>
+
+            {/* Image Thumbnails */}
+            {hospital.images.length > 1 && (
+              <View style={styles.thumbnailsContainer}>
+                {hospital.images.map((img, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.thumbnail,
+                      index === currentImageIndex && styles.thumbnailActive
+                    ]}
+                    onPress={() => setCurrentImageIndex(index)}
+                    activeOpacity={0.7}
+                  >
+                    <Image source={img} style={styles.thumbnailImage} resizeMode="cover" />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
 
         {/* Quick Info Cards */}
         <View style={styles.quickInfoSection}>
@@ -513,6 +587,78 @@ const styles = StyleSheet.create({
     right: 0,
     paddingHorizontal: 24,
     paddingVertical: 30,
+  },
+  gallerySection: {
+    backgroundColor: '#ffffff',
+    marginTop: spacing.lg,
+    paddingHorizontal: spacing.md,
+  },
+  imageCarouselContainer: {
+    position: 'relative',
+    height: 300,
+    borderRadius: borderRadius.xl,
+    overflow: 'hidden',
+    backgroundColor: colors.backgroundSecondary,
+    marginHorizontal: spacing.md,
+    marginVertical: spacing.md,
+  },
+  galleryImage: {
+    width: '100%',
+    height: '100%',
+  },
+  navButton: {
+    position: 'absolute',
+    top: '50%',
+    transform: [{ translateY: -24 }],
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  prevButton: {
+    left: spacing.md,
+  },
+  nextButton: {
+    right: spacing.md,
+  },
+  imageIndicator: {
+    position: 'absolute',
+    bottom: spacing.md,
+    right: spacing.md,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    zIndex: 10,
+  },
+  imageIndicatorText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  thumbnailsContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.md,
+    gap: spacing.sm,
+  },
+  thumbnail: {
+    width: 80,
+    height: 80,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  thumbnailActive: {
+    borderColor: colors.primary,
+  },
+  thumbnailImage: {
+    width: '100%',
+    height: '100%',
   },
 
   quickInfoSection: {

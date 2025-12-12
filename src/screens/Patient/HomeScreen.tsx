@@ -207,6 +207,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
   const [currentLocation, setCurrentLocation] = useState('Your Location');
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [hospitalImageIndices, setHospitalImageIndices] = useState<{ [key: number]: number }>({});
+  const [hoveredCardId, setHoveredCardId] = useState<number | null>(null);
 
   // Demo discount data
   const discounts = {
@@ -479,6 +481,46 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
     const trafficMultiplier = 1 + (Math.random() * 0.5); // Traffic factor 1.0-1.5x
     const totalTime = Math.round(baseTime * trafficMultiplier);
     return totalTime;
+  };
+
+  // Image carousel handlers
+  const getCurrentImageIndex = (hospitalId: number) => {
+    return hospitalImageIndices[hospitalId] || 0;
+  };
+
+  const handleNextImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    setHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  const handlePreviousImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    setHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  const getCurrentImage = (hospital: Hospital): string | any => {
+    const images = hospital.images;
+    if (!images || images.length === 0) {
+      return hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center';
+    }
+    const currentIndex = getCurrentImageIndex(hospital.id);
+    return images[currentIndex];
   };
 
   // Responsive breakpoints
@@ -1294,7 +1336,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                     })}
                   >
                     <View style={{ width: '100%', height: '100%', backgroundColor: '#ffffff' }}>
-                      {/* Hospital Image */}
+                      {/* Hospital Image with Carousel */}
                       <View style={{
                         height: 130,
                         position: 'relative',
@@ -1303,9 +1345,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                         borderColor: '#e5e7eb',
                         borderRadius: 12,
                         overflow: 'hidden',
-                      }}>
+                      }}
+                      {...(Platform.OS === 'web' && {
+                        onMouseEnter: () => setHoveredCardId(item.id),
+                        onMouseLeave: () => setHoveredCardId(null),
+                      })}
+                      >
                         <Image
-                          source={{ uri: item.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
+                          source={typeof getCurrentImage(item) === 'string' 
+                            ? { uri: getCurrentImage(item) }
+                            : getCurrentImage(item)
+                          }
                           style={{
                             width: '100%',
                             height: '100%',
@@ -1313,6 +1363,92 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                           }}
                           defaultSource={require('../../../assets/image.png')}
                         />
+                        
+                        {/* Navigation Buttons */}
+                        {item.images && item.images.length > 1 && (
+                          <>
+                            {/* Left Button */}
+                            {hoveredCardId === item.id && (
+                              <TouchableOpacity
+                                onPress={(e) => handlePreviousImage(item.id, item, e)}
+                                style={{
+                                  position: 'absolute',
+                                  left: 8,
+                                  top: '50%',
+                                  transform: [{ translateY: -18 }],
+                                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                  borderRadius: 18,
+                                  width: 36,
+                                  height: 36,
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  zIndex: 10,
+                                  shadowColor: '#000000',
+                                  shadowOffset: { width: 0, height: 2 },
+                                  shadowOpacity: 0.25,
+                                  shadowRadius: 4,
+                                  elevation: 5,
+                                }}
+                                activeOpacity={0.7}
+                              >
+                                <Ionicons name="chevron-back" size={20} color="#1f2937" />
+                              </TouchableOpacity>
+                            )}
+
+                            {/* Right Button */}
+                            {hoveredCardId === item.id && (
+                              <TouchableOpacity
+                                onPress={(e) => handleNextImage(item.id, item, e)}
+                                style={{
+                                  position: 'absolute',
+                                  right: 8,
+                                  top: '50%',
+                                  transform: [{ translateY: -18 }],
+                                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                                  borderRadius: 18,
+                                  width: 36,
+                                  height: 36,
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  zIndex: 10,
+                                  shadowColor: '#000000',
+                                  shadowOffset: { width: 0, height: 2 },
+                                  shadowOpacity: 0.25,
+                                  shadowRadius: 4,
+                                  elevation: 5,
+                                }}
+                                activeOpacity={0.7}
+                              >
+                                <Ionicons name="chevron-forward" size={20} color="#1f2937" />
+                              </TouchableOpacity>
+                            )}
+
+                            {/* Image Counter */}
+                            <View style={{
+                              position: 'absolute',
+                              bottom: 8,
+                              left: '50%',
+                              transform: [{ translateX: -20 }],
+                              backgroundColor: 'rgba(0, 0, 0, 0.6)',
+                              paddingHorizontal: 8,
+                              paddingVertical: 4,
+                              borderRadius: 12,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: 4,
+                              zIndex: 8,
+                            }}>
+                              <Text style={{
+                                fontSize: 11,
+                                fontWeight: '600',
+                                color: '#ffffff',
+                              }}>
+                                {getCurrentImageIndex(item.id) + 1}/{item.images.length}
+                              </Text>
+                            </View>
+                          </>
+                        )}
+
                         {/* Rating Badge */}
                         <View style={{
                           position: 'absolute',
