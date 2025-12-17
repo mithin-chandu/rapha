@@ -107,7 +107,7 @@ const EHRScreen: React.FC = () => {
           {/* Quick Overview Stats */}
           <View style={styles.ehrQuickStats}>
             <View style={styles.ehrQuickStatItem}>
-              <View style={styles.ehrQuickStatIcon}>
+              <View style={[styles.ehrQuickStatIcon, { backgroundColor: '#f3e8ff' }]}>
                 <Ionicons name="folder-open-outline" size={20} color="#7c3aed" />
               </View>
               <Text style={styles.ehrQuickStatNumber}>{ehrRecords.length}</Text>
@@ -115,7 +115,7 @@ const EHRScreen: React.FC = () => {
             </View>
             
             <View style={styles.ehrQuickStatItem}>
-              <View style={styles.ehrQuickStatIcon}>
+              <View style={[styles.ehrQuickStatIcon, { backgroundColor: '#fef3c7' }]}>
                 <Ionicons name="calendar-outline" size={20} color="#f59e0b" />
               </View>
               <Text style={styles.ehrQuickStatNumber}>{upcomingFollowUps.length}</Text>
@@ -123,17 +123,17 @@ const EHRScreen: React.FC = () => {
             </View>
             
             <View style={styles.ehrQuickStatItem}>
-              <View style={styles.ehrQuickStatIcon}>
+              <View style={[styles.ehrQuickStatIcon, { backgroundColor: '#dcfce7' }]}>
                 <Ionicons name="pulse-outline" size={20} color="#10b981" />
               </View>
               <Text style={styles.ehrQuickStatNumber}>
                 {ehrRecords.filter(r => r.status === 'Active').length}
               </Text>
-              <Text style={styles.ehrQuickStatLabel}>Critical</Text>
+              <Text style={styles.ehrQuickStatLabel}>Active</Text>
             </View>
             
             <View style={styles.ehrQuickStatItem}>
-              <View style={styles.ehrQuickStatIcon}>
+              <View style={[styles.ehrQuickStatIcon, { backgroundColor: '#e0f2fe' }]}>
                 <Ionicons name="shield-checkmark-outline" size={20} color="#0891b2" />
               </View>
               <Text style={styles.ehrQuickStatNumber}>
@@ -872,7 +872,7 @@ const styles = StyleSheet.create({
   // Quick Stats
   ehrQuickStats: {
     flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: '#ffffff',
     borderRadius: 40,
     padding: 20,
     gap: 12,
@@ -885,7 +885,6 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
