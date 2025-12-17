@@ -233,11 +233,15 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                 </View>
               )}
 
-              {/* Thumbnail Gallery */}
+              {/* Thumbnail Gallery (all images, scrollable) */}
               <View style={styles.thumbnailGallerySection}>
                 <Text style={styles.galleryTitle}>Image Gallery</Text>
-                <View style={styles.thumbnailContainer}>
-                  {hospital.images.slice(0, 3).map((image, index) => (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.thumbnailScrollContent}
+                >
+                  {hospital.images.map((image, index) => (
                     <TouchableOpacity 
                       key={index} 
                       style={styles.thumbnailWrapper}
@@ -251,7 +255,7 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                       <Text style={styles.thumbnailLabel}>Image {index + 1}</Text>
                     </TouchableOpacity>
                   ))}
-                </View>
+                </ScrollView>
               </View>
             </View>
           )}
@@ -647,13 +651,13 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     marginBottom: 16,
   },
-  thumbnailContainer: {
+  thumbnailScrollContent: {
     flexDirection: 'row',
     gap: 12,
-    justifyContent: 'space-between',
+    paddingRight: 12,
   },
   thumbnailWrapper: {
-    flex: 1,
+    width: 140,
     alignItems: 'center',
   },
   thumbnail: {
