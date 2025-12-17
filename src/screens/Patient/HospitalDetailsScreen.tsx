@@ -98,10 +98,10 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
       />
       
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* TWO COLUMN LAYOUT: Details on Left, Images on Right */}
+        {/* TWO COLUMN LAYOUT: Details on Left, Images on Right (only for intro sections) */}
         <View style={styles.mainWrapper}>
           
-          {/* LEFT COLUMN: DETAILS */}
+          {/* LEFT COLUMN: DETAILS (pre-departments) */}
           <ScrollView style={styles.leftColumn} showsVerticalScrollIndicator={false}>
             
             {/* SECTION 1: Hospital Info (Name, Specialization, Address, Buttons) */}
@@ -176,86 +176,6 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                 </TouchableOpacity>
               </View>
             )}
-
-            {/* SECTION 4: Hospital Departments */}
-            <View style={styles.departmentsSection}>
-              <Text style={styles.sectionTitle}>Hospital Departments</Text>
-              
-              <View style={styles.departmentsList}>
-                {hospital.specialization.split(',').map((dept, index) => (
-                  <View key={index} style={styles.departmentItem}>
-                    <LinearGradient
-                      colors={['#667eea', '#764ba2']}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={styles.departmentIcon}
-                    >
-                      <Ionicons name="medical-outline" size={18} color="#fff" />
-                    </LinearGradient>
-                    <Text style={styles.departmentName}>{dept.trim()}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-
-            {/* SECTION 5: Our Doctors */}
-            <View style={styles.doctorsSection}>
-              <Text style={styles.sectionTitle}>Our Doctors</Text>
-              
-              {hospitalDoctors.length > 0 ? (
-                <View style={styles.doctorsList}>
-                  {hospitalDoctors.map((doctor, doctorIndex) => (
-                    <View key={doctor.id} style={styles.doctorCardWrapper}>
-                      <View style={styles.doctorCardContent}>
-                        {/* Doctor Photo */}
-                        <View style={styles.doctorPhoto}>
-                          <Ionicons name="person-circle" size={80} color={colors.primary} />
-                        </View>
-
-                        {/* Doctor Info */}
-                        <View style={styles.doctorInfoSection}>
-                          <Text style={styles.doctorName}>{doctor.name}</Text>
-                          <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
-                          
-                          <View style={styles.doctorExperienceRow}>
-                            <Ionicons name="briefcase-outline" size={14} color={colors.primary} />
-                            <Text style={styles.doctorExperienceText}>
-                              {doctor.experience}
-                            </Text>
-                          </View>
-
-                          <View style={styles.consultationRow}>
-                            <Text style={styles.consultationLabelSmall}>Consultation Fee:</Text>
-                            <Text style={styles.consultationFeeSmall}>₹{doctor.consultationFee}</Text>
-                          </View>
-                        </View>
-
-                        {/* Book Button */}
-                        <TouchableOpacity 
-                          style={styles.bookButton}
-                          onPress={() => handleBookAppointment(doctor)}
-                        >
-                          <Text style={styles.bookButtonText}>Book</Text>
-                        </TouchableOpacity>
-                      </View>
-
-                      {/* Next Doctor Details Link */}
-                      <TouchableOpacity style={styles.nextDoctorLink}>
-                        <Text style={styles.nextDoctorLinkText}>Next Doctor Details</Text>
-                        <Ionicons name="chevron-forward" size={14} color={colors.primary} />
-                      </TouchableOpacity>
-                    </View>
-                  ))}
-                </View>
-              ) : (
-                <View style={styles.noDoctorsContainer}>
-                  <Ionicons name="medical-outline" size={48} color={colors.textLight} />
-                  <Text style={styles.noDoctorsText}>No doctors available</Text>
-                </View>
-              )}
-            </View>
-
-            <View style={styles.bottomSpacer} />
           </ScrollView>
 
           {/* RIGHT COLUMN: IMAGES */}
@@ -336,6 +256,89 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
             </View>
           )}
         </View>
+
+        {/* POST-DEPARTMENTS: full-width sections */}
+        <View style={styles.fullWidthContent}>
+          {/* SECTION 4: Hospital Departments */}
+          <View style={styles.departmentsSection}>
+            <Text style={styles.sectionTitle}>Hospital Departments</Text>
+            
+            <View style={styles.departmentsList}>
+              {hospital.specialization.split(',').map((dept, index) => (
+                <View key={index} style={styles.departmentItem}>
+                  <LinearGradient
+                    colors={['#667eea', '#764ba2']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.departmentIcon}
+                  >
+                    <Ionicons name="medical-outline" size={18} color="#fff" />
+                  </LinearGradient>
+                  <Text style={styles.departmentName}>{dept.trim()}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* SECTION 5: Our Doctors */}
+          <View style={styles.doctorsSection}>
+            <Text style={styles.sectionTitle}>Our Doctors</Text>
+            
+            {hospitalDoctors.length > 0 ? (
+              <View style={styles.doctorsList}>
+                {hospitalDoctors.map((doctor, doctorIndex) => (
+                  <View key={doctor.id} style={styles.doctorCardWrapper}>
+                    <View style={styles.doctorCardContent}>
+                      {/* Doctor Photo */}
+                      <View style={styles.doctorPhoto}>
+                        <Ionicons name="person-circle" size={80} color={colors.primary} />
+                      </View>
+
+                      {/* Doctor Info */}
+                      <View style={styles.doctorInfoSection}>
+                        <Text style={styles.doctorName}>{doctor.name}</Text>
+                        <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
+                        
+                        <View style={styles.doctorExperienceRow}>
+                          <Ionicons name="briefcase-outline" size={14} color={colors.primary} />
+                          <Text style={styles.doctorExperienceText}>
+                            {doctor.experience}
+                          </Text>
+                        </View>
+
+                        <View style={styles.consultationRow}>
+                          <Text style={styles.consultationLabelSmall}>Consultation Fee:</Text>
+                          <Text style={styles.consultationFeeSmall}>₹{doctor.consultationFee}</Text>
+                        </View>
+                      </View>
+
+                      {/* Book Button */}
+                      <TouchableOpacity 
+                        style={styles.bookButton}
+                        onPress={() => handleBookAppointment(doctor)}
+                      >
+                        <Text style={styles.bookButtonText}>Book</Text>
+                      </TouchableOpacity>
+                    </View>
+
+                    {/* Next Doctor Details Link */}
+                    <TouchableOpacity style={styles.nextDoctorLink}>
+                      <Text style={styles.nextDoctorLinkText}>Next Doctor Details</Text>
+                      <Ionicons name="chevron-forward" size={14} color={colors.primary} />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View style={styles.noDoctorsContainer}>
+                <Ionicons name="medical-outline" size={48} color={colors.textLight} />
+                <Text style={styles.noDoctorsText}>No doctors available</Text>
+              </View>
+            )}
+          </View>
+
+          <View style={styles.bottomSpacer} />
+        </View>
       </ScrollView>
     </View>
   );
@@ -368,6 +371,11 @@ const styles = StyleSheet.create({
     borderLeftColor: '#E2E8F0',
     backgroundColor: '#fafafa',
     justifyContent: 'flex-start',
+  },
+  fullWidthContent: {
+    paddingHorizontal: 20,
+    paddingVertical: 0,
+    flex: 1,
   },
   // ===== IMAGE CAROUSEL (RIGHT COLUMN) =====
   imageCarouselContainer: {
