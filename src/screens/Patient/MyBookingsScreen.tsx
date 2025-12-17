@@ -46,10 +46,19 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   const [displayedRecordsCount, setDisplayedRecordsCount] = useState(3);
   // Nearby hospitals state
   const [showAllNearbyHospitals, setShowAllNearbyHospitals] = useState(false);
-  // Image carousel state - track current image index for each hospital
-  const [currentImageIndices, setCurrentImageIndices] = useState<{ [key: number]: number }>({});
-  // Hovered card state for showing/hiding arrows
-  const [hoveredCardId, setHoveredCardId] = useState<number | null>(null);
+  // Image carousel state - SEPARATE tracking for nearby and frequently visited hospitals
+  // This prevents image carousel state from being shared between sections
+  const [nearbyHospitalImageIndices, setNearbyHospitalImageIndices] = useState<{ [key: number]: number }>({});
+  const [frequentlyVisitedImageIndices, setFrequentlyVisitedImageIndices] = useState<{ [key: number]: number }>({});
+  const [searchResultImageIndices, setSearchResultImageIndices] = useState<{ [key: number]: number }>({});
+  const [featuredHospitalImageIndices, setFeaturedHospitalImageIndices] = useState<{ [key: number]: number }>({});
+  const [topHospitalImageIndices, setTopHospitalImageIndices] = useState<{ [key: number]: number }>({});
+  // Hovered card state for showing/hiding arrows - SEPARATE for each section
+  const [hoveredNearbyCardId, setHoveredNearbyCardId] = useState<number | null>(null);
+  const [hoveredFrequentCardId, setHoveredFrequentCardId] = useState<number | null>(null);
+  const [hoveredSearchCardId, setHoveredSearchCardId] = useState<number | null>(null);
+  const [hoveredFeaturedCardId, setHoveredFeaturedCardId] = useState<number | null>(null);
+  const [hoveredTopCardId, setHoveredTopCardId] = useState<number | null>(null);
   
   // Utility function to ensure doctor name is displayed correctly
   const formatDoctorName = (name: string) => {
@@ -58,12 +67,12 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     return name.startsWith('Dr.') ? name : `Dr. ${name}`;
   };
 
-  // Image carousel helper functions
-  const getCurrentImageIndex = (hospitalId: number) => {
-    return currentImageIndices[hospitalId] || 0;
+  // Image carousel helper functions - NEARBY HOSPITALS
+  const getNearbyCurrentImageIndex = (hospitalId: number) => {
+    return nearbyHospitalImageIndices[hospitalId] || 0;
   };
 
-  const handlePreviousImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+  const handleNearbyPreviousImage = (hospitalId: number, hospital: Hospital, e?: any) => {
     if (e) {
       e.stopPropagation();
       e.preventDefault();
@@ -71,12 +80,12 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     const images = hospital.images || [];
     if (images.length <= 1) return;
     
-    const currentIndex = getCurrentImageIndex(hospitalId);
+    const currentIndex = getNearbyCurrentImageIndex(hospitalId);
     const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
-    setCurrentImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+    setNearbyHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
   };
 
-  const handleNextImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+  const handleNearbyNextImage = (hospitalId: number, hospital: Hospital, e?: any) => {
     if (e) {
       e.stopPropagation();
       e.preventDefault();
@@ -84,22 +93,146 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     const images = hospital.images || [];
     if (images.length <= 1) return;
     
-    const currentIndex = getCurrentImageIndex(hospitalId);
+    const currentIndex = getNearbyCurrentImageIndex(hospitalId);
     const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
-    setCurrentImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+    setNearbyHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
   };
 
-  const getCurrentImage = (hospital: Hospital): string | any => {
+  // Image carousel helper functions - FREQUENTLY VISITED HOSPITALS
+  const getFrequentCurrentImageIndex = (hospitalId: number) => {
+    return frequentlyVisitedImageIndices[hospitalId] || 0;
+  };
+
+  const handleFrequentPreviousImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getFrequentCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    setFrequentlyVisitedImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  const handleFrequentNextImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getFrequentCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    setFrequentlyVisitedImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  // Image carousel helper functions - SEARCH RESULTS
+  const getSearchCurrentImageIndex = (cardId: number) => {
+    return searchResultImageIndices[cardId] || 0;
+  };
+
+  const handleSearchPreviousImage = (cardId: number, card: any, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = card.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getSearchCurrentImageIndex(cardId);
+    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    setSearchResultImageIndices(prev => ({ ...prev, [cardId]: newIndex }));
+  };
+
+  const handleSearchNextImage = (cardId: number, card: any, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = card.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getSearchCurrentImageIndex(cardId);
+    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    setSearchResultImageIndices(prev => ({ ...prev, [cardId]: newIndex }));
+  };
+
+  // Image carousel helper functions - FEATURED HOSPITALS
+  const getFeaturedCurrentImageIndex = (hospitalId: number) => {
+    return featuredHospitalImageIndices[hospitalId] || 0;
+  };
+
+  const handleFeaturedPreviousImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getFeaturedCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    setFeaturedHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  const handleFeaturedNextImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getFeaturedCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    setFeaturedHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  // Image carousel helper functions - TOP HOSPITALS
+  const getTopCurrentImageIndex = (hospitalId: number) => {
+    return topHospitalImageIndices[hospitalId] || 0;
+  };
+
+  const handleTopPreviousImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getTopCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    setTopHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  const handleTopNextImage = (hospitalId: number, hospital: Hospital, e?: any) => {
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    const images = hospital.images || [];
+    if (images.length <= 1) return;
+    
+    const currentIndex = getTopCurrentImageIndex(hospitalId);
+    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    setTopHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
+  };
+
+  const getCurrentImage = (hospital: Hospital, imageIndices: { [key: number]: number }): string | any => {
     const images = hospital.images;
     if (!images || images.length === 0) {
       return hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center';
     }
-    const currentIndex = getCurrentImageIndex(hospital.id);
+    const currentIndex = imageIndices[hospital.id] || 0;
     return images[currentIndex];
   };
 
-  const getImageSource = (item: Hospital | any) => {
-    const currentImg = getCurrentImage(item);
+  const getImageSource = (item: Hospital | any, imageIndices: { [key: number]: number }) => {
+    const currentImg = getCurrentImage(item, imageIndices);
     return typeof currentImg === 'string' ? { uri: currentImg } : currentImg;
   };
   
@@ -730,14 +863,14 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           {/* Card Image with Carousel */}
           <View style={styles.compactImageContainer}
             {...(Platform.OS === 'web' && {
-              onMouseEnter: () => setHoveredCardId(item.id),
-              onMouseLeave: () => setHoveredCardId(null),
+              onMouseEnter: () => setHoveredSearchCardId(item.id),
+              onMouseLeave: () => setHoveredSearchCardId(null),
             })}
           >
             {item.image || (item.images && item.images.length > 0) ? (
               <>
                 <Image 
-                  source={getImageSource(item)}
+                  source={getImageSource(item, searchResultImageIndices)}
                   style={styles.compactImage}
                   resizeMode="cover"
                 />
@@ -745,20 +878,20 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 {/* Image Navigation Arrows */}
                 {item.images && item.images.length > 1 && (
                   <>
-                    {hoveredCardId === item.id && (
+                    {hoveredSearchCardId === item.id && (
                       <TouchableOpacity
                         style={[styles.imageNavButton, styles.imageNavButtonLeft, { width: 24, height: 24 }]}
-                        onPress={(e) => handlePreviousImage(item.id, item, e)}
+                        onPress={(e) => handleSearchPreviousImage(item.id, item, e)}
                         activeOpacity={0.7}
                       >
                         <Ionicons name="chevron-back" size={16} color="#ffffff" />
                       </TouchableOpacity>
                     )}
                     
-                    {hoveredCardId === item.id && (
+                    {hoveredSearchCardId === item.id && (
                       <TouchableOpacity
                         style={[styles.imageNavButton, styles.imageNavButtonRight, { width: 24, height: 24 }]}
-                        onPress={(e) => handleNextImage(item.id, item, e)}
+                        onPress={(e) => handleSearchNextImage(item.id, item, e)}
                         activeOpacity={0.7}
                       >
                         <Ionicons name="chevron-forward" size={16} color="#ffffff" />
@@ -773,7 +906,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                           style={[
                             styles.imageIndicatorDot,
                             { width: 4, height: 4 },
-                            getCurrentImageIndex(item.id) === idx && styles.imageIndicatorDotActive
+                            getSearchCurrentImageIndex(item.id) === idx && styles.imageIndicatorDotActive
                           ]}
                         />
                       ))}
@@ -1960,32 +2093,32 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                     {/* Hospital Image with Carousel */}
                     <View style={styles.topHospitalImageContainer}
                       {...(Platform.OS === 'web' && {
-                        onMouseEnter: () => setHoveredCardId(hospital.id),
-                        onMouseLeave: () => setHoveredCardId(null),
+                        onMouseEnter: () => setHoveredFeaturedCardId(hospital.id),
+                        onMouseLeave: () => setHoveredFeaturedCardId(null),
                       })}
                     >
                       <Image
-                        source={getImageSource(hospital)}
+                        source={getImageSource(hospital, featuredHospitalImageIndices)}
                         style={styles.topHospitalImage}
                       />
                       
                       {/* Image Navigation Arrows */}
                       {hospital.images && hospital.images.length > 1 && (
                         <>
-                          {hoveredCardId === hospital.id && (
+                          {hoveredFeaturedCardId === hospital.id && (
                             <TouchableOpacity
                               style={[styles.imageNavButton, styles.imageNavButtonLeft]}
-                              onPress={(e) => handlePreviousImage(hospital.id, hospital, e)}
+                              onPress={(e) => handleFeaturedPreviousImage(hospital.id, hospital, e)}
                               activeOpacity={0.7}
                             >
                               <Ionicons name="chevron-back" size={20} color="#ffffff" />
                             </TouchableOpacity>
                           )}
                           
-                          {hoveredCardId === hospital.id && (
+                          {hoveredFeaturedCardId === hospital.id && (
                             <TouchableOpacity
                               style={[styles.imageNavButton, styles.imageNavButtonRight]}
-                              onPress={(e) => handleNextImage(hospital.id, hospital, e)}
+                              onPress={(e) => handleFeaturedNextImage(hospital.id, hospital, e)}
                               activeOpacity={0.7}
                             >
                               <Ionicons name="chevron-forward" size={20} color="#ffffff" />
@@ -1999,7 +2132,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                                 key={idx}
                                 style={[
                                   styles.imageIndicatorDot,
-                                  getCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
+                                  getFeaturedCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
                                 ]}
                               />
                             ))}
@@ -2115,32 +2248,32 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                     {/* Hospital Image with Carousel */}
                     <View style={styles.topHospitalImageContainer}
                       {...(Platform.OS === 'web' && {
-                        onMouseEnter: () => setHoveredCardId(hospital.id),
-                        onMouseLeave: () => setHoveredCardId(null),
+                        onMouseEnter: () => setHoveredTopCardId(hospital.id),
+                        onMouseLeave: () => setHoveredTopCardId(null),
                       })}
                     >
                       <Image
-                        source={getImageSource(hospital)}
+                        source={getImageSource(hospital, topHospitalImageIndices)}
                         style={styles.topHospitalImage}
                       />
                       
                       {/* Image Navigation Arrows */}
                       {hospital.images && hospital.images.length > 1 && (
                         <>
-                          {hoveredCardId === hospital.id && (
+                          {hoveredTopCardId === hospital.id && (
                             <TouchableOpacity
                               style={[styles.imageNavButton, styles.imageNavButtonLeft]}
-                              onPress={(e) => handlePreviousImage(hospital.id, hospital, e)}
+                              onPress={(e) => handleTopPreviousImage(hospital.id, hospital, e)}
                               activeOpacity={0.7}
                             >
                               <Ionicons name="chevron-back" size={20} color="#ffffff" />
                             </TouchableOpacity>
                           )}
                           
-                          {hoveredCardId === hospital.id && (
+                          {hoveredTopCardId === hospital.id && (
                             <TouchableOpacity
                               style={[styles.imageNavButton, styles.imageNavButtonRight]}
-                              onPress={(e) => handleNextImage(hospital.id, hospital, e)}
+                              onPress={(e) => handleTopNextImage(hospital.id, hospital, e)}
                               activeOpacity={0.7}
                             >
                               <Ionicons name="chevron-forward" size={20} color="#ffffff" />
@@ -2154,7 +2287,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                                 key={idx}
                                 style={[
                                   styles.imageIndicatorDot,
-                                  getCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
+                                  getTopCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
                                 ]}
                               />
                             ))}
@@ -2278,32 +2411,32 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
               <View style={styles.frequentlyVisitedCardContent}>
                 <View style={styles.frequentlyVisitedImageContainer}
                   {...(Platform.OS === 'web' && {
-                    onMouseEnter: () => setHoveredCardId(hospital.id),
-                    onMouseLeave: () => setHoveredCardId(null),
+                    onMouseEnter: () => setHoveredFrequentCardId(hospital.id),
+                    onMouseLeave: () => setHoveredFrequentCardId(null),
                   })}
                 >
                   <Image
-                    source={getImageSource(hospital)}
+                    source={getImageSource(hospital, frequentlyVisitedImageIndices)}
                     style={styles.frequentlyVisitedImage}
                   />
                   
                   {/* Image Navigation Arrows */}
                   {hospital.images && hospital.images.length > 1 && (
                     <>
-                      {hoveredCardId === hospital.id && (
+                      {hoveredFrequentCardId === hospital.id && (
                         <TouchableOpacity
                           style={[styles.imageNavButton, styles.imageNavButtonLeft]}
-                          onPress={(e) => handlePreviousImage(hospital.id, hospital, e)}
+                          onPress={(e) => handleFrequentPreviousImage(hospital.id, hospital, e)}
                           activeOpacity={0.7}
                         >
                           <Ionicons name="chevron-back" size={18} color="#ffffff" />
                         </TouchableOpacity>
                       )}
                       
-                      {hoveredCardId === hospital.id && (
+                      {hoveredFrequentCardId === hospital.id && (
                         <TouchableOpacity
                           style={[styles.imageNavButton, styles.imageNavButtonRight]}
-                          onPress={(e) => handleNextImage(hospital.id, hospital, e)}
+                          onPress={(e) => handleFrequentNextImage(hospital.id, hospital, e)}
                           activeOpacity={0.7}
                         >
                           <Ionicons name="chevron-forward" size={18} color="#ffffff" />
@@ -2317,7 +2450,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                             key={idx}
                             style={[
                               styles.imageIndicatorDot,
-                              getCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
+                              getFrequentCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
                             ]}
                           />
                         ))}
@@ -2406,32 +2539,32 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                       <View style={styles.nearbyHospitalGradient}>
                         <View style={styles.nearbyHospitalImageContainer}
                           {...(Platform.OS === 'web' && {
-                            onMouseEnter: () => setHoveredCardId(hospital.id),
-                            onMouseLeave: () => setHoveredCardId(null),
+                            onMouseEnter: () => setHoveredNearbyCardId(hospital.id),
+                            onMouseLeave: () => setHoveredNearbyCardId(null),
                           })}
                         >
                           <Image
-                            source={getImageSource(hospital)}
+                            source={getImageSource(hospital, nearbyHospitalImageIndices)}
                             style={styles.nearbyHospitalImage}
                           />
                           
                           {/* Image Navigation Arrows */}
                           {hospital.images && hospital.images.length > 1 && (
                             <>
-                              {hoveredCardId === hospital.id && (
+                              {hoveredNearbyCardId === hospital.id && (
                                 <TouchableOpacity
                                   style={[styles.imageNavButton, styles.imageNavButtonLeft, { width: 28, height: 28 }]}
-                                  onPress={(e) => handlePreviousImage(hospital.id, hospital, e)}
+                                  onPress={(e) => handleNearbyPreviousImage(hospital.id, hospital, e)}
                                   activeOpacity={0.7}
                                 >
                                   <Ionicons name="chevron-back" size={16} color="#ffffff" />
                                 </TouchableOpacity>
                               )}
                               
-                              {hoveredCardId === hospital.id && (
+                              {hoveredNearbyCardId === hospital.id && (
                                 <TouchableOpacity
                                   style={[styles.imageNavButton, styles.imageNavButtonRight, { width: 28, height: 28 }]}
-                                  onPress={(e) => handleNextImage(hospital.id, hospital, e)}
+                                  onPress={(e) => handleNearbyNextImage(hospital.id, hospital, e)}
                                   activeOpacity={0.7}
                                 >
                                   <Ionicons name="chevron-forward" size={16} color="#ffffff" />
@@ -2446,7 +2579,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                                     style={[
                                       styles.imageIndicatorDot,
                                       { width: 5, height: 5 },
-                                      getCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
+                                      getNearbyCurrentImageIndex(hospital.id) === idx && styles.imageIndicatorDotActive
                                     ]}
                                   />
                                 ))}

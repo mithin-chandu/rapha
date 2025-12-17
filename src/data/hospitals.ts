@@ -342,11 +342,11 @@ export const hospitals: Hospital[] = [
     rating: 4.7,
     image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H19.webp'),
-      require('../../assets/InteriorImages/I19.jpg'),
-      require('../../assets/InteriorRoomsImages/IR19.jpg'),
-      require('../../assets/OperationTheatreImages/O19.avif'),
-      require('../../assets/ParkingAreaImages/P19.webp')
+      require('../../assets/HospitalImages/H12.jpg'),
+      require('../../assets/InteriorImages/I12.webp'),
+      require('../../assets/InteriorRoomsImages/IR12.webp'),
+      require('../../assets/OperationTheatreImages/O12.jpg'),
+      require('../../assets/ParkingAreaImages/P12.webp')
     ],
     description: "Comprehensive cancer care and advanced gastroenterology treatments.",
     visitorsCount: 11700
@@ -359,11 +359,11 @@ export const hospitals: Hospital[] = [
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H20.jpg'),
-      require('../../assets/InteriorImages/I1.jpg'),
-      require('../../assets/InteriorRoomsImages/IR1.jpeg'),
-      require('../../assets/OperationTheatreImages/O1.webp'),
-      require('../../assets/ParkingAreaImages/P1.jpg')
+      require('../../assets/HospitalImages/H21.jpeg'),
+      require('../../assets/InteriorImages/I21.jpg'),
+      require('../../assets/InteriorRoomsImages/IR21.jpg'),
+      require('../../assets/OperationTheatreImages/O21.jpeg'),
+      require('../../assets/ParkingAreaImages/P21.jpg')
     ],
     description: "Expert orthopedic and trauma care with rehabilitation facilities.",
     visitorsCount: 9400
@@ -376,11 +376,11 @@ export const hospitals: Hospital[] = [
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H1.jpg'),
-      require('../../assets/InteriorImages/I2.webp'),
-      require('../../assets/InteriorRoomsImages/IR2.jpg'),
-      require('../../assets/OperationTheatreImages/O2.jpg'),
-      require('../../assets/ParkingAreaImages/P2.jpg')
+      require('../../assets/HospitalImages/H22.jpg'),
+      require('../../assets/InteriorImages/I22.jpeg'),
+      require('../../assets/InteriorRoomsImages/IR22.jpg'),
+      require('../../assets/OperationTheatreImages/O22.jpg'),
+      require('../../assets/ParkingAreaImages/P22.avif')
     ],
     description: "Advanced diagnostic imaging and laboratory services with expert radiologists.",
     visitorsCount: 6500
@@ -393,11 +393,11 @@ export const hospitals: Hospital[] = [
     rating: 4.4,
     image: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H2.jpg'),
-      require('../../assets/InteriorImages/I3.webp'),
-      require('../../assets/InteriorRoomsImages/IR3.jpg'),
-      require('../../assets/OperationTheatreImages/O3.jpg'),
-      require('../../assets/ParkingAreaImages/P3.webp')
+      require('../../assets/HospitalImages/H23.jpg'),
+      require('../../assets/InteriorImages/I23.jpg'),
+      require('../../assets/InteriorRoomsImages/IR23.webp'),
+      require('../../assets/OperationTheatreImages/O23.jpg'),
+      require('../../assets/ParkingAreaImages/P23.jpg')
     ],
     description: "Specialized neurosurgery and orthopedic treatments with modern equipment.",
     visitorsCount: 7900
@@ -410,11 +410,11 @@ export const hospitals: Hospital[] = [
     rating: 4.3,
     image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H3.jpg'),
-      require('../../assets/InteriorImages/I4.jpg'),
-      require('../../assets/InteriorRoomsImages/IR4.jpg'),
-      require('../../assets/OperationTheatreImages/O4.jpg'),
-      require('../../assets/ParkingAreaImages/P4.jpg')
+      require('../../assets/HospitalImages/H24.jpg'),
+      require('../../assets/InteriorImages/I24.webp'),
+      require('../../assets/InteriorRoomsImages/IR24.jpg'),
+      require('../../assets/OperationTheatreImages/O24.jpg'),
+      require('../../assets/ParkingAreaImages/P24.jpg')
     ],
     description: "Traditional Ayurvedic treatments combined with modern wellness therapies.",
     visitorsCount: 5200
@@ -427,11 +427,11 @@ export const hospitals: Hospital[] = [
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H4.jpeg'),
-      require('../../assets/InteriorImages/I5.jpg'),
-      require('../../assets/InteriorRoomsImages/IR5.jpg'),
-      require('../../assets/OperationTheatreImages/O5.jpg'),
-      require('../../assets/ParkingAreaImages/P5.webp')
+      require('../../assets/HospitalImages/H25.jpg'),
+      require('../../assets/InteriorImages/I25.webp'),
+      require('../../assets/InteriorRoomsImages/IR25.jpg'),
+      require('../../assets/OperationTheatreImages/O25.webp'),
+      require('../../assets/ParkingAreaImages/P25.webp')
     ],
     description: "Specialized women healthcare with state-of-the-art maternity facilities.",
     visitorsCount: 10200
@@ -444,11 +444,11 @@ export const hospitals: Hospital[] = [
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H5.jpg'),
-      require('../../assets/InteriorImages/I6.jpg'),
-      require('../../assets/InteriorRoomsImages/IR6.webp'),
-      require('../../assets/OperationTheatreImages/O6.jpg'),
-      require('../../assets/ParkingAreaImages/P6.jpg')
+      require('../../assets/HospitalImages/H26.jpg'),
+      require('../../assets/InteriorImages/I1.jpg'),
+      require('../../assets/InteriorRoomsImages/IR26.jpg'),
+      require('../../assets/OperationTheatreImages/O26.jpg'),
+      require('../../assets/ParkingAreaImages/P26.jpg')
     ],
     description: "Advanced dental treatments with painless procedures and orthodontic care.",
     visitorsCount: 4800
@@ -461,9 +461,9 @@ export const hospitals: Hospital[] = [
     rating: 4.4,
     image: "https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H6.jpg'),
+      require('../../assets/HospitalImages/H27.jpg'),
       require('../../assets/InteriorImages/I7.webp'),
-      require('../../assets/InteriorRoomsImages/IR7.webp'),
+      require('../../assets/InteriorRoomsImages/IR27.avif'),
       require('../../assets/OperationTheatreImages/O7.jpg'),
       require('../../assets/ParkingAreaImages/P7.jpg')
     ],
@@ -478,9 +478,9 @@ export const hospitals: Hospital[] = [
     rating: 4.2,
     image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H7.jpg'),
+      require('../../assets/HospitalImages/H28.jpg'),
       require('../../assets/InteriorImages/I8.webp'),
-      require('../../assets/InteriorRoomsImages/IR8.jpg'),
+      require('../../assets/InteriorRoomsImages/IR28.jpg'),
       require('../../assets/OperationTheatreImages/O8.jpg'),
       require('../../assets/ParkingAreaImages/P8.jpeg')
     ],
@@ -495,9 +495,9 @@ export const hospitals: Hospital[] = [
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H8.jpeg'),
+      require('../../assets/HospitalImages/H29.avif'),
       require('../../assets/InteriorImages/I9.jpg'),
-      require('../../assets/InteriorRoomsImages/IR9.jpg'),
+      require('../../assets/InteriorRoomsImages/IR29.jpg'),
       require('../../assets/OperationTheatreImages/O9.webp'),
       require('../../assets/ParkingAreaImages/P9.jpg')
     ],
@@ -512,9 +512,9 @@ export const hospitals: Hospital[] = [
     rating: 4.3,
     image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H9.webp'),
+      require('../../assets/HospitalImages/H30.jpg'),
       require('../../assets/InteriorImages/I10.jpg'),
-      require('../../assets/InteriorRoomsImages/IR10.webp'),
+      require('../../assets/InteriorRoomsImages/IR30.jpeg'),
       require('../../assets/OperationTheatreImages/O10.webp'),
       require('../../assets/ParkingAreaImages/P10.jpg')
     ],
@@ -682,7 +682,7 @@ export const hospitals: Hospital[] = [
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center",
     images: [
-      require('../../assets/HospitalImages/H19.webp'),
+      require('../../assets/HospitalImages/H41.jpg'),
       require('../../assets/InteriorImages/I1.jpg'),
       require('../../assets/InteriorRoomsImages/IR1.jpeg'),
       require('../../assets/OperationTheatreImages/O1.webp'),

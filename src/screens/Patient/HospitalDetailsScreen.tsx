@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity, Platform, Linking, Alert, Dimensions } from 'react-native';
 import { colors, spacing, borderRadius, fontSize } from '../../utils/colors';
 import { Header } from '../../components/Header';
 import { DoctorCard } from '../../components/DoctorCard';
-import { ImageCarousel } from '../../components/ImageCarousel';
 import { Hospital } from '../../data/hospitals';
 import { doctors, Doctor } from '../../data/doctors';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,6 +17,8 @@ interface HospitalDetailsScreenProps {
   };
 }
 
+const { width: screenWidth } = Dimensions.get('window');
+
 export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({ 
   navigation, 
   route 
@@ -25,7 +26,7 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
   const { hospital } = route.params;
   const [hospitalDoctors, setHospitalDoctors] = useState<Doctor[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showImageNavButtons, setShowImageNavButtons] = useState(false);
+  const [currentThumbnailIndex, setCurrentThumbnailIndex] = useState(0);
 
   useEffect(() => {
     // Filter doctors by hospital ID
@@ -35,7 +36,6 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
 
   const handleBookAppointment = (doctor: Doctor) => {
     try {
-      console.log('Navigating to BookAppointment with:', { hospital: hospital.name, doctor: doctor.name });
       navigation.navigate('BookAppointment', { hospital, doctor });
     } catch (error) {
       console.error('Navigation error:', error);
@@ -48,14 +48,45 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
 
   const handleNextImage = () => {
     if (hospital.images && hospital.images.length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % hospital.images!.length);
+      let nextIndex = (currentImageIndex + 1) % hospital.images.length;
+      // Skip PNG images
+      while (nextIndex !== currentImageIndex && isPngImage(hospital.images[nextIndex])) {
+        nextIndex = (nextIndex + 1) % hospital.images.length;
+      }
+      setCurrentImageIndex(nextIndex);
     }
   };
 
   const handlePrevImage = () => {
     if (hospital.images && hospital.images.length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + hospital.images!.length) % hospital.images!.length);
+      let prevIndex = currentImageIndex === 0 ? hospital.images.length - 1 : currentImageIndex - 1;
+      // Skip PNG images
+      const startIndex = prevIndex;
+      while (isPngImage(hospital.images[prevIndex]) && prevIndex !== startIndex) {
+        prevIndex = prevIndex === 0 ? hospital.images.length - 1 : prevIndex - 1;
+      }
+      setCurrentImageIndex(prevIndex);
     }
+  };
+
+  const isPngImage = (imageSource: any): boolean => {
+    if (typeof imageSource === 'string') {
+      return imageSource.toLowerCase().endsWith('.png');
+    }
+    if (imageSource && typeof imageSource === 'object') {
+      const uri = imageSource.uri || '';
+      return uri.toLowerCase().includes('.png');
+    }
+    return false;
+  };
+
+  const handleDirections = () => {
+    const url = `https://www.google.com/maps/search/${encodeURIComponent(hospital.address)}`;
+    Linking.openURL(url).catch(err => Alert.alert('Error', 'Could not open maps'));
+  };
+
+  const handleCall = () => {
+    Linking.openURL(`tel:+919876543210`).catch(err => Alert.alert('Error', 'Could not make call'));
   };
 
   return (
@@ -66,214 +97,245 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
         onBackPress={handleBackPress}
       />
       
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={true}>
-        {/* Hero Section */}
-        <View style={styles.heroSection}>
-          {hospital.image ? (
-            <Image 
-              source={{ uri: hospital.image }} 
-              style={styles.heroImage}
-              resizeMode="cover"
-            />
-          ) : (
-            <LinearGradient
-              colors={['#667eea', '#764ba2']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.heroPlaceholder}
-            >
-              <View style={styles.heroPatternContainer}>
-                <View style={styles.heroCircle1} />
-                <View style={styles.heroCircle2} />
-                <View style={styles.heroCircle3} />
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* TWO COLUMN LAYOUT: Details on Left, Images on Right */}
+        <View style={styles.mainWrapper}>
+          
+          {/* LEFT COLUMN: DETAILS */}
+          <ScrollView style={styles.leftColumn} showsVerticalScrollIndicator={false}>
+            
+            {/* SECTION 1: Hospital Info (Name, Specialization, Address, Buttons) */}
+            <View style={styles.infoSection}>
+              <View style={styles.hospitalHeader}>
+                <View>
+                  <Text style={styles.hospitalTitle}>{hospital.name}</Text>
+                  <Text style={styles.specialization}>{hospital.specialization}</Text>
+                </View>
+                <View style={styles.ratingBadge}>
+                  <Ionicons name="star" size={18} color="#FFC107" />
+                  <Text style={styles.ratingText}>{hospital.rating}</Text>
+                </View>
               </View>
-              <Ionicons name="medical" size={80} color="rgba(255,255,255,0.9)" />
-            </LinearGradient>
-          )}
-          <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.8)']}
-            style={styles.heroOverlay}
-          >
-            <Text style={styles.hospitalName}>{hospital.name}</Text>
-            <Text style={styles.specialization}>{hospital.specialization}</Text>
-          </LinearGradient>
-        </View>
 
-        {/* Hospital Images Gallery */}
-        {hospital.images && hospital.images.length > 0 && (
-          <View style={styles.gallerySection}>
-            <View
-              style={styles.imageCarouselContainer}
-            >
-              <Image
-                source={hospital.images[currentImageIndex]}
-                style={styles.galleryImage}
-                resizeMode="cover"
-              />
+              <View style={styles.addressRow}>
+                <Ionicons name="location-outline" size={18} color={colors.primary} />
+                <Text style={styles.addressText} numberOfLines={3}>{hospital.address}</Text>
+              </View>
 
-              {hospital.images.length > 1 && (
-                <>
-                  <TouchableOpacity
-                    style={[styles.navButton, styles.prevButton]}
-                    onPress={handlePrevImage}
-                    activeOpacity={0.7}
-                  >
-                    <Ionicons name="chevron-back" size={24} color="#fff" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.navButton, styles.nextButton]}
-                    onPress={handleNextImage}
-                    activeOpacity={0.7}
-                  >
-                    <Ionicons name="chevron-forward" size={24} color="#fff" />
-                  </TouchableOpacity>
-                  
-                  <View style={styles.imageIndicator}>
-                    <Text style={styles.imageIndicatorText}>
-                      {currentImageIndex + 1} / {hospital.images.length}
-                    </Text>
+              {/* Action Buttons */}
+              <View style={styles.actionButtonsRow}>
+                <TouchableOpacity 
+                  style={styles.directionButton}
+                  onPress={handleDirections}
+                >
+                  <Ionicons name="navigate" size={20} color="#fff" />
+                  <Text style={styles.directionButtonText}>Directions</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={styles.callButton}
+                  onPress={handleCall}
+                >
+                  <Ionicons name="call" size={20} color={colors.primary} />
+                  <Text style={styles.callButtonText}>Call</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* SECTION 2: Consultation Timing & Fee Section */}
+            <View style={styles.consultationSection}>
+              <View style={styles.consultationTimingRow}>
+                <View style={styles.consultationTimeCard}>
+                  <Text style={styles.consultationTime}>9:00 - 10:00 AM</Text>
+                  <Text style={styles.consultationLabel}>Timing</Text>
+                </View>
+                <View style={styles.consultationFeeCard}>
+                  <Text style={styles.consultationCostLabel}>Consultation Fee</Text>
+                  <Text style={styles.consultationCost}>₹999</Text>
+                </View>
+              </View>
+              <View style={styles.consultationMoreRow}>
+                <View style={styles.consultationMoreCard}>
+                  <Text style={styles.consultationTime}>4:00 - 12:00 PM</Text>
+                  <Text style={styles.hospitalName}>CALT Hospital</Text>
+                </View>
+                <View style={styles.consultationFeeCard}>
+                  <Text style={styles.consultationCostLabel}>Consultation Fee</Text>
+                  <Text style={styles.consultationCost}>₹750</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* SECTION 3: About Our Hospital */}
+            {hospital.description && (
+              <View style={styles.aboutSection}>
+                <Text style={styles.sectionTitle}>About Our Hospital</Text>
+                <Text style={styles.aboutText}>{hospital.description}</Text>
+                <TouchableOpacity style={styles.viewMoreButton}>
+                  <Text style={styles.viewMoreText}>View more for big 5 chain hospitals</Text>
+                  <Ionicons name="chevron-forward" size={16} color={colors.primary} />
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* SECTION 4: Hospital Departments */}
+            <View style={styles.departmentsSection}>
+              <Text style={styles.sectionTitle}>Hospital Departments</Text>
+              
+              <View style={styles.departmentsList}>
+                {hospital.specialization.split(',').map((dept, index) => (
+                  <View key={index} style={styles.departmentItem}>
+                    <LinearGradient
+                      colors={['#667eea', '#764ba2']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.departmentIcon}
+                    >
+                      <Ionicons name="medical-outline" size={18} color="#fff" />
+                    </LinearGradient>
+                    <Text style={styles.departmentName}>{dept.trim()}</Text>
                   </View>
-                </>
+                ))}
+              </View>
+            </View>
+
+            {/* SECTION 5: Our Doctors */}
+            <View style={styles.doctorsSection}>
+              <Text style={styles.sectionTitle}>Our Doctors</Text>
+              
+              {hospitalDoctors.length > 0 ? (
+                <View style={styles.doctorsList}>
+                  {hospitalDoctors.map((doctor, doctorIndex) => (
+                    <View key={doctor.id} style={styles.doctorCardWrapper}>
+                      <View style={styles.doctorCardContent}>
+                        {/* Doctor Photo */}
+                        <View style={styles.doctorPhoto}>
+                          <Ionicons name="person-circle" size={80} color={colors.primary} />
+                        </View>
+
+                        {/* Doctor Info */}
+                        <View style={styles.doctorInfoSection}>
+                          <Text style={styles.doctorName}>{doctor.name}</Text>
+                          <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
+                          
+                          <View style={styles.doctorExperienceRow}>
+                            <Ionicons name="briefcase-outline" size={14} color={colors.primary} />
+                            <Text style={styles.doctorExperienceText}>
+                              {doctor.experience}
+                            </Text>
+                          </View>
+
+                          <View style={styles.consultationRow}>
+                            <Text style={styles.consultationLabelSmall}>Consultation Fee:</Text>
+                            <Text style={styles.consultationFeeSmall}>₹{doctor.consultationFee}</Text>
+                          </View>
+                        </View>
+
+                        {/* Book Button */}
+                        <TouchableOpacity 
+                          style={styles.bookButton}
+                          onPress={() => handleBookAppointment(doctor)}
+                        >
+                          <Text style={styles.bookButtonText}>Book</Text>
+                        </TouchableOpacity>
+                      </View>
+
+                      {/* Next Doctor Details Link */}
+                      <TouchableOpacity style={styles.nextDoctorLink}>
+                        <Text style={styles.nextDoctorLinkText}>Next Doctor Details</Text>
+                        <Ionicons name="chevron-forward" size={14} color={colors.primary} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              ) : (
+                <View style={styles.noDoctorsContainer}>
+                  <Ionicons name="medical-outline" size={48} color={colors.textLight} />
+                  <Text style={styles.noDoctorsText}>No doctors available</Text>
+                </View>
               )}
             </View>
 
-            {/* Image Thumbnails */}
-            {hospital.images.length > 1 && (
-              <View style={styles.thumbnailsContainer}>
-                {hospital.images.map((img, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.thumbnail,
-                      index === currentImageIndex && styles.thumbnailActive
-                    ]}
-                    onPress={() => setCurrentImageIndex(index)}
-                    activeOpacity={0.7}
-                  >
-                    <Image source={img} style={styles.thumbnailImage} resizeMode="cover" />
-                  </TouchableOpacity>
-                ))}
+            <View style={styles.bottomSpacer} />
+          </ScrollView>
+
+          {/* RIGHT COLUMN: IMAGES */}
+          {hospital.images && hospital.images.length > 0 && (
+            <View style={styles.rightColumn}>
+              {/* Main Image Carousel */}
+              <View style={styles.imageCarouselContainer}>
+                <Image
+                  source={hospital.images[currentImageIndex]}
+                  style={styles.mainImage}
+                  resizeMode="cover"
+                />
+                
+                {/* Image Counter Badge */}
+                <View style={styles.imageBadge}>
+                  <Text style={styles.imageBadgeText}>
+                    {currentImageIndex + 1} / {hospital.images.length}
+                  </Text>
+                </View>
+
+                {/* Navigation Arrows */}
+                {hospital.images.length > 1 && (
+                  <>
+                    <TouchableOpacity
+                      style={[styles.navArrow, styles.navArrowLeft]}
+                      onPress={handlePrevImage}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons name="chevron-back" size={28} color="#fff" />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.navArrow, styles.navArrowRight]}
+                      onPress={handleNextImage}
+                      activeOpacity={0.7}
+                    >
+                      <Ionicons name="chevron-forward" size={28} color="#fff" />
+                    </TouchableOpacity>
+                  </>
+                )}
               </View>
-            )}
-          </View>
-        )}
 
-        {/* Quick Info Cards */}
-        <View style={styles.quickInfoSection}>
-          <LinearGradient
-            colors={['#3B82F6', '#60A5FA']}
-            style={styles.gradientInfoCard}
-          >
-            <View style={styles.infoIconContainer}>
-              <Ionicons name="location" size={24} color="#fff" />
-            </View>
-            <Text style={styles.infoCardTitle}>Location</Text>
-            <Text style={styles.infoCardText} numberOfLines={2}>{hospital.address}</Text>
-          </LinearGradient>
-          
-          <LinearGradient
-            colors={['#a8edea', '#fed6e3']}
-            style={styles.gradientInfoCard}
-          >
-            <View style={styles.infoIconContainer}>
-              <Ionicons name="star" size={24} color="#333" />
-            </View>
-            <Text style={[styles.infoCardTitle, { color: '#555' }]}>Rating</Text>
-            <Text style={[styles.infoCardText, { color: '#333' }]}>{hospital.rating}/5.0</Text>
-          </LinearGradient>
-          
-          <LinearGradient
-            colors={['#ffecd2', '#fcb69f']}
-            style={styles.gradientInfoCard}
-          >
-            <View style={styles.infoIconContainer}>
-              <Ionicons name="people" size={24} color="#333" />
-            </View>
-            <Text style={[styles.infoCardTitle, { color: '#555' }]}>Rating</Text>
-            <Text style={[styles.infoCardText, { color: '#333' }]}>{hospital.visitorsCount?.toLocaleString() || 'N/A'}</Text>
-          </LinearGradient>
-        </View>
+              {/* Image Dots Indicator */}
+              {hospital.images.length > 1 && (
+                <View style={styles.dotsContainer}>
+                  {hospital.images.map((_, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.dot,
+                        index === currentImageIndex && styles.dotActive
+                      ]}
+                      onPress={() => setCurrentImageIndex(index)}
+                    />
+                  ))}
+                </View>
+              )}
 
-        {hospital.description && (
-          <View style={styles.descriptionSection}>
-            <Text style={styles.sectionTitle}>About Hospital</Text>
-            <Text style={styles.description}>{hospital.description}</Text>
-          </View>
-        )}
-
-        <View style={styles.servicesSection}>
-          <Text style={styles.sectionTitle}>
-            <Ionicons name="medical-outline" size={20} color={colors.primary} style={styles.sectionIcon} />
-            Specialized Services
-          </Text>
-          <View style={styles.servicesGrid}>
-            {hospital.specialization.split(', ').map((service, index) => (
-              <LinearGradient
-                key={index}
-                colors={['rgba(102, 126, 234, 0.1)', 'rgba(118, 75, 162, 0.1)']}
-                style={styles.serviceChip}
-              >
-                <Ionicons name="checkmark-circle" size={18} color={colors.success} />
-                <Text style={styles.serviceText}>{service.trim()}</Text>
-              </LinearGradient>
-            ))}
-          </View>
-        </View>
-
-        {/* Facilities Section */}
-        <View style={styles.facilitiesSection}>
-          <Text style={styles.sectionTitle}>
-            <Ionicons name="business-outline" size={20} color={colors.primary} style={styles.sectionIcon} />
-            Hospital Facilities
-          </Text>
-          <View style={styles.facilitiesGrid}>
-            <View style={styles.facilityItem}>
-              <Ionicons name="car" size={20} color={colors.primary} />
-              <Text style={styles.facilityText}>Parking</Text>
-            </View>
-            <View style={styles.facilityItem}>
-              <Ionicons name="wifi" size={20} color={colors.primary} />
-              <Text style={styles.facilityText}>Free WiFi</Text>
-            </View>
-            <View style={styles.facilityItem}>
-              <Ionicons name="restaurant" size={20} color={colors.primary} />
-              <Text style={styles.facilityText}>Cafeteria</Text>
-            </View>
-            <View style={styles.facilityItem}>
-              <Ionicons name="shield-checkmark" size={20} color={colors.primary} />
-              <Text style={styles.facilityText}>Emergency</Text>
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.doctorsSection}>
-          <View style={styles.doctorsHeader}>
-            <Text style={styles.sectionTitle}>
-              <Ionicons name="people-outline" size={20} color={colors.primary} style={styles.sectionIcon} />
-              Our Medical Team
-            </Text>
-            <Text style={styles.doctorsCount}>{hospitalDoctors.length} Doctors Available</Text>
-          </View>
-          
-          {hospitalDoctors.length > 0 ? (
-            hospitalDoctors.map((doctor) => (
-              <DoctorCard
-                key={doctor.id}
-                doctor={doctor}
-                onPress={handleBookAppointment}
-                showBookButton={true}
-              />
-            ))
-          ) : (
-            <View style={styles.noDoctorsContainer}>
-              <Ionicons name="medical-outline" size={48} color={colors.textLight} />
-              <Text style={styles.noDoctorsText}>No doctors available</Text>
-              <Text style={styles.noDoctorsSubtext}>Please check back later</Text>
+              {/* Thumbnail Gallery */}
+              <View style={styles.thumbnailGallerySection}>
+                <Text style={styles.galleryTitle}>Image Gallery</Text>
+                <View style={styles.thumbnailContainer}>
+                  {hospital.images.slice(0, 3).map((image, index) => (
+                    <TouchableOpacity 
+                      key={index} 
+                      style={styles.thumbnailWrapper}
+                      onPress={() => setCurrentImageIndex(index)}
+                    >
+                      <Image
+                        source={image}
+                        style={styles.thumbnail}
+                        resizeMode="cover"
+                      />
+                      <Text style={styles.thumbnailLabel}>Image {index + 1}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
             </View>
           )}
         </View>
-
-        <View style={styles.bottomSpacer} />
       </ScrollView>
     </View>
   );
@@ -284,329 +346,63 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
-  heroSection: {
-    position: 'relative',
-    height: 320,
-    overflow: 'hidden',
-  },
-  heroPatternContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: 0.1,
-  },
-  heroCircle1: {
-    position: 'absolute',
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    top: -50,
-    right: -50,
-  },
-  heroCircle2: {
-    position: 'absolute',
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    bottom: -30,
-    left: -30,
-  },
-  heroCircle3: {
-    position: 'absolute',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    top: 100,
-    left: 80,
-  },
-  backgroundImage: {
-    width: '100%',
-    height: '100%',
-    position: 'absolute',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
-  },
-  heroContent: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: spacing.lg,
-    paddingBottom: spacing.xl,
-  },
-  hospitalName: {
-    fontSize: 28,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    marginBottom: spacing.xs,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  specialization: {
-    fontSize: fontSize.lg,
-    color: '#E2E8F0',
-    fontWeight: '600',
-    marginBottom: spacing.sm,
-  },
-  heroStats: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.lg,
-  },
-  statItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.md,
-  },
-  statText: {
-    color: '#FFFFFF',
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    marginLeft: spacing.xs,
-  },
   content: {
     flex: 1,
   },
-  infoCard: {
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: spacing.lg,
-    marginTop: -30,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
-    zIndex: 1,
-  },
-  locationContainer: {
+
+  // ===== TWO COLUMN LAYOUT =====
+  mainWrapper: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: spacing.lg,
-    paddingBottom: spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-  },
-  address: {
-    flex: 1,
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    marginLeft: spacing.sm,
-    lineHeight: 22,
-  },
-  quickActions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-  },
-  actionButton: {
-    flex: 1,
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: spacing.xs,
-  },
-  actionButtonSecondary: {
-    backgroundColor: '#F1F5F9',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  actionButtonText: {
-    color: '#FFFFFF',
-    fontSize: fontSize.md,
-    fontWeight: '600',
-  },
-  actionButtonTextSecondary: {
-    color: colors.textPrimary,
-  },
-  sectionContainer: {
-    backgroundColor: '#FFFFFF',
-    marginHorizontal: spacing.lg,
-    marginTop: spacing.lg,
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  sectionTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: '700',
-    color: colors.textPrimary,
-    marginBottom: spacing.md,
-  },
-  descriptionText: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    lineHeight: 24,
-  },
-  facilitiesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-  },
-  facilityItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.sm,
-  },
-  facilityText: {
-    fontSize: fontSize.sm,
-    color: colors.textPrimary,
-    marginLeft: spacing.xs,
-    fontWeight: '500',
-  },
-  doctorsContainer: {
-    gap: spacing.md,
-  },
-  doctorCard: {
-    flexDirection: 'row',
-    backgroundColor: '#F8FAFC',
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    alignItems: 'center',
-  },
-  doctorAvatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: spacing.md,
-  },
-  doctorInfo: {
     flex: 1,
   },
-  doctorName: {
-    fontSize: fontSize.md,
-    fontWeight: '600',
-    color: colors.textPrimary,
-    marginBottom: spacing.xs,
+  leftColumn: {
+    flex: 1.2,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
   },
-  doctorSpecialty: {
-    fontSize: fontSize.sm,
-    color: colors.primary,
-    marginBottom: spacing.xs,
+  rightColumn: {
+    flex: 0.8,
+    paddingHorizontal: 20,
+    paddingVertical: 20,
+    borderLeftWidth: 1,
+    borderLeftColor: '#E2E8F0',
+    backgroundColor: '#fafafa',
+    justifyContent: 'flex-start',
   },
-  doctorRating: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ratingTextSmall: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-    marginLeft: spacing.xs,
-  },
-  bookButton: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-  },
-  bookButtonText: {
-    color: '#FFFFFF',
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-  },
-  contactCard: {
-    backgroundColor: '#F0F9FF',
-    borderLeftWidth: 4,
-    borderLeftColor: colors.primary,
-    padding: spacing.lg,
-    borderRadius: borderRadius.lg,
-  },
-  contactItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  contactText: {
-    fontSize: fontSize.md,
-    color: colors.textPrimary,
-    marginLeft: spacing.md,
-    fontWeight: '500',
-  },
-  emergencyBadge: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FECACA',
-    borderWidth: 1,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.full,
-    marginTop: spacing.sm,
-  },
-  emergencyText: {
-    color: '#DC2626',
-    fontSize: fontSize.sm,
-    fontWeight: '600',
-    textAlign: 'center',
-    elevation: 3,
-  },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover' as 'cover',
-  },
-  heroPlaceholder: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  heroOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 24,
-    paddingVertical: 30,
-  },
-  gallerySection: {
-    backgroundColor: '#ffffff',
-    marginTop: spacing.lg,
-    paddingHorizontal: spacing.md,
-  },
+  // ===== IMAGE CAROUSEL (RIGHT COLUMN) =====
   imageCarouselContainer: {
     position: 'relative',
-    height: 300,
-    borderRadius: borderRadius.xl,
+    height: 320,
+    borderRadius: 20,
     overflow: 'hidden',
-    backgroundColor: colors.backgroundSecondary,
-    marginHorizontal: spacing.md,
-    marginVertical: spacing.md,
+    backgroundColor: '#f1f5f9',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    marginBottom: 20,
+    minHeight: 320,
   },
-  galleryImage: {
+  mainImage: {
     width: '100%',
     height: '100%',
   },
-  navButton: {
+  imageBadge: {
+    position: 'absolute',
+    bottom: 16,
+    right: 16,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  imageBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  navArrow: {
     position: 'absolute',
     top: '50%',
     transform: [{ translateY: -24 }],
@@ -614,214 +410,472 @@ const styles = StyleSheet.create({
     height: 48,
     borderRadius: 24,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 10,
   },
-  prevButton: {
-    left: spacing.md,
+  navArrowLeft: {
+    left: 16,
   },
-  nextButton: {
-    right: spacing.md,
+  navArrowRight: {
+    right: 16,
   },
-  imageIndicator: {
-    position: 'absolute',
-    bottom: spacing.md,
-    right: spacing.md,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.md,
-    zIndex: 10,
-  },
-  imageIndicatorText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  thumbnailsContainer: {
+  dotsContainer: {
     flexDirection: 'row',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    gap: spacing.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+    gap: 8,
   },
-  thumbnail: {
-    width: 80,
-    height: 80,
-    borderRadius: borderRadius.md,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#E2E8F0',
   },
-  thumbnailActive: {
-    borderColor: colors.primary,
-  },
-  thumbnailImage: {
-    width: '100%',
-    height: '100%',
+  dotActive: {
+    width: 24,
+    backgroundColor: colors.primary,
   },
 
-  quickInfoSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  // ===== SECTION 1: HOSPITAL INFO =====
+  infoSection: {
+    backgroundColor: '#fff',
     paddingHorizontal: 16,
-    marginTop: -40,
-    marginHorizontal: 16,
-    gap: 12,
-    zIndex: 10,
-  },
-  gradientInfoCard: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 20,
-    alignItems: 'center',
+    paddingVertical: 20,
+    marginHorizontal: 0,
+    marginTop: 0,
+    marginBottom: 16,
+    borderRadius: 16,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
-    minHeight: 100,
-  },
-  infoIconContainer: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    padding: 10,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  infoCardTitle: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.8)',
-    marginBottom: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  infoCardText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#fff',
-    textAlign: 'center',
-  },
-  descriptionSection: {
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    margin: spacing.md,
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  sectionIcon: {
-    marginRight: 8,
-  },
-  servicesGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 15,
-  },
-  serviceChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 25,
-    margin: 4,
-    borderWidth: 1,
-    borderColor: 'rgba(102, 126, 234, 0.2)',
-    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  hospitalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  hospitalTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  specialization: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  ratingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF9E6',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 12,
+    gap: 4,
+  },
+  ratingText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1f2937',
+  },
+  addressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    gap: 10,
+  },
+  addressText: {
+    fontSize: 14,
+    color: '#6b7280',
+    flex: 1,
+    lineHeight: 20,
+  },
+  actionButtonsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  directionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
     elevation: 2,
   },
-  facilitiesSection: {
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    margin: spacing.md,
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+  directionButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
-  doctorsHeader: {
+  callButton: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#F0F9FF',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+  },
+  callButtonText: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
+  // ===== SECTION 2: CONSULTATION TIMING =====
+  consultationSection: {
+    backgroundColor: '#fff',
+    marginHorizontal: 0,
+    marginTop: 0,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    borderRadius: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  consultationTimingRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 12,
+  },
+  consultationTimeCard: {
+    flex: 1,
+    backgroundColor: '#F0F9FF',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+  },
+  consultationTime: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  consultationLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '500',
+  },
+  consultationFeeCard: {
+    flex: 1,
+    backgroundColor: '#F0F9FF',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+  },
+  consultationCostLabel: {
+    fontSize: 11,
+    color: '#6b7280',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  consultationCost: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.primary,
+  },
+  consultationMoreRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  consultationMoreCard: {
+    flex: 1,
+    backgroundColor: '#E8F5E9',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#4CAF50',
+  },
+  hospitalName: {
+    fontSize: 12,
+    color: '#1f2937',
+    fontWeight: '500',
+    marginTop: 4,
+  },
+
+  // ===== SECTION 3: IMAGE GALLERY THUMBNAILS =====
+  thumbnailGallerySection: {
+    backgroundColor: '#fff',
+    marginHorizontal: 0,
+    marginTop: 0,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderRadius: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  galleryTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 16,
+  },
+  thumbnailContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between',
+  },
+  thumbnailWrapper: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  thumbnail: {
+    width: '100%',
+    height: 100,
+    borderRadius: 12,
+    backgroundColor: '#f1f5f9',
+  },
+  thumbnailLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '600',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+
+  // ===== COMMON SECTION TITLE =====
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 16,
+  },
+
+  // ===== SECTION 4: ABOUT HOSPITAL =====
+  aboutSection: {
+    backgroundColor: '#fff',
+    marginHorizontal: 0,
+    marginTop: 0,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    borderRadius: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  aboutText: {
+    fontSize: 14,
+    color: '#6b7280',
+    lineHeight: 22,
+    marginBottom: 16,
+  },
+  viewMoreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    backgroundColor: '#F0F9FF',
+    borderRadius: 10,
+    justifyContent: 'space-between',
+  },
+  viewMoreText: {
+    fontSize: 13,
+    color: colors.primary,
+    fontWeight: '600',
+    flex: 1,
+  },
+
+  // ===== SECTION 5: DEPARTMENTS =====
+  departmentsSection: {
+    backgroundColor: '#fff',
+    marginHorizontal: 0,
+    marginTop: 0,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    borderRadius: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  departmentsList: {
+    gap: 12,
+  },
+  departmentItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+    gap: 12,
+  },
+  departmentIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  departmentName: {
+    fontSize: 14,
+    color: '#1f2937',
+    fontWeight: '600',
+    flex: 1,
+  },
+
+  // ===== SECTION 6: DOCTORS =====
+  doctorsSection: {
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    marginBottom: 0,
+  },
+  doctorsList: {
+    gap: 16,
+  },
+  doctorCardWrapper: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    marginBottom: 16,
+  },
+  doctorCardContent: {
+    flexDirection: 'row',
+    padding: 16,
+    alignItems: 'flex-start',
+    gap: 16,
+  },
+  doctorPhoto: {
+    width: 80,
+    height: 80,
+    borderRadius: 16,
+    backgroundColor: '#F0F9FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  doctorInfoSection: {
+    flex: 1,
+  },
+  doctorName: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  doctorSpecialty: {
+    fontSize: 13,
+    color: colors.primary,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
+  doctorExperienceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
+  doctorExperienceText: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '600',
+  },
+  consultationRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 15,
+    marginTop: 8,
   },
-  doctorsCount: {
-    fontSize: 14,
-    color: colors.textTertiary,
+  consultationLabelSmall: {
+    fontSize: 12,
+    color: '#6b7280',
     fontWeight: '500',
   },
-
-  description: {
-    fontSize: fontSize.md,
-    color: colors.textSecondary,
-    lineHeight: 22,
+  consultationFeeSmall: {
+    fontSize: 14,
+    color: colors.primary,
+    fontWeight: '700',
   },
-  servicesSection: {
-    backgroundColor: 'rgba(255,255,255,0.95)',
-    margin: spacing.md,
-    marginTop: spacing.md,
-    borderRadius: borderRadius.xl,
-    padding: spacing.xl,
-    shadowColor: colors.shadow,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+  bookButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
+    alignSelf: 'flex-start',
+    marginTop: 8,
   },
-  servicesList: {
-    marginTop: spacing.sm,
+  bookButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
   },
-  serviceItem: {
+  nextDoctorLink: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
+    gap: 8,
   },
-  serviceText: {
-    fontSize: fontSize.md,
-    color: colors.textPrimary,
-    marginLeft: spacing.sm,
-    fontWeight: '500',
+  nextDoctorLinkText: {
+    fontSize: 13,
+    color: colors.primary,
+    fontWeight: '600',
+    flex: 1,
   },
-  doctorsSection: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
+
+  // No Doctors
   noDoctorsContainer: {
-    backgroundColor: colors.card,
-    borderRadius: borderRadius.lg,
-    padding: spacing.xxl,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    paddingVertical: 40,
     alignItems: 'center',
-    margin: spacing.md,
+    marginHorizontal: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
   },
   noDoctorsText: {
-    fontSize: fontSize.lg,
+    fontSize: 16,
     fontWeight: '600',
-    color: colors.textSecondary,
-    marginVertical: spacing.md,
+    color: '#6b7280',
+    marginVertical: 12,
   },
-  noDoctorsSubtext: {
-    fontSize: fontSize.md,
-    color: colors.textLight,
-    textAlign: 'center',
-  },
+
   bottomSpacer: {
-    height: spacing.xxl,
+    height: 30,
   },
 });

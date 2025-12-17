@@ -42,15 +42,62 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
     onPress(hospital);
   };
 
+  // Helper function to check if an image is a .png file (to be excluded)
+  const isPngImage = (imageSource: any): boolean => {
+    if (typeof imageSource === 'string') {
+      return imageSource.toLowerCase().endsWith('.png');
+    }
+    // For require() statements, check the uri property if available
+    if (imageSource && typeof imageSource === 'object') {
+      const uri = imageSource.uri || '';
+      return uri.toLowerCase().includes('.png');
+    }
+    return false;
+  };
+
+  // Get next valid index, skipping PNG images
+  const getNextValidIndex = (currentIndex: number, images: any[]): number => {
+    let nextIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    let attempts = 0;
+    const maxAttempts = images.length;
+    
+    while (attempts < maxAttempts && isPngImage(images[nextIndex])) {
+      nextIndex = nextIndex === images.length - 1 ? 0 : nextIndex + 1;
+      attempts++;
+    }
+    
+    return nextIndex;
+  };
+
+  // Get previous valid index, skipping PNG images
+  const getPreviousValidIndex = (currentIndex: number, images: any[]): number => {
+    let prevIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    let attempts = 0;
+    const maxAttempts = images.length;
+    
+    while (attempts < maxAttempts && isPngImage(images[prevIndex])) {
+      prevIndex = prevIndex === 0 ? images.length - 1 : prevIndex - 1;
+      attempts++;
+    }
+    
+    return prevIndex;
+  };
+
   const handleNextImage = () => {
     if (hospital.images && hospital.images.length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % hospital.images!.length);
+      setCurrentImageIndex((prev) => {
+        const validCurrent = prev >= 0 && prev < hospital.images!.length ? prev : 0;
+        return getNextValidIndex(validCurrent, hospital.images!);
+      });
     }
   };
 
   const handlePrevImage = () => {
     if (hospital.images && hospital.images.length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + hospital.images!.length) % hospital.images!.length);
+      setCurrentImageIndex((prev) => {
+        const validCurrent = prev >= 0 && prev < hospital.images!.length ? prev : 0;
+        return getPreviousValidIndex(validCurrent, hospital.images!);
+      });
     }
   };
 
@@ -66,10 +113,19 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
     // Show nav buttons by default on web, on demand on mobile
     const shouldShowButtons = Platform.OS === 'web' || showNavButtons;
 
+    // Ensure current image is not a PNG, otherwise find first non-PNG
+    let displayIndex = currentImageIndex;
+    let attempts = 0;
+    const maxAttempts = hospital.images.length;
+    while (attempts < maxAttempts && displayIndex < hospital.images.length && isPngImage(hospital.images[displayIndex])) {
+      displayIndex = (displayIndex + 1) % hospital.images.length;
+      attempts++;
+    }
+
     return (
       <View style={styles.imageContainer}>
         <Image
-          source={hospital.images[currentImageIndex]}
+          source={hospital.images[displayIndex]}
           style={styles.carouselImage}
           resizeMode="cover"
         />
@@ -95,7 +151,7 @@ export const HospitalCard: React.FC<HospitalCardProps> = ({
             
             <View style={styles.imageIndicator}>
               <Text style={styles.imageIndicatorText}>
-                {currentImageIndex + 1} / {hospital.images.length}
+                {displayIndex + 1} / {hospital.images.length}
               </Text>
             </View>
           </>

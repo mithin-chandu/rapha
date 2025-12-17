@@ -72,7 +72,6 @@ const EnhancedHospitalCard: React.FC<{
             <Image
               source={{ uri: hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center' }}
               style={styles.hospitalImage}
-              defaultSource={require('../../../assets/image.png')}
             />
             <View style={styles.ratingBadge}>
               <Ionicons name="star" size={12} color="#FFC107" />
@@ -488,6 +487,47 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
     return hospitalImageIndices[hospitalId] || 0;
   };
 
+  // Helper function to check if an image is a .png file (to be excluded)
+  const isPngImage = (imageSource: any): boolean => {
+    if (typeof imageSource === 'string') {
+      return imageSource.toLowerCase().endsWith('.png');
+    }
+    // For require() statements, check the __filename property if available
+    if (imageSource && typeof imageSource === 'object') {
+      const uri = imageSource.uri || '';
+      return uri.toLowerCase().includes('.png');
+    }
+    return false;
+  };
+
+  // Get next valid index, skipping PNG images
+  const getNextValidIndex = (currentIndex: number, images: any[]): number => {
+    let nextIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    let attempts = 0;
+    const maxAttempts = images.length;
+    
+    while (attempts < maxAttempts && isPngImage(images[nextIndex])) {
+      nextIndex = nextIndex === images.length - 1 ? 0 : nextIndex + 1;
+      attempts++;
+    }
+    
+    return nextIndex;
+  };
+
+  // Get previous valid index, skipping PNG images
+  const getPreviousValidIndex = (currentIndex: number, images: any[]): number => {
+    let prevIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    let attempts = 0;
+    const maxAttempts = images.length;
+    
+    while (attempts < maxAttempts && isPngImage(images[prevIndex])) {
+      prevIndex = prevIndex === 0 ? images.length - 1 : prevIndex - 1;
+      attempts++;
+    }
+    
+    return prevIndex;
+  };
+
   const handleNextImage = (hospitalId: number, hospital: Hospital, e?: any) => {
     if (e) {
       e.stopPropagation();
@@ -497,7 +537,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
     if (images.length <= 1) return;
     
     const currentIndex = getCurrentImageIndex(hospitalId);
-    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    // Ensure currentIndex is valid before calculating next
+    const validCurrentIndex = currentIndex >= 0 && currentIndex < images.length ? currentIndex : 0;
+    const newIndex = getNextValidIndex(validCurrentIndex, images);
     setHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
   };
 
@@ -510,7 +552,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
     if (images.length <= 1) return;
     
     const currentIndex = getCurrentImageIndex(hospitalId);
-    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    // Ensure currentIndex is valid before calculating previous
+    const validCurrentIndex = currentIndex >= 0 && currentIndex < images.length ? currentIndex : 0;
+    const newIndex = getPreviousValidIndex(validCurrentIndex, images);
     setHospitalImageIndices(prev => ({ ...prev, [hospitalId]: newIndex }));
   };
 
@@ -520,7 +564,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
       return hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center';
     }
     const currentIndex = getCurrentImageIndex(hospital.id);
-    return images[currentIndex];
+    // Ensure index is within bounds
+    const validIndex = currentIndex >= 0 && currentIndex < images.length ? currentIndex : 0;
+    let image = images[validIndex];
+    
+    // Skip PNG images - find first non-PNG image
+    let attempts = 0;
+    const maxAttempts = images.length;
+    while (attempts < maxAttempts && image && isPngImage(image)) {
+      const nextIdx = validIndex + 1 + attempts;
+      image = images[nextIdx % images.length];
+      attempts++;
+    }
+    
+    // Return the image, or fallback if it's invalid or PNG
+    return (image && !isPngImage(image)) ? image : (hospital.image || 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center');
   };
 
   // Responsive breakpoints
@@ -1360,8 +1418,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
                             width: '100%',
                             height: '100%',
                             resizeMode: 'cover',
+                            backgroundColor: '#f1f5f9',
                           }}
-                          defaultSource={require('../../../assets/image.png')}
+                          onError={() => {
+                            // If local image fails to load, reset to first image
+                            setHospitalImageIndices(prev => {
+                              const newIndices = { ...prev };
+                              delete newIndices[item.id];
+                              return newIndices;
+                            });
+                          }}
+                          onLoadStart={() => {
+                            // Prevent showing placeholder while loading
+                          }}
                         />
                         
                         {/* Navigation Buttons */}

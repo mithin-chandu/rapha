@@ -23,6 +23,47 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [showNavButtons, setShowNavButtons] = useState(false);
 
+  // Helper function to check if an image is a .png file (to be excluded)
+  const isPngImage = (imageSource: any): boolean => {
+    if (typeof imageSource === 'string') {
+      return imageSource.toLowerCase().endsWith('.png');
+    }
+    // For require() statements, check the uri property if available
+    if (imageSource && typeof imageSource === 'object') {
+      const uri = imageSource.uri || '';
+      return uri.toLowerCase().includes('.png');
+    }
+    return false;
+  };
+
+  // Get next valid index, skipping PNG images
+  const getNextValidIndex = (currentIdx: number): number => {
+    let nextIndex = currentIdx === images.length - 1 ? 0 : currentIdx + 1;
+    let attempts = 0;
+    const maxAttempts = images.length;
+    
+    while (attempts < maxAttempts && isPngImage(images[nextIndex])) {
+      nextIndex = nextIndex === images.length - 1 ? 0 : nextIndex + 1;
+      attempts++;
+    }
+    
+    return nextIndex;
+  };
+
+  // Get previous valid index, skipping PNG images
+  const getPreviousValidIndex = (currentIdx: number): number => {
+    let prevIndex = currentIdx === 0 ? images.length - 1 : currentIdx - 1;
+    let attempts = 0;
+    const maxAttempts = images.length;
+    
+    while (attempts < maxAttempts && isPngImage(images[prevIndex])) {
+      prevIndex = prevIndex === 0 ? images.length - 1 : prevIndex - 1;
+      attempts++;
+    }
+    
+    return prevIndex;
+  };
+
   if (!images || images.length === 0) {
     return (
       <View style={[styles.imagePlaceholder, { height }]}>
@@ -33,13 +74,13 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({
   }
 
   const handlePrevious = () => {
-    const newIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    const newIndex = getPreviousValidIndex(currentIndex);
     setCurrentIndex(newIndex);
     onIndexChange?.(newIndex);
   };
 
   const handleNext = () => {
-    const newIndex = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    const newIndex = getNextValidIndex(currentIndex);
     setCurrentIndex(newIndex);
     onIndexChange?.(newIndex);
   };
