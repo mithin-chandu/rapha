@@ -141,6 +141,24 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
               </View>
             </View>
 
+            {/* SECTION 1.5: Location Journey Indicator */}
+            <View style={styles.journeySection}>
+              <View style={styles.journeyRow}>
+                <View style={styles.journeyStart}>
+                  <View style={styles.journeyDot} />
+                  <Text style={styles.journeyLabel}>Your Location</Text>
+                </View>
+                <View style={styles.journeyLine}>
+                  <View style={styles.journeyDottedLine} />
+                  <Text style={styles.journeyTime}>12 mins</Text>
+                </View>
+                <View style={styles.journeyEnd}>
+                  <Ionicons name="location" size={24} color={colors.primary} />
+                  <Text style={styles.journeyLabel}>{hospital.name}</Text>
+                </View>
+              </View>
+            </View>
+
             {/* SECTION 2: Consultation Timing & Fee Section */}
             <View style={styles.consultationSection}>
               <View style={styles.consultationTimingRow}>
@@ -153,29 +171,7 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                   <Text style={styles.consultationCost}>₹999</Text>
                 </View>
               </View>
-              <View style={styles.consultationMoreRow}>
-                <View style={styles.consultationMoreCard}>
-                  <Text style={styles.consultationTime}>4:00 - 12:00 PM</Text>
-                  <Text style={styles.hospitalName}>CALT Hospital</Text>
-                </View>
-                <View style={styles.consultationFeeCard}>
-                  <Text style={styles.consultationCostLabel}>Consultation Fee</Text>
-                  <Text style={styles.consultationCost}>₹750</Text>
-                </View>
-              </View>
             </View>
-
-            {/* SECTION 3: About Our Hospital */}
-            {hospital.description && (
-              <View style={styles.aboutSection}>
-                <Text style={styles.sectionTitle}>About Our Hospital</Text>
-                <Text style={styles.aboutText}>{hospital.description}</Text>
-                <TouchableOpacity style={styles.viewMoreButton}>
-                  <Text style={styles.viewMoreText}>View more for big 5 chain hospitals</Text>
-                  <Ionicons name="chevron-forward" size={16} color={colors.primary} />
-                </TouchableOpacity>
-              </View>
-            )}
           </ScrollView>
 
           {/* RIGHT COLUMN: IMAGES */}
@@ -263,75 +259,79 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
 
         {/* POST-DEPARTMENTS: full-width sections */}
         <View style={styles.fullWidthContent}>
-          {/* SECTION 4: Hospital Departments */}
-          <View style={styles.departmentsSection}>
-            <Text style={styles.sectionTitle}>Hospital Departments</Text>
-            
-            <View style={styles.departmentsList}>
-              {hospital.specialization.split(',').map((dept, index) => (
-                <View key={index} style={styles.departmentItem}>
-                  <LinearGradient
-                    colors={['#667eea', '#764ba2']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.departmentIcon}
-                  >
-                    <Ionicons name="medical-outline" size={18} color="#fff" />
-                  </LinearGradient>
-                  <Text style={styles.departmentName}>{dept.trim()}</Text>
-                </View>
-              ))}
+          {/* SECTION 3: About Our Hospital - Full Width */}
+          {hospital.description && (
+            <View style={styles.aboutSection}>
+              <Text style={styles.sectionTitle}>About Our Hospital</Text>
+              <Text style={styles.aboutText}>{hospital.description}</Text>
             </View>
-          </View>
+          )}
 
-          {/* SECTION 5: Our Doctors */}
-          <View style={styles.doctorsSection}>
-            <Text style={styles.sectionTitle}>Our Doctors</Text>
-            
+          {/* SECTION 4: Hospital Departments - Main Card with Department-wise Doctors */}
+          <View style={styles.departmentsMainCard}>
+            <Text style={styles.sectionTitle}>Hospital Departments</Text>
+            <Text style={styles.departmentSubtitle}>Our Doctors</Text>
+
+            {/* Department-wise Doctors */}
             {hospitalDoctors.length > 0 ? (
-              <View style={styles.doctorsList}>
-                {hospitalDoctors.map((doctor, doctorIndex) => (
-                  <View key={doctor.id} style={styles.doctorCardWrapper}>
-                    <View style={styles.doctorCardContent}>
-                      {/* Doctor Photo */}
-                      <View style={styles.doctorPhoto}>
-                        <Ionicons name="person-circle" size={80} color={colors.primary} />
+              <View style={styles.departmentWiseDoctorsList}>
+                {/* Group doctors by specialization/department */}
+                {Array.from(
+                  new Set(hospitalDoctors.map(d => d.specialization))
+                ).map((department, deptIndex) => {
+                  const deptDoctors = hospitalDoctors.filter(d => d.specialization === department);
+                  
+                  return (
+                    <View key={deptIndex} style={styles.departmentGroup}>
+                      {/* Department Header with Doctor Count */}
+                      <View style={styles.departmentGroupHeader}>
+                        <View style={[styles.departmentGroupIcon, { backgroundColor: '#E0E7FF' }]}>
+                          <Ionicons name="medical-outline" size={18} color="#4F46E5" />
+                        </View>
+                        <Text style={styles.departmentGroupTitle}>{department}</Text>
+                        <Text style={styles.doctorCount}>({deptDoctors.length})</Text>
                       </View>
 
-                      {/* Doctor Info */}
-                      <View style={styles.doctorInfoSection}>
-                        <Text style={styles.doctorName}>{doctor.name}</Text>
-                        <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
-                        
-                        <View style={styles.doctorExperienceRow}>
-                          <Ionicons name="briefcase-outline" size={14} color={colors.primary} />
-                          <Text style={styles.doctorExperienceText}>
-                            {doctor.experience}
-                          </Text>
-                        </View>
+                      {/* Doctors in this department */}
+                      {deptDoctors.map((doctor, doctorIndex) => (
+                        <View key={doctor.id} style={styles.departmentDoctorCard}>
+                          <View style={styles.doctorCardContent}>
+                            {/* Doctor Photo */}
+                            <View style={styles.doctorPhoto}>
+                              <Ionicons name="person-circle" size={80} color={colors.primary} />
+                            </View>
 
-                        <View style={styles.consultationRow}>
-                          <Text style={styles.consultationLabelSmall}>Consultation Fee:</Text>
-                          <Text style={styles.consultationFeeSmall}>₹{doctor.consultationFee}</Text>
-                        </View>
-                      </View>
+                            {/* Doctor Info */}
+                            <View style={styles.doctorInfoSection}>
+                              <Text style={styles.doctorName}>{doctor.name}</Text>
+                              <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
+                              
+                              <View style={styles.doctorExperienceRow}>
+                                <Ionicons name="briefcase-outline" size={14} color={colors.primary} />
+                                <Text style={styles.doctorExperienceText}>
+                                  {doctor.experience}
+                                </Text>
+                              </View>
 
-                      {/* Book Button */}
-                      <TouchableOpacity 
-                        style={styles.bookButton}
-                        onPress={() => handleBookAppointment(doctor)}
-                      >
-                        <Text style={styles.bookButtonText}>Book</Text>
-                      </TouchableOpacity>
+                              <View style={styles.consultationRow}>
+                                <Text style={styles.consultationLabelSmall}>Consultation Fee:</Text>
+                                <Text style={styles.consultationFeeSmall}>₹{doctor.consultationFee}</Text>
+                              </View>
+                            </View>
+
+                            {/* Book Button */}
+                            <TouchableOpacity 
+                              style={styles.bookButton}
+                              onPress={() => handleBookAppointment(doctor)}
+                            >
+                              <Text style={styles.bookButtonText}>Book</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      ))}
                     </View>
-
-                    {/* Next Doctor Details Link */}
-                    <TouchableOpacity style={styles.nextDoctorLink}>
-                      <Text style={styles.nextDoctorLinkText}>Next Doctor Details</Text>
-                      <Ionicons name="chevron-forward" size={14} color={colors.primary} />
-                    </TouchableOpacity>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
             ) : (
               <View style={styles.noDoctorsContainer}>
@@ -364,20 +364,20 @@ const styles = StyleSheet.create({
   },
   leftColumn: {
     flex: 1.2,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
   },
   rightColumn: {
     flex: 0.8,
-    paddingHorizontal: 20,
-    paddingVertical: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
     borderLeftWidth: 1,
     borderLeftColor: '#E2E8F0',
     backgroundColor: '#fafafa',
     justifyContent: 'flex-start',
   },
   fullWidthContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 12,
     paddingVertical: 0,
     flex: 1,
   },
@@ -393,7 +393,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
-    marginBottom: 20,
+    marginBottom: 8,
     minHeight: 320,
   },
   mainImage: {
@@ -453,11 +453,11 @@ const styles = StyleSheet.create({
   // ===== SECTION 1: HOSPITAL INFO =====
   infoSection: {
     backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 14,
     marginHorizontal: 0,
     marginTop: 0,
-    marginBottom: 16,
+    marginBottom: 6,
     borderRadius: 16,
     elevation: 3,
     shadowColor: '#000',
@@ -548,14 +548,74 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
+  // ===== SECTION 1.5: JOURNEY INDICATOR =====
+  journeySection: {
+    backgroundColor: '#fff',
+    marginHorizontal: 0,
+    marginTop: 0,
+    marginBottom: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 16,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  journeyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  journeyStart: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  journeyDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#3b82f6',
+  },
+  journeyLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#6b7280',
+    textAlign: 'center',
+    maxWidth: 80,
+  },
+  journeyLine: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  journeyDottedLine: {
+    width: '100%',
+    height: 2,
+    borderStyle: 'dotted' as const,
+    borderWidth: 1,
+    borderColor: '#3b82f6',
+  },
+  journeyTime: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#3b82f6',
+  },
+  journeyEnd: {
+    alignItems: 'center',
+    gap: 6,
+  },
+
   // ===== SECTION 2: CONSULTATION TIMING =====
   consultationSection: {
     backgroundColor: '#fff',
     marginHorizontal: 0,
     marginTop: 0,
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 20,
+    marginBottom: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 14,
     borderRadius: 16,
     elevation: 3,
     shadowColor: '#000',
@@ -678,8 +738,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1f2937',
+    color: '#000000',
     marginBottom: 16,
+  },
+
+  departmentSubtitle: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#6b7280',
+    marginBottom: 12,
   },
 
   // ===== SECTION 4: ABOUT HOSPITAL =====
@@ -687,7 +754,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginHorizontal: 0,
     marginTop: 0,
-    marginBottom: 16,
+    marginBottom: 8,
     paddingHorizontal: 16,
     paddingVertical: 20,
     borderRadius: 16,
@@ -719,12 +786,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // ===== SECTION 5: DEPARTMENTS =====
-  departmentsSection: {
-    backgroundColor: '#fff',
+  // ===== SECTION 4: DEPARTMENTS =====
+  departmentsMainCard: {
+    backgroundColor: '#FFFFFF',
     marginHorizontal: 0,
     marginTop: 0,
-    marginBottom: 16,
+    marginBottom: 8,
     paddingHorizontal: 16,
     paddingVertical: 20,
     borderRadius: 16,
@@ -758,6 +825,63 @@ const styles = StyleSheet.create({
     color: '#1f2937',
     fontWeight: '600',
     flex: 1,
+  },
+
+  // ===== SECTION 5: DOCTORS - Department Grouping =====
+  departmentSeparator: {
+    height: 1,
+    backgroundColor: '#E2E8F0',
+    marginVertical: 16,
+  },
+  departmentWiseDoctorsList: {
+    gap: 16,
+  },
+  departmentDoctorCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  departmentGroup: {
+    marginBottom: 16,
+  },
+  departmentGroupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 12,
+    marginBottom: 12,
+    gap: 10,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  departmentGroupIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  departmentGroupTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#000000',
+    flex: 1,
+  },
+  doctorCount: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#000000',
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
 
   // ===== SECTION 6: DOCTORS =====

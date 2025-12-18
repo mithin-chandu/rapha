@@ -208,7 +208,7 @@ export const AppNavigator: React.FC = () => {
         ) : userData.role === 'patient' ? (
           <>
             {/* Patient Screens */}
-            <Stack.Screen name="PatientHome">
+            <Stack.Screen name="Rapha">
               {({ navigation }: any) => (
                 <View style={styles.screenContainer}>
                   <HomeScreen 

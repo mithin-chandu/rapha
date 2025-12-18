@@ -8,6 +8,7 @@ import { HospitalCard } from '../../components/HospitalCard';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { hospitals, Hospital } from '../../data/hospitals';
+import { doctors } from '../../data/doctors';
 import { diagnosticTests } from '../../data/diagnostics';
 import { medicines } from '../../data/pharmacies';
 import { storage, UserData } from '../../utils/storage';
@@ -328,6 +329,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
       clearInterval(timeInterval);
       // clearInterval(hospitalScrollInterval);
     };
+  }, []);
+
+  useEffect(() => {
+    if (Platform.OS === 'web') {
+      document.title = 'Rapha';
+    }
   }, []);
 
   const onRefresh = () => {
@@ -1633,7 +1640,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
           </View>
       </Animated.View>
 
-      {/* Enhanced Quick Stats */}
+      {/* Enhanced Quick Stats - Premium Cards */}
       <Animated.View 
         style={[
           {
@@ -1651,120 +1658,85 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'stretch',
-          gap: 12,
+          gap: 16,
           marginTop: 16,
           paddingHorizontal: 4,
         }}>
           {[
             {
-              icon: 'business',
-              number: '50+',
+              number: hospitals.length,
               label: 'HOSPITALS',
-              gradient: ['#ffffff', '#ffffff'] as [string, string],
-              iconGradient: ['#ffffff', '#ffffff'] as [string, string],
+              icon: 'business-outline',
               iconColor: '#3B82F6',
-              shadowColor: '#d1d5db',
+              backgroundColor: '#E0E7FF',
             },
             {
-              icon: 'people',
-              number: '200+',
+              number: doctors.length,
               label: 'DOCTORS',
-              gradient: ['#ffffff', '#ffffff'] as [string, string],
-              iconGradient: ['#ffffff', '#ffffff'] as [string, string],
-              iconColor: '#3B82F6',
-              shadowColor: '#d1d5db',
+              icon: 'people',
+              iconColor: '#8B5CF6',
+              backgroundColor: '#F3E8FF',
             },
           ].map((stat, index) => (
             <Animated.View 
               key={index} 
               style={{
                 flex: 1,
-                maxWidth: '48%',
-                transform: [{ scale: pulseAnim }],
               }}
             >
-              <LinearGradient
-                colors={stat.gradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+              <View
                 style={{
-                  borderRadius: 20,
-                  padding: 20,
+                  borderRadius: 24,
+                  padding: 24,
                   alignItems: 'center',
-                  minHeight: 160,
+                  minHeight: 200,
                   width: '100%',
                   justifyContent: 'center',
-                  shadowColor: stat.shadowColor,
-                  shadowOffset: { width: 0, height: 8 },
-                  shadowOpacity: 0.3,
-                  shadowRadius: 16,
-                  elevation: 12,
-                  position: 'relative',
-                  overflow: 'hidden',
+                  backgroundColor: '#FFFFFF',
+                  shadowColor: '#000000',
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: 0.1,
+                  shadowRadius: 12,
+                  elevation: 3,
+                  borderWidth: 1,
+                  borderColor: '#E5E7EB',
                 }}
               >
-                {/* Decorative Elements */}
+                {/* Icon Display */}
                 <View style={{
-                  position: 'absolute',
-                  top: -20,
-                  right: -20,
                   width: 80,
                   height: 80,
-                  borderRadius: 40,
-                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                }} />
-                <View style={{
-                  position: 'absolute',
-                  bottom: -30,
-                  left: -30,
-                  width: 60,
-                  height: 60,
-                  borderRadius: 30,
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                }} />
-                
-                {/* Icon Container with Gradient */}
-                <LinearGradient
-                  colors={stat.iconGradient}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={{
-                    width: 64,
-                    height: 64,
-                    borderRadius: 20,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: 16,
-                    shadowColor: '#000000',
-                    shadowOffset: { width: 0, height: 4 },
-                    shadowOpacity: 0.2,
-                    shadowRadius: 8,
-                    elevation: 6,
-                  }}
-                >
-                  <Ionicons name={stat.icon as any} size={32} color={(stat as any).iconColor || "#000000"} />
-                </LinearGradient>
-                
+                  borderRadius: 16,
+                  backgroundColor: stat.backgroundColor,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginBottom: 20,
+                }}>
+                  <Ionicons name={stat.icon as any} size={40} color={stat.iconColor} />
+                </View>
+
+                {/* Number */}
                 <Text style={{
-                  fontSize: 36,
-                  fontWeight: '900',
+                  fontSize: 52,
+                  fontWeight: '800',
                   color: '#000000',
-                  marginBottom: 6,
+                  lineHeight: 58,
+                  marginBottom: 8,
                 }}>
                   {stat.number}
                 </Text>
-                
+
+                {/* Label */}
                 <Text style={{
-                  fontSize: 16,
-                  color: '#000000',
-                  textAlign: 'center',
+                  fontSize: 14,
                   fontWeight: '700',
-                  letterSpacing: 0.8,
-                  textTransform: 'uppercase',
+                  color: '#000000',
+                  letterSpacing: 1.5,
+                  textAlign: 'center',
                 }}>
                   {stat.label}
                 </Text>
-              </LinearGradient>
+              </View>
             </Animated.View>
           ))}
         </View>
