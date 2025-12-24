@@ -121,29 +121,11 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                 <Ionicons name="location-outline" size={18} color={colors.primary} />
                 <Text style={styles.addressText} numberOfLines={3}>{hospital.address}</Text>
               </View>
-
-              {/* Action Buttons */}
-              <View style={styles.actionButtonsRow}>
-                <TouchableOpacity 
-                  style={styles.directionButton}
-                  onPress={handleDirections}
-                >
-                  <Ionicons name="navigate" size={20} color="#fff" />
-                  <Text style={styles.directionButtonText}>Directions</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={styles.callButton}
-                  onPress={handleCall}
-                >
-                  <Ionicons name="call" size={20} color={colors.primary} />
-                  <Text style={styles.callButtonText}>Call</Text>
-                </TouchableOpacity>
-              </View>
             </View>
 
             {/* SECTION 1.5: Location Journey Indicator */}
             <View style={styles.journeySection}>
-              <View style={styles.journeyRow}>
+              <View style={styles.journeyRowWithButton}>
                 <View style={styles.journeyStart}>
                   <View style={styles.journeyDot} />
                   <Text style={styles.journeyLabel}>Your Location</Text>
@@ -156,6 +138,15 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                   <Ionicons name="location" size={24} color={colors.primary} />
                   <Text style={styles.journeyLabel}>{hospital.name}</Text>
                 </View>
+                
+                {/* Directions Card Button */}
+                <TouchableOpacity 
+                  style={styles.directionsCardButton}
+                  onPress={handleDirections}
+                >
+                  <Ionicons name="navigate" size={18} color={colors.primary} />
+                  <Text style={styles.directionsCardText}>Directions</Text>
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -166,6 +157,15 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                   <Text style={styles.consultationTime}>9:00 - 10:00 AM</Text>
                   <Text style={styles.consultationLabel}>Timing</Text>
                 </View>
+                
+                <TouchableOpacity 
+                  style={styles.consultationCallCard}
+                  onPress={handleCall}
+                >
+                  <Ionicons name="call" size={24} color={colors.primary} />
+                  <Text style={styles.consultationCallText}>Call</Text>
+                </TouchableOpacity>
+                
                 <View style={styles.consultationFeeCard}>
                   <Text style={styles.consultationCostLabel}>Consultation Fee</Text>
                   <Text style={styles.consultationCost}>₹999</Text>
@@ -211,23 +211,23 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                     </TouchableOpacity>
                   </>
                 )}
-              </View>
 
-              {/* Image Dots Indicator */}
-              {hospital.images.length > 1 && (
-                <View style={styles.dotsContainer}>
-                  {hospital.images.map((_, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={[
-                        styles.dot,
-                        index === currentImageIndex && styles.dotActive
-                      ]}
-                      onPress={() => setCurrentImageIndex(index)}
-                    />
-                  ))}
-                </View>
-              )}
+                {/* Image Dots Indicator - Inside Carousel */}
+                {hospital.images.length > 1 && (
+                  <View style={styles.dotsContainer}>
+                    {hospital.images.map((_, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={[
+                          styles.dot,
+                          index === currentImageIndex && styles.dotActive
+                        ]}
+                        onPress={() => setCurrentImageIndex(index)}
+                      />
+                    ))}
+                  </View>
+                )}
+              </View>
 
               {/* Thumbnail Gallery (all images, scrollable) */}
               <View style={styles.thumbnailGallerySection}>
@@ -307,7 +307,7 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                               <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
                               
                               <View style={styles.doctorExperienceRow}>
-                                <Ionicons name="briefcase-outline" size={14} color={colors.primary} />
+                                <Text style={styles.doctorExperienceLabel}>Experience:</Text>
                                 <Text style={styles.doctorExperienceText}>
                                   {doctor.experience}
                                 </Text>
@@ -360,17 +360,16 @@ const styles = StyleSheet.create({
   // ===== TWO COLUMN LAYOUT =====
   mainWrapper: {
     flexDirection: 'row',
-    flex: 1,
   },
   leftColumn: {
     flex: 1.2,
     paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingVertical: 0,
   },
   rightColumn: {
     flex: 0.8,
     paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingVertical: 0,
     borderLeftWidth: 1,
     borderLeftColor: '#E2E8F0',
     backgroundColor: '#fafafa',
@@ -385,20 +384,21 @@ const styles = StyleSheet.create({
   imageCarouselContainer: {
     position: 'relative',
     height: 320,
-    borderRadius: 20,
-    overflow: 'hidden',
+    borderRadius: 24,
+    overflow: 'visible',
     backgroundColor: '#f1f5f9',
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
-    marginBottom: 8,
+    marginBottom: 0,
     minHeight: 320,
   },
   mainImage: {
     width: '100%',
     height: '100%',
+    borderRadius: 24,
   },
   imageBadge: {
     position: 'absolute',
@@ -433,32 +433,36 @@ const styles = StyleSheet.create({
     right: 16,
   },
   dotsContainer: {
+    position: 'absolute',
+    bottom: 16,
+    left: '50%',
+    transform: [{ translateX: -60 }],
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 16,
     gap: 8,
+    zIndex: 5,
   },
   dot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#E2E8F0',
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
   },
   dotActive: {
     width: 24,
-    backgroundColor: colors.primary,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
   },
 
   // ===== SECTION 1: HOSPITAL INFO =====
   infoSection: {
     backgroundColor: '#fff',
-    paddingHorizontal: 12,
-    paddingVertical: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 16,
     marginHorizontal: 0,
     marginTop: 0,
-    marginBottom: 6,
-    borderRadius: 16,
+    marginBottom: 8,
+    borderRadius: 18,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -469,18 +473,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 18,
   },
   hospitalTitle: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 28,
+    fontWeight: '900',
     color: '#1f2937',
-    marginBottom: 4,
+    marginBottom: 8,
+    letterSpacing: 0.5,
   },
   specialization: {
-    fontSize: 14,
-    color: '#6b7280',
-    fontWeight: '500',
+    fontSize: 15,
+    color: '#4b5563',
+    fontWeight: '600',
   },
   ratingBadge: {
     flexDirection: 'row',
@@ -553,10 +558,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginHorizontal: 0,
     marginTop: 0,
-    marginBottom: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderRadius: 16,
+    marginBottom: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    borderRadius: 18,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -567,6 +572,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
+  },
+  journeyRowWithButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    justifyContent: 'space-between',
   },
   journeyStart: {
     alignItems: 'center',
@@ -608,15 +619,57 @@ const styles = StyleSheet.create({
     gap: 6,
   },
 
+  journeyDirectionsButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+  },
+  journeyDirectionsText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+
+  directionsCardButton: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+  },
+  directionsCardText: {
+    color: colors.primary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+
   // ===== SECTION 2: CONSULTATION TIMING =====
   consultationSection: {
     backgroundColor: '#fff',
     marginHorizontal: 0,
     marginTop: 0,
-    marginBottom: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 14,
-    borderRadius: 16,
+    marginBottom: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 18,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -626,48 +679,82 @@ const styles = StyleSheet.create({
   consultationTimingRow: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 12,
+    marginBottom: 0,
+    justifyContent: 'space-between',
   },
   consultationTimeCard: {
     flex: 1,
-    backgroundColor: '#F0F9FF',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    borderLeftWidth: 4,
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 16,
+    borderLeftWidth: 5,
     borderLeftColor: colors.primary,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+  },
+  consultationCallCard: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 16,
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+    flexDirection: 'row',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+  },
+  consultationCallText: {
+    fontSize: 15,
+    color: colors.primary,
+    fontWeight: '600',
   },
   consultationTime: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700',
     color: '#1f2937',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   consultationLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#6b7280',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   consultationFeeCard: {
     flex: 1,
-    backgroundColor: '#F0F9FF',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    borderLeftWidth: 4,
+    borderLeftWidth: 5,
     borderLeftColor: colors.primary,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
   },
   consultationCostLabel: {
-    fontSize: 11,
+    fontSize: 13,
     color: '#6b7280',
-    fontWeight: '500',
-    marginBottom: 4,
+    fontWeight: '600',
+    marginBottom: 6,
   },
   consultationCost: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '800',
     color: colors.primary,
   },
   consultationMoreRow: {
@@ -695,10 +782,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginHorizontal: 0,
     marginTop: 0,
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderRadius: 16,
+    marginBottom: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 18,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -709,22 +796,24 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: '#1f2937',
-    marginBottom: 16,
+    marginBottom: 14,
   },
   thumbnailScrollContent: {
     flexDirection: 'row',
-    gap: 12,
-    paddingRight: 12,
+    gap: 10,
+    paddingRight: 4,
   },
   thumbnailWrapper: {
-    width: 140,
+    width: 120,
     alignItems: 'center',
   },
   thumbnail: {
     width: '100%',
     height: 100,
-    borderRadius: 12,
+    borderRadius: 16,
     backgroundColor: '#f1f5f9',
+    borderWidth: 1.5,
+    borderColor: '#e5e7eb',
   },
   thumbnailLabel: {
     fontSize: 12,
@@ -940,6 +1029,11 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 8,
   },
+  doctorExperienceLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '600',
+  },
   doctorExperienceText: {
     fontSize: 12,
     color: '#6b7280',
@@ -947,8 +1041,9 @@ const styles = StyleSheet.create({
   },
   consultationRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    gap: 8,
     marginTop: 8,
   },
   consultationLabelSmall: {
@@ -1012,6 +1107,6 @@ const styles = StyleSheet.create({
   },
 
   bottomSpacer: {
-    height: 30,
+    height: 0,
   },
 });

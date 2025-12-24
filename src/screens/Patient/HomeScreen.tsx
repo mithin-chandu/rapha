@@ -684,6 +684,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
             paddingBottom: 0,
             paddingTop: 0,
             marginTop: 0,
+            display: 'flex',
+            flexDirection: 'column',
           }
         ]}
         refreshControl={
@@ -1923,10 +1925,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
           {
             opacity: fadeAnim,
             transform: [{ translateY: slideAnim }],
+            flex: 1,
+            justifyContent: 'flex-end',
           },
         ]}
       >
-        <View style={styles.footer}>
+        <View style={[styles.footer, { flex: 1 }]}>
           <LinearGradient
             colors={['#1e40af', '#3b82f6', '#60a5fa']}
             start={{ x: 0, y: 0 }}
@@ -2042,8 +2046,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
           </LinearGradient>
         </View>
       </Animated.View>
-
-      <View style={styles.bottomSpacer} />
     </ScrollView>
   </View>
   );
@@ -3068,12 +3070,9 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   
-  bottomSpacer: {
-    height: spacing.massive,
-  },
-  
   // Enhanced Professional Footer Styles
   footer: {
+    flex: 1,
     marginTop: 32,
     marginBottom: 0,
     shadowColor: '#000000',
@@ -3088,11 +3087,12 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 32,
   },
   footerGradient: {
+    flex: 1,
     paddingVertical: 48,
     paddingHorizontal: 24,
     position: 'relative',
     width: '100%',
-    height: '100%',
+    justifyContent: 'space-between',
   },
   footerDecorations: {
     position: 'absolute',

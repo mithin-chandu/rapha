@@ -107,7 +107,7 @@ const EHRScreen: React.FC = () => {
           {/* Quick Overview Stats */}
           <View style={styles.ehrQuickStats}>
             <View style={styles.ehrQuickStatItem}>
-              <View style={[styles.ehrQuickStatIcon, { backgroundColor: '#f3e8ff' }]}>
+              <View style={styles.ehrQuickStatIcon}>
                 <Ionicons name="folder-open-outline" size={20} color="#7c3aed" />
               </View>
               <Text style={styles.ehrQuickStatNumber}>{ehrRecords.length}</Text>
@@ -115,7 +115,7 @@ const EHRScreen: React.FC = () => {
             </View>
             
             <View style={styles.ehrQuickStatItem}>
-              <View style={[styles.ehrQuickStatIcon, { backgroundColor: '#fef3c7' }]}>
+              <View style={styles.ehrQuickStatIcon}>
                 <Ionicons name="calendar-outline" size={20} color="#f59e0b" />
               </View>
               <Text style={styles.ehrQuickStatNumber}>{upcomingFollowUps.length}</Text>
@@ -123,7 +123,7 @@ const EHRScreen: React.FC = () => {
             </View>
             
             <View style={styles.ehrQuickStatItem}>
-              <View style={[styles.ehrQuickStatIcon, { backgroundColor: '#dcfce7' }]}>
+              <View style={styles.ehrQuickStatIcon}>
                 <Ionicons name="pulse-outline" size={20} color="#10b981" />
               </View>
               <Text style={styles.ehrQuickStatNumber}>
@@ -133,7 +133,7 @@ const EHRScreen: React.FC = () => {
             </View>
             
             <View style={styles.ehrQuickStatItem}>
-              <View style={[styles.ehrQuickStatIcon, { backgroundColor: '#e0f2fe' }]}>
+              <View style={styles.ehrQuickStatIcon}>
                 <Ionicons name="shield-checkmark-outline" size={20} color="#0891b2" />
               </View>
               <Text style={styles.ehrQuickStatNumber}>
@@ -873,31 +873,34 @@ const styles = StyleSheet.create({
   ehrQuickStats: {
     flexDirection: 'row',
     backgroundColor: '#ffffff',
-    borderRadius: 40,
-    padding: 20,
-    gap: 12,
+    borderRadius: 20,
+    padding: 16,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
   },
   ehrQuickStatItem: {
     flex: 1,
     alignItems: 'center',
   },
   ehrQuickStatIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 20,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#dbeafe',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   ehrQuickStatNumber: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#ffffff',
+    color: '#1e293b',
     marginBottom: 4,
   },
   ehrQuickStatLabel: {
     fontSize: 12,
-    color: '#c4b5fd',
+    color: '#64748b',
     fontWeight: '600',
     textTransform: 'uppercase',
   },

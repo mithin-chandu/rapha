@@ -15,7 +15,7 @@ export const hospitals: Hospital[] = [
     id: 1,
     name: "Manipal Hospital Vijayawada",
     specialization: "Cardiology, Neurology",
-    address: "NH-5, Tadepalli, Vijayawada, Andhra Pradesh",
+    address: "Door No: 115-A, NH-5, Tadepalli, Vijayawada, Andhra Pradesh 520007",
     rating: 4.8,
     image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -32,7 +32,7 @@ export const hospitals: Hospital[] = [
     id: 2,
     name: "Ramesh Hospitals",
     specialization: "Orthopedics, General Medicine",
-    address: "Governorpet, Vijayawada, Andhra Pradesh",
+    address: "Door No: 42-B, Governorpet, Vijayawada, Andhra Pradesh 520002",
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -49,7 +49,7 @@ export const hospitals: Hospital[] = [
     id: 3,
     name: "Andhra Hospital",
     specialization: "Pediatrics, Gynecology",
-    address: "Suryaraopet, Vijayawada, Andhra Pradesh",
+    address: "Door No: 75-C, Suryaraopet, Vijayawada, Andhra Pradesh 520001",
     rating: 4.7,
     image: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -66,7 +66,7 @@ export const hospitals: Hospital[] = [
     id: 4,
     name: "Vijaya Hospital",
     specialization: "Emergency Care, Surgery",
-    address: "Benz Circle, Vijayawada, Andhra Pradesh",
+    address: "Door No: 28-D, Benz Circle, Vijayawada, Andhra Pradesh 520003",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -83,7 +83,7 @@ export const hospitals: Hospital[] = [
     id: 5,
     name: "Apollo Hospitals Vijayawada",
     specialization: "Oncology, Cardiology",
-    address: "PWD Colony, Vijayawada, Andhra Pradesh",
+    address: "Door No: 156-E, PWD Colony, Vijayawada, Andhra Pradesh 520010",
     rating: 4.9,
     image: "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -100,7 +100,7 @@ export const hospitals: Hospital[] = [
     id: 6,
     name: "Krishna Institute of Medical Sciences (KIMS)",
     specialization: "Neurosurgery, Transplant",
-    address: "Minister Road, Secunderabad, Vijayawada, Andhra Pradesh",
+    address: "Door No: 234-A, Minister Road, Secunderabad, Vijayawada, Andhra Pradesh 520009",
     rating: 4.7,
     image:  "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -117,7 +117,7 @@ export const hospitals: Hospital[] = [
     id: 7,
     name: "Medicover Hospitals Vijayawada",
     specialization: "Gastroenterology, Urology",
-    address: "Benz Circle, Vijayawada, Andhra Pradesh",
+    address: "Door No: 89-B, Benz Circle, Vijayawada, Andhra Pradesh 520008",
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -134,7 +134,7 @@ export const hospitals: Hospital[] = [
     id: 8,
     name: "Max Cure Hospitals",
     specialization: "Dermatology, Plastic Surgery",
-    address: "Madhuranagar, Vijayawada, Andhra Pradesh",
+    address: "Door No: 456-C, Madhuranagar, Vijayawada, Andhra Pradesh 520012",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -151,7 +151,7 @@ export const hospitals: Hospital[] = [
     id: 9,
     name: "Government General Hospital Vijayawada",
     specialization: "Research, Multi-Specialty",
-    address: "Hospital Road, Vijayawada, Andhra Pradesh",
+    address: "Door No: 567-D, Hospital Road, Vijayawada, Andhra Pradesh 520002",
     rating: 4.9,
     image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -168,7 +168,7 @@ export const hospitals: Hospital[] = [
     id: 10,
     name: "Sterling Hospital",
     specialization: "Robotic Surgery, ICU",
-    address: "Ring Road, Vijayawada, Andhra Pradesh",
+    address: "Door No: 678-E, Ring Road, Vijayawada, Andhra Pradesh 520004",
     rating: 4.8,
     image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -185,7 +185,7 @@ export const hospitals: Hospital[] = [
     id: 11,
     name: "Narayana Multispeciality Hospital",
     specialization: "Cardiac Surgery, Pediatrics",
-    address: "Kanuru, Vijayawada, Andhra Pradesh",
+    address: "Door No: 123-F, Kanuru, Vijayawada, Andhra Pradesh 520007",
     rating: 4.7,
     image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -202,7 +202,7 @@ export const hospitals: Hospital[] = [
     id: 12,
     name: "Rainbow Children's Hospital Vijayawada",
     specialization: "Liver Transplant, Nephrology",
-    address: "Auto Nagar, Vijayawada, Andhra Pradesh",
+    address: "Door No: 234-G, Auto Nagar, Vijayawada, Andhra Pradesh 520006",
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1632833239869-a37e3a5806d2?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -219,7 +219,7 @@ export const hospitals: Hospital[] = [
     id: 13,
     name: "Andhra Hospitals",
     specialization: "Pediatric Care, NICU",
-    address: "Patamatalanka, Vijayawada, Andhra Pradesh",
+    address: "Door No: 345-H, Patamatalanka, Vijayawada, Andhra Pradesh 520011",
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -236,7 +236,7 @@ export const hospitals: Hospital[] = [
     id: 14,
     name: "Sai Balaji Multi Specialty Hospital",
     specialization: "Liver Transplant, Gastroenterology",
-    address: "Gandhinagar, Vijayawada, Andhra Pradesh",
+    address: "Door No: 456-I, Gandhinagar, Vijayawada, Andhra Pradesh 520003",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -253,7 +253,7 @@ export const hospitals: Hospital[] = [
     id: 15,
     name: "Continental Hospitals Vijayawada",
     specialization: "Emergency Care, Maternity",
-    address: "Labbipet, Vijayawada, Andhra Pradesh",
+    address: "Door No: 567-J, Labbipet, Vijayawada, Andhra Pradesh 520010",
     rating: 4.4,
     image: "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -270,7 +270,7 @@ export const hospitals: Hospital[] = [
     id: 16,
     name: "Bhavani Hospital",
     specialization: "General Medicine, Surgery",
-    address: "Eluru Road, Vijayawada, Andhra Pradesh",
+    address: "Door No: 678-K, Eluru Road, Vijayawada, Andhra Pradesh 520001",
     rating: 4.3,
     image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -287,7 +287,7 @@ export const hospitals: Hospital[] = [
     id: 17,
     name: "Care Hospital Vijayawada",
     specialization: "Cardiac Speciality, Interventional",
-    address: "Health City, Vijayawada, Andhra Pradesh",
+    address: "Door No: 789-L, Health City, Vijayawada, Andhra Pradesh 520014",
     rating: 4.8,
     image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -304,7 +304,7 @@ export const hospitals: Hospital[] = [
     id: 18,
     name: "VJ's Children's Hospital",
     specialization: "Cancer Care, Radiology",
-    address: "One Town, Vijayawada, Andhra Pradesh",
+    address: "Door No: 234-M, One Town, Vijayawada, Andhra Pradesh 520013",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -321,7 +321,7 @@ export const hospitals: Hospital[] = [
     id: 19,
     name: "Amaravathi Hospital",
     specialization: "Nephrology, Urology",
-    address: "Amaravathi Road, Vijayawada, Andhra Pradesh",
+    address: "Door No: 345-N, Amaravathi Road, Vijayawada, Andhra Pradesh 520015",
     rating: 4.4,
     image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -338,7 +338,7 @@ export const hospitals: Hospital[] = [
     id: 20,
     name: "Lotus Hospital Vijayawada",
     specialization: "Oncology, Gastroenterology",
-    address: "Kanuru, Vijayawada, Andhra Pradesh",
+    address: "Door No: 456-O, Kanuru, Vijayawada, Andhra Pradesh 520016",
     rating: 4.7,
     image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -355,7 +355,7 @@ export const hospitals: Hospital[] = [
     id: 21,
     name: "Shanthi Multi Specialty Hospital",
     specialization: "Orthopedics, Traumatology",
-    address: "MVP Colony, Vijayawada, Andhra Pradesh",
+    address: "Door No: 678-L, MVP Colony, Vijayawada, Andhra Pradesh 520005",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -372,7 +372,7 @@ export const hospitals: Hospital[] = [
     id: 22,
     name: "Sai Diagnostics Center Vijayawada",
     specialization: "Radiology, Pathology",
-    address: "Patamata, Vijayawada, Andhra Pradesh",
+    address: "Door No: 789-M, Patamata, Vijayawada, Andhra Pradesh 520011",
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -389,7 +389,7 @@ export const hospitals: Hospital[] = [
     id: 23,
     name: "Ashoka Multi Specialty",
     specialization: "Neurology, Orthopedics",
-    address: "Kaja Darwaja, Vijayawada, Andhra Pradesh",
+    address: "Door No: 234-N, Kaja Darwaja, Vijayawada, Andhra Pradesh 520003",
     rating: 4.4,
     image: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -406,7 +406,7 @@ export const hospitals: Hospital[] = [
     id: 24,
     name: "Vaidya Wellness Center",
     specialization: "Ayurveda, Yoga Therapy",
-    address: "Suryapeta, Vijayawada, Andhra Pradesh",
+    address: "Door No: 345-O, Suryapeta, Vijayawada, Andhra Pradesh 520008",
     rating: 4.3,
     image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -423,7 +423,7 @@ export const hospitals: Hospital[] = [
     id: 25,
     name: "Aarya Hospital Vijayawada",
     specialization: "Maternity, Gynecology",
-    address: "Chandralok, Vijayawada, Andhra Pradesh",
+    address: "Door No: 456-P, Chandralok, Vijayawada, Andhra Pradesh 520006",
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1587351021759-3e566b6af7cc?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -440,7 +440,7 @@ export const hospitals: Hospital[] = [
     id: 26,
     name: "Precision Dental Care",
     specialization: "Dentistry, Orthodontics",
-    address: "Near Rajiv Chowk, Vijayawada, Andhra Pradesh",
+    address: "Door No: 567-Q, Near Rajiv Chowk, Vijayawada, Andhra Pradesh 520002",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -457,7 +457,7 @@ export const hospitals: Hospital[] = [
     id: 27,
     name: "Med Care Hospital",
     specialization: "Internal Medicine, Pulmonology",
-    address: "Moghalrajpuram, Vijayawada, Andhra Pradesh",
+    address: "Door No: 678-R, Moghalrajpuram, Vijayawada, Andhra Pradesh 520012",
     rating: 4.4,
     image: "https://images.unsplash.com/photo-1612277795421-9bc7706a4a34?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -474,7 +474,7 @@ export const hospitals: Hospital[] = [
     id: 28,
     name: "Vitality Wellness Clinic",
     specialization: "Homeopathy, Physiotherapy",
-    address: "Prakasam Nagar, Vijayawada, Andhra Pradesh",
+    address: "Door No: 789-S, Prakasam Nagar, Vijayawada, Andhra Pradesh 520009",
     rating: 4.2,
     image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -491,7 +491,7 @@ export const hospitals: Hospital[] = [
     id: 29,
     name: "Spark Eye Care Center",
     specialization: "Ophthalmology, Eye Surgery",
-    address: "Dowanpet, Vijayawada, Andhra Pradesh",
+    address: "Door No: 234-T, Dowanpet, Vijayawada, Andhra Pradesh 520007",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -508,7 +508,7 @@ export const hospitals: Hospital[] = [
     id: 30,
     name: "Herbal Healing Hospital",
     specialization: "Naturopathy, Unani",
-    address: "Gajuwaka, Vijayawada, Andhra Pradesh",
+    address: "Door No: 345-U, Gajuwaka, Vijayawada, Andhra Pradesh 520013",
     rating: 4.3,
     image: "https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -525,7 +525,7 @@ export const hospitals: Hospital[] = [
     id: 31,
     name: "Heart Plus Hospital",
     specialization: "Cardiology, Cardiac Surgery",
-    address: "Eenadu Junction, Vijayawada, Andhra Pradesh",
+    address: "Door No: 456-V, Eenadu Junction, Vijayawada, Andhra Pradesh 520011",
     rating: 4.7,
     image: "https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -542,7 +542,7 @@ export const hospitals: Hospital[] = [
     id: 32,
     name: "Smile Dental Clinic",
     specialization: "Prosthodontics, Implants",
-    address: "Papi Hills, Vijayawada, Andhra Pradesh",
+    address: "Door No: 567-W, Papi Hills, Vijayawada, Andhra Pradesh 520010",
     rating: 4.4,
     image: "https://images.unsplash.com/photo-1632833239869-a37e3a5806d2?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -559,7 +559,7 @@ export const hospitals: Hospital[] = [
     id: 33,
     name: "Brain & Spine Institute",
     specialization: "Neurosurgery, Spine Surgery",
-    address: "Arundelpet, Vijayawada, Andhra Pradesh",
+    address: "Door No: 678-X, Arundelpet, Vijayawada, Andhra Pradesh 520014",
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -576,7 +576,7 @@ export const hospitals: Hospital[] = [
     id: 34,
     name: "Skin & Hair Clinic",
     specialization: "Dermatology, Trichology",
-    address: "Beside Stadium, Vijayawada, Andhra Pradesh",
+    address: "Door No: 789-Y, Beside Stadium, Vijayawada, Andhra Pradesh 520004",
     rating: 4.3,
     image: "https://images.unsplash.com/photo-1512678080530-7760d81faba6?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -593,7 +593,7 @@ export const hospitals: Hospital[] = [
     id: 35,
     name: "Diabetes Care Center",
     specialization: "Endocrinology, Diabetes",
-    address: "Muralipatnam, Vijayawada, Andhra Pradesh",
+    address: "Door No: 234-Z, Muralipatnam, Vijayawada, Andhra Pradesh 520015",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -610,7 +610,7 @@ export const hospitals: Hospital[] = [
     id: 36,
     name: "Wellness Plus Medical Center",
     specialization: "Family Medicine, Prevention",
-    address: "Vijaya Nagar, Vijayawada, Andhra Pradesh",
+    address: "Door No: 345-AA, Vijaya Nagar, Vijayawada, Andhra Pradesh 520012",
     rating: 4.4,
     image: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -627,7 +627,7 @@ export const hospitals: Hospital[] = [
     id: 37,
     name: "Joint Care Hospital",
     specialization: "Rheumatology, Joint Care",
-    address: "Kala Nagar, Vijayawada, Andhra Pradesh",
+    address: "Door No: 456-AB, Kala Nagar, Vijayawada, Andhra Pradesh 520003",
     rating: 4.3,
     image: "https://images.unsplash.com/photo-1516549655169-df83a0774514?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -644,7 +644,7 @@ export const hospitals: Hospital[] = [
     id: 38,
     name: "Comprehensive Health Labs",
     specialization: "Laboratory, Diagnostics",
-    address: "Palm Beach Road, Vijayawada, Andhra Pradesh",
+    address: "Door No: 567-AC, Palm Beach Road, Vijayawada, Andhra Pradesh 520011",
     rating: 4.4,
     image: "https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -661,7 +661,7 @@ export const hospitals: Hospital[] = [
     id: 39,
     name: "ENT Specialty Clinic",
     specialization: "Otolaryngology, ENT Surgery",
-    address: "Indira Nagar, Vijayawada, Andhra Pradesh",
+    address: "Door No: 678-AD, Indira Nagar, Vijayawada, Andhra Pradesh 520009",
     rating: 4.5,
     image: "https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=400&h=200&fit=crop&crop=center",
     images: [
@@ -678,7 +678,7 @@ export const hospitals: Hospital[] = [
     id: 40,
     name: "Acute Care Medical Hospital",
     specialization: "Emergency, Critical Care",
-    address: "Opp LIC Office, Vijayawada, Andhra Pradesh",
+    address: "Door No: 789-AE, Opp LIC Office, Vijayawada, Andhra Pradesh 520001",
     rating: 4.6,
     image: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=400&h=200&fit=crop&crop=center",
     images: [

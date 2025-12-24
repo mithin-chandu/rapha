@@ -255,7 +255,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'skinHair' as FilterCategory, 
       label: 'Skin & Hair', 
-      icon: 'color-palette', 
+      icon: 'person-circle-outline', 
       color: '#8b5cf6', 
       bgColor: '#f5f3ff',
       gradient: ['#ede9fe', '#ddd6fe'],
@@ -273,7 +273,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'generalPhysician' as FilterCategory, 
       label: 'General Physician', 
-      icon: 'medical', 
+      icon: 'person', 
       color: '#0891b2', 
       bgColor: '#ecfeff',
       gradient: ['#cffafe', '#a5f3fc'],
@@ -282,7 +282,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'dentalCare' as FilterCategory, 
       label: 'Dental Care', 
-      icon: 'happy', 
+      icon: 'happy-outline', 
       color: '#f97316', 
       bgColor: '#fff7ed',
       gradient: ['#fed7aa', '#fdba74'],
@@ -291,7 +291,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'bonesJoints' as FilterCategory, 
       label: 'Bones & Joints', 
-      icon: 'fitness', 
+      icon: 'body-outline', 
       color: '#6366f1', 
       bgColor: '#eef2ff',
       gradient: ['#e0e7ff', '#c7d2fe'],
@@ -300,7 +300,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'mentalWellness' as FilterCategory, 
       label: 'Mental Wellness', 
-      icon: 'chatbubble-ellipses', 
+      icon: 'head-outline', 
       color: '#10b981', 
       bgColor: '#ecfdf5',
       gradient: ['#d1fae5', '#a7f3d0'],
@@ -327,7 +327,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'childSpecialist' as FilterCategory, 
       label: 'Child Specialist', 
-      icon: 'body', 
+      icon: 'happy-outline', 
       color: '#fb923c', 
       bgColor: '#fff7ed',
       gradient: ['#fed7aa', '#fdba74'],
@@ -336,7 +336,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'homeopathy' as FilterCategory, 
       label: 'Homeopathy', 
-      icon: 'flask', 
+      icon: 'flask-outline', 
       color: '#8b5cf6', 
       bgColor: '#f5f3ff',
       gradient: ['#ede9fe', '#ddd6fe'],
@@ -345,7 +345,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'digestiveIssues' as FilterCategory, 
       label: 'Digestive Issues', 
-      icon: 'nutrition', 
+      icon: 'nutrition-outline', 
       color: '#f97316', 
       bgColor: '#fff7ed',
       gradient: ['#fed7aa', '#fdba74'],
@@ -363,7 +363,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'heart' as FilterCategory, 
       label: 'Heart', 
-      icon: 'heart', 
+      icon: 'heart-half', 
       color: '#dc2626', 
       bgColor: '#fef2f2',
       gradient: ['#fee2e2', '#fecaca'],
@@ -372,7 +372,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'physiotherapy' as FilterCategory, 
       label: 'Physiotherapy', 
-      icon: 'accessibility', 
+      icon: 'accessibility-outline', 
       color: '#7c3aed', 
       bgColor: '#f5f3ff',
       gradient: ['#ede9fe', '#ddd6fe'],
@@ -381,7 +381,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'brainNerves' as FilterCategory, 
       label: 'Brain and Nerves', 
-      icon: 'git-network', 
+      icon: 'radio-button-off-outline', 
       color: '#8b5cf6', 
       bgColor: '#faf5ff',
       gradient: ['#f3e8ff', '#e9d5ff'],
@@ -390,7 +390,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'lungsBreathing' as FilterCategory, 
       label: 'Lungs and Breathing', 
-      icon: 'partly-sunny', 
+      icon: 'lung-outline', 
       color: '#06b6d4', 
       bgColor: '#ecfeff',
       gradient: ['#cffafe', '#a5f3fc'],
@@ -399,7 +399,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'kidneyIssues' as FilterCategory, 
       label: 'Kidney Issues', 
-      icon: 'water', 
+      icon: 'water-outline', 
       color: '#ec4899', 
       bgColor: '#fdf2f8',
       gradient: ['#fce7f3', '#fbcfe8'],
@@ -408,7 +408,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
     { 
       key: 'generalSurgery' as FilterCategory, 
       label: 'General Surgery', 
-      icon: 'cut', 
+      icon: 'cut-outline', 
       color: '#64748b', 
       bgColor: '#f8fafc',
       gradient: ['#f1f5f9', '#e2e8f0'],
@@ -2072,24 +2072,6 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                   })}
                 >
                   <View style={styles.topHospitalGradient}>
-                    {/* Featured Badge */}
-                    <View style={{
-                      position: 'absolute',
-                      top: 8,
-                      right: 8,
-                      backgroundColor: '#8b5cf6',
-                      paddingHorizontal: 8,
-                      paddingVertical: 4,
-                      borderRadius: 8,
-                      zIndex: 10,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 4,
-                    }}>
-                      <Ionicons name="sparkles" size={10} color="#ffffff" />
-                      <Text style={{ fontSize: 10, fontWeight: '700', color: '#ffffff' }}>FEATURED</Text>
-                    </View>
-
                     {/* Hospital Image with Carousel */}
                     <View style={styles.topHospitalImageContainer}
                       {...(Platform.OS === 'web' && {
@@ -2140,9 +2122,9 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                         </>
                       )}
                       
-                      <View style={[styles.topHospitalRating, { backgroundColor: '#8b5cf6' }]}>
-                        <Ionicons name="star" size={14} color="#ffffff" />
-                        <Text style={[styles.topHospitalRatingValue, { color: '#ffffff' }]}>{hospital.rating}</Text>
+                      <View style={[styles.topHospitalRating, { backgroundColor: 'rgba(255, 255, 255, 0.95)' }]}>
+                        <Ionicons name="star" size={14} color="#FFC107" />
+                        <Text style={[styles.topHospitalRatingValue, { color: '#1f2937' }]}>{hospital.rating}</Text>
                       </View>
                     </View>
 
@@ -2801,13 +2783,13 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                         </Text>
                       </View>
 
-                      {/* Doctor Count Badge */}
+                      {/* Hospital Count Badge */}
                       <View style={[
                         styles.enhancedCategoryBadge,
                         { backgroundColor: isSelected ? '#1e3a8a' : 'rgba(0,0,0,0.3)' }
                       ]}>
                         <Ionicons 
-                          name="people" 
+                          name="business-outline" 
                           size={12} 
                           color="#ffffff" 
                         />
