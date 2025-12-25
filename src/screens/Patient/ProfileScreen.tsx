@@ -93,7 +93,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={true}>
       <LinearGradient
-        colors={['#667eea', '#764ba2']}
+        colors={['#2563eb', '#3b82f6']}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.header}
@@ -126,7 +126,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         {/* Stats Overview */}
         <View style={styles.statsSection}>
           <LinearGradient
-            colors={['#4facfe', '#00f2fe']}
+            colors={['#3b82f6', '#1d4ed8']}
             style={styles.statCard}
           >
             <Ionicons name="calendar-outline" size={24} color="#fff" />
@@ -134,20 +134,20 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             <Text style={styles.statLabel}>Appointments</Text>
           </LinearGradient>
           <LinearGradient
-            colors={['#a8edea', '#fed6e3']}
+            colors={['#60a5fa', '#3b82f6']}
             style={styles.statCard}
           >
-            <Ionicons name="document-text-outline" size={24} color="#333" />
-            <Text style={[styles.statNumber, { color: '#333' }]}>8</Text>
-            <Text style={[styles.statLabel, { color: '#555' }]}>Reports</Text>
+            <Ionicons name="document-text-outline" size={24} color="#fff" />
+            <Text style={[styles.statNumber, { color: '#fff' }]}>8</Text>
+            <Text style={[styles.statLabel, { color: '#fff' }]}>Reports</Text>
           </LinearGradient>
           <LinearGradient
-            colors={['#ffecd2', '#fcb69f']}
+            colors={['#93c5fd', '#60a5fa']}
             style={styles.statCard}
           >
-            <Ionicons name="medical-outline" size={24} color="#333" />
-            <Text style={[styles.statNumber, { color: '#333' }]}>4</Text>
-            <Text style={[styles.statLabel, { color: '#555' }]}>Prescriptions</Text>
+            <Ionicons name="medical-outline" size={24} color="#fff" />
+            <Text style={[styles.statNumber, { color: '#fff' }]}>4</Text>
+            <Text style={[styles.statLabel, { color: '#fff' }]}>Prescriptions</Text>
           </LinearGradient>
         </View>
 
@@ -412,12 +412,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f9fa',
   },
   header: {
-    paddingVertical: spacing.xxl * 1.8,
+    paddingVertical: spacing.xxl * 2,
+    paddingTop: spacing.xxl * 2.5,
     alignItems: 'center',
     position: 'relative',
     overflow: 'hidden',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 8,
   },
   backgroundPattern: {
     position: 'absolute',
@@ -458,26 +464,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 130,
+    height: 130,
+    borderRadius: 65,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.lg,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 12 },
+    shadowOffset: { width: 0, height: 14 },
     shadowOpacity: 0.4,
-    shadowRadius: 25,
-    elevation: 12,
-    borderWidth: 5,
-    borderColor: 'rgba(255,255,255,0.4)',
+    shadowRadius: 28,
+    elevation: 14,
+    borderWidth: 6,
+    borderColor: '#ffffff',
   },
   roleBadge: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: 25,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    paddingHorizontal: spacing.lg + 4,
+    paddingVertical: spacing.sm + 2,
+    borderRadius: 28,
+    borderWidth: 2,
+    borderColor: '#ffffff',
+    backgroundColor: 'rgba(255,255,255,0.15)',
   },
   avatarText: {
     fontSize: fontSize.xxl * 1.2,

@@ -107,13 +107,22 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
             {/* SECTION 1: Hospital Info (Name, Specialization, Address, Buttons) */}
             <View style={styles.infoSection}>
               <View style={styles.hospitalHeader}>
-                <View>
+                <View style={{ flex: 1 }}>
                   <Text style={styles.hospitalTitle}>{hospital.name}</Text>
-                  <Text style={styles.specialization}>{hospital.specialization}</Text>
-                </View>
-                <View style={styles.ratingBadge}>
-                  <Ionicons name="star" size={18} color="#FFC107" />
-                  <Text style={styles.ratingText}>{hospital.rating}</Text>
+                  <View style={styles.specializationWithRating}>
+                    <Text style={styles.specialization}>{hospital.specialization}</Text>
+                    <View style={styles.starRatingContainer}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Ionicons
+                          key={star}
+                          name={star <= Math.round(hospital.rating) ? "star" : "star-outline"}
+                          size={14}
+                          color="#FFC107"
+                        />
+                      ))}
+                      <Text style={styles.ratingNumber}>({hospital.rating})</Text>
+                    </View>
+                  </View>
                 </View>
               </View>
 
@@ -169,6 +178,32 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                 <View style={styles.consultationFeeCard}>
                   <Text style={styles.consultationCostLabel}>Consultation Fee</Text>
                   <Text style={styles.consultationCost}>₹999</Text>
+                </View>
+              </View>
+            </View>
+
+            {/* SECTION 3: Hospital Amenities */}
+            <View style={styles.amenitiesSection}>
+              <View style={styles.amenitiesRow}>
+                <View style={styles.amenityCard}>
+                  <View style={styles.amenityIconContainer}>
+                    <Ionicons name="time-outline" size={24} color={colors.primary} />
+                  </View>
+                  <Text style={styles.amenityText}>24/7</Text>
+                </View>
+                
+                <View style={styles.amenityCard}>
+                  <View style={styles.amenityIconContainer}>
+                    <Ionicons name="car-outline" size={24} color={colors.primary} />
+                  </View>
+                  <Text style={styles.amenityText}>Parking</Text>
+                </View>
+                
+                <View style={styles.amenityCard}>
+                  <View style={styles.amenityIconContainer}>
+                    <Text style={styles.amenityEmoji}>♿</Text>
+                  </View>
+                  <Text style={styles.amenityText}>Wheelchair</Text>
                 </View>
               </View>
             </View>
@@ -289,7 +324,6 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                           <Ionicons name="medical-outline" size={18} color="#4F46E5" />
                         </View>
                         <Text style={styles.departmentGroupTitle}>{department}</Text>
-                        <Text style={styles.doctorCount}>({deptDoctors.length})</Text>
                       </View>
 
                       {/* Doctors in this department */}
@@ -303,8 +337,16 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
 
                             {/* Doctor Info */}
                             <View style={styles.doctorInfoSection}>
-                              <Text style={styles.doctorName}>{doctor.name}</Text>
+                              <View style={styles.doctorNameRow}>
+                                <Text style={styles.doctorName}>{doctor.name}</Text>
+                                {parseInt(doctor.experience) >= 10 && (
+                                  <Text style={styles.srTag}>(sr)</Text>
+                                )}
+                              </View>
                               <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
+                              {doctor.qualification && (
+                                <Text style={styles.doctorQualification}>{doctor.qualification}</Text>
+                              )}
                               
                               <View style={styles.doctorExperienceRow}>
                                 <Text style={styles.doctorExperienceLabel}>Experience:</Text>
@@ -486,6 +528,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#4b5563',
     fontWeight: '600',
+  },
+  specializationWithRating: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 6,
+  },
+  starRatingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  ratingNumber: {
+    fontSize: 13,
+    color: '#6b7280',
+    fontWeight: '500',
+    marginLeft: 4,
   },
   ratingBadge: {
     flexDirection: 'row',
@@ -702,12 +761,12 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingHorizontal: 14,
     paddingVertical: 16,
-    borderWidth: 1.5,
-    borderColor: colors.primary,
+    borderLeftWidth: 5,
+    borderLeftColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 8,
-    flexDirection: 'row',
+    flexDirection: 'column',
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
@@ -715,8 +774,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   consultationCallText: {
-    fontSize: 15,
-    color: colors.primary,
+    fontSize: 13,
+    color: '#6b7280',
     fontWeight: '600',
   },
   consultationTime: {
@@ -1011,15 +1070,31 @@ const styles = StyleSheet.create({
   doctorInfoSection: {
     flex: 1,
   },
+  doctorNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
   doctorName: {
     fontSize: 15,
     fontWeight: '700',
     color: '#1f2937',
-    marginBottom: 4,
+  },
+  srTag: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#1f2937',
   },
   doctorSpecialty: {
     fontSize: 13,
-    color: colors.primary,
+    color: '#1f2937',
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  doctorQualification: {
+    fontSize: 12,
+    color: '#6b7280',
     fontWeight: '500',
     marginBottom: 8,
   },
@@ -1053,7 +1128,7 @@ const styles = StyleSheet.create({
   },
   consultationFeeSmall: {
     fontSize: 14,
-    color: colors.primary,
+    color: '#1f2937',
     fontWeight: '700',
   },
   bookButton: {
@@ -1104,6 +1179,54 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#6b7280',
     marginVertical: 12,
+  },
+
+  amenitiesSection: {
+    backgroundColor: '#fff',
+    marginHorizontal: 0,
+    marginTop: 8,
+    marginBottom: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 18,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  amenitiesRow: {
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'space-between',
+  },
+  amenityCard: {
+    flex: 1,
+    backgroundColor: '#ffffff',
+    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+    borderLeftWidth: 5,
+    borderLeftColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+  },
+  amenityIconContainer: {
+    marginBottom: 8,
+  },
+  amenityEmoji: {
+    fontSize: 28,
+  },
+  amenityText: {
+    fontSize: 13,
+    color: '#6b7280',
+    fontWeight: '600',
+    textAlign: 'center',
   },
 
   bottomSpacer: {

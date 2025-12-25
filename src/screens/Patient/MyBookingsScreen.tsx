@@ -839,7 +839,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
         activeOpacity={0.95}
         {...(Platform.OS === 'web' && {
           onMouseEnter: (e: any) => {
-            e.currentTarget.style.boxShadow = '0 12px 32px rgba(59, 130, 246, 0.25), 0 0 0 2px rgba(59, 130, 246, 0.15)';
+            e.currentTarget.style.boxShadow = '0 12px 32px rgba(0, 0, 0, 0.1)';
             e.currentTarget.style.transform = 'translateY(-4px) scale(1.02)';
             e.currentTarget.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
             e.currentTarget.style.borderRadius = '16px';
@@ -993,7 +993,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
         <LinearGradient
           colors={
             item.type === 'hospital' 
-              ? ['#ffffff', '#f0f9ff', '#e0f2fe']
+              ? ['#ffffff', '#ffffff', '#ffffff']
               : item.type === 'diagnostic'
               ? ['#ffffff', '#fefce8', '#fef3c7']
               : ['#ffffff', '#ecfdf5', '#d1fae5']
@@ -2032,7 +2032,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
           <View style={styles.topHospitalsHeaderLeft}>
             <View style={styles.topHospitalsIconContainer}>
               <LinearGradient
-                colors={['#8b5cf6', '#7c3aed', '#6d28d9']}
+                colors={['#3b82f6', '#2563eb']}
                 style={styles.topHospitalsIcon}
               >
                 <Ionicons name="sparkles" size={20} color="#ffffff" />
