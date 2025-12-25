@@ -87,6 +87,8 @@ export default function App() {
   );
 }
 
+App.displayName = 'Rapha';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

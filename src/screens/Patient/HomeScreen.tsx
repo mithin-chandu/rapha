@@ -333,7 +333,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation, userData, on
 
   useEffect(() => {
     if (Platform.OS === 'web') {
-      document.title = 'Rapha';
+      document.title = 'Rapha - Healthcare Excellence';
+      // Set meta description for SEO
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.setAttribute('name', 'description');
+        document.head.appendChild(metaDescription);
+      }
+      metaDescription.setAttribute('content', 'Rapha - Book appointments, view health records, order medicines, and schedule lab tests');
     }
   }, []);
 
