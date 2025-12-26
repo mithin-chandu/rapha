@@ -1173,7 +1173,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
   };
 
   // Enhanced grid layout renderer
-  const renderProviderGrid = (providers: any[], title: string, onViewAll: () => void) => {
+  const renderProviderGrid = (providers: any[], title: string, onViewAll?: () => void) => {
     if (providers.length === 0) return null;
     
     const displayProviders = providers; // Show all items
@@ -1263,7 +1263,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
         {renderProviderGrid(
           groupedProviders.hospitals, 
           getSectionTitle(), 
-          () => setSelectedProvider('all')
+          undefined
         )}
 
         {filteredProviders.length === 0 && renderEmptyState()}
