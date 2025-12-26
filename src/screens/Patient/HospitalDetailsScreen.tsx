@@ -89,6 +89,22 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
     Linking.openURL(`tel:+919876543210`).catch(err => Alert.alert('Error', 'Could not make call'));
   };
 
+  const getStarRating = (experience: string) => {
+    const years = parseInt(experience);
+    if (years < 3) return 2;
+    if (years < 6) return 3;
+    if (years < 10) return 4;
+    return 5;
+  };
+
+  const getNumericRating = (experience: string) => {
+    const years = parseInt(experience);
+    if (years < 3) return 2.0;
+    if (years < 6) return 3.5;
+    if (years < 10) return 4.2;
+    return 4.8;
+  };
+
   return (
     <View style={styles.container}>
       <Header
@@ -343,7 +359,20 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                                   <Text style={styles.srTag}>(sr)</Text>
                                 )}
                               </View>
-                              <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
+                              <View style={styles.specialtyWithStarsRow}>
+                                <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
+                                <View style={styles.doctorInlineStarRating}>
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <Ionicons
+                                      key={star}
+                                      name={star <= getStarRating(doctor.experience) ? "star" : "star-outline"}
+                                      size={14}
+                                      color="#FFC107"
+                                    />
+                                  ))}
+                                  <Text style={styles.ratingCountText}>({getNumericRating(doctor.experience)})</Text>
+                                </View>
+                              </View>
                               {doctor.qualification && (
                                 <Text style={styles.doctorQualification}>{doctor.qualification}</Text>
                               )}
@@ -1090,7 +1119,26 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#1f2937',
     fontWeight: '500',
+    position: 'absolute',
+    left: 0,
+  },
+  specialtyWithStarsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
     marginBottom: 4,
+  },
+  doctorInlineStarRating: {
+    flexDirection: 'row',
+    gap: 3,
+    alignItems: 'center',
+  },
+  ratingCountText: {
+    fontSize: 12,
+    color: '#6b7280',
+    fontWeight: '600',
+    marginLeft: 4,
   },
   doctorQualification: {
     fontSize: 12,
@@ -1130,6 +1178,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#1f2937',
     fontWeight: '700',
+  },
+  doctorStarRatingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 12,
   },
   bookButton: {
     backgroundColor: colors.primary,
