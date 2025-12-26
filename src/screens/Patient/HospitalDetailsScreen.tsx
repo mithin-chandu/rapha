@@ -179,8 +179,9 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
             <View style={styles.consultationSection}>
               <View style={styles.consultationTimingRow}>
                 <View style={styles.consultationTimeCard}>
+                  <Text style={[styles.consultationLabel, { fontWeight: 'bold', color: '#000' }]}>Timing</Text>
+                  <View style={{ flex: 1 }} />
                   <Text style={styles.consultationTime}>9:00 - 10:00 AM</Text>
-                  <Text style={styles.consultationLabel}>Timing</Text>
                 </View>
                 
                 <TouchableOpacity 
@@ -192,34 +193,52 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                 </TouchableOpacity>
                 
                 <View style={styles.consultationFeeCard}>
-                  <Text style={styles.consultationCostLabel}>Consultation Fee</Text>
-                  <Text style={styles.consultationCost}>₹999</Text>
+                  <Text style={[styles.consultationCostLabel, { fontWeight: 'bold', color: '#000' }]}>Consultation Fee</Text>
+                  <Text style={[styles.consultationCost, { fontWeight: 'bold', color: '#000' }]}>₹999</Text>
                 </View>
               </View>
             </View>
-
             {/* SECTION 3: Hospital Amenities */}
             <View style={styles.amenitiesSection}>
-              <View style={styles.amenitiesRow}>
-                <View style={styles.amenityCard}>
-                  <View style={styles.amenityIconContainer}>
-                    <Ionicons name="time-outline" size={24} color={colors.primary} />
+              <Text style={styles.amenitiesHeading}>Amenities</Text>
+              <View style={styles.amenitiesGrid}>
+                {/* Timing */}
+                <View style={styles.amenityItem}>
+                  <View style={styles.amenityIconBox}>
+                    <Ionicons name="time-outline" size={28} color={colors.primary} />
                   </View>
-                  <Text style={styles.amenityText}>24/7</Text>
+                  <Text style={styles.amenityName}>Opening Hours</Text>
+                 
                 </View>
-                
-                <View style={styles.amenityCard}>
-                  <View style={styles.amenityIconContainer}>
-                    <Ionicons name="car-outline" size={24} color={colors.primary} />
+
+                {/* Parking */}
+                <View style={styles.amenityItem}>
+                  <View style={styles.amenityIconBox}>
+                    <Ionicons name="car-outline" size={28} color={colors.primary} />
                   </View>
-                  <Text style={styles.amenityText}>Parking</Text>
+                  <Text style={styles.amenityName}>Parking</Text>
+                  
                 </View>
-                
-                <View style={styles.amenityCard}>
-                  <View style={styles.amenityIconContainer}>
+
+                {/* Accessibility */}
+                <View style={styles.amenityItem}>
+                  <View style={styles.amenityIconBox}>
                     <Text style={styles.amenityEmoji}>♿</Text>
                   </View>
-                  <Text style={styles.amenityText}>Wheelchair</Text>
+                  <Text style={styles.amenityName}>wheelchair</Text>
+                  
+                </View>
+
+                {/* Specialties */}
+                <View style={styles.amenityItem}>
+                  <View style={styles.amenityIconBox}>
+                    <Ionicons name="medical" size={28} color={colors.primary} />
+                  </View>
+                  <Text style={styles.amenityCount}>
+                    {Array.from(new Set(hospitalDoctors.map(d => d.specialization))).length}
+                  </Text>
+                  <Text style={styles.amenityName}>Specialties</Text>
+                  
                 </View>
               </View>
             </View>
@@ -282,7 +301,6 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
 
               {/* Thumbnail Gallery (all images, scrollable) */}
               <View style={styles.thumbnailGallerySection}>
-                <Text style={styles.galleryTitle}>Image Gallery</Text>
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
@@ -299,7 +317,7 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                         style={styles.thumbnail}
                         resizeMode="cover"
                       />
-                      <Text style={styles.thumbnailLabel}>Image {index + 1}</Text>
+                      {/* Removed label Text - previously showed "Image 1", "Image 2" etc */}
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
@@ -1242,7 +1260,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 8,
     paddingHorizontal: 14,
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderRadius: 18,
     elevation: 3,
     shadowColor: '#000',
@@ -1250,38 +1268,63 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  amenitiesRow: {
+  amenitiesGrid: {
     flexDirection: 'row',
     gap: 12,
     justifyContent: 'space-between',
   },
-  amenityCard: {
+  amenityItem: {
     flex: 1,
-    backgroundColor: '#ffffff',
-    borderRadius: 14,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 14,
-    borderLeftWidth: 5,
-    borderLeftColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 2,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+    elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
   },
-  amenityIconContainer: {
-    marginBottom: 8,
+  amenityIconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 10,
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
   },
   amenityEmoji: {
     fontSize: 28,
   },
-  amenityText: {
+  amenityName: {
     fontSize: 13,
-    color: '#6b7280',
     fontWeight: '600',
+    color: '#1f2937',
     textAlign: 'center',
+    marginBottom: 4,
+  },
+  amenitySubtext: {
+    fontSize: 10,
+    fontWeight: '500',
+    color: '#9ca3af',
+    textAlign: 'center',
+  },
+  amenityCount: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.primary,
+    marginBottom: 4,
+  },
+  amenitiesHeading: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1f2937',
+    marginBottom: 12,
   },
 
   bottomSpacer: {
