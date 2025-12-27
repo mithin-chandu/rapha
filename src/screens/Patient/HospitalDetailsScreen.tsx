@@ -378,47 +378,58 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                                     <Text style={styles.srTag}>(sr)</Text>
                                   )}
                                 </View>
-                                <View style={styles.specialtyWithStarsRow}>
+
+                                {/* Row 1: Specialty + Rating Card */}
+                                <View style={styles.doctorCardWithInfoRow}>
                                   <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
-                                  <View style={styles.doctorInlineStarRating}>
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <Ionicons
-                                        key={star}
-                                        name={star <= getStarRating(doctor.experience) ? "star" : "star-outline"}
-                                        size={14}
-                                        color="#FFC107"
-                                      />
-                                    ))}
-                                    <Text style={styles.ratingCountText}>({getNumericRating(doctor.experience)})</Text>
+                                  <View style={styles.doctorRatingCard}>
+                                    <Text style={styles.doctorRatingCardLabel}>Doctor's Rating</Text>
+                                    <View style={styles.doctorRatingStarsContainer}>
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <Ionicons
+                                          key={star}
+                                          name={star <= getStarRating(doctor.experience) ? "star" : "star-outline"}
+                                          size={11}
+                                          color="#FFC107"
+                                        />
+                                      ))}
+                                    </View>
+                                    <Text style={styles.doctorRatingValue}>({getNumericRating(doctor.experience)})</Text>
                                   </View>
                                 </View>
-                                {doctor.qualification && (
-                                  <Text style={styles.doctorQualification}>{doctor.qualification}</Text>
-                                )}
-                                
-                                <View style={styles.doctorExperienceRow}>
-                                  <Text style={styles.doctorExperienceLabel}>Experience:</Text>
-                                  <Text style={styles.doctorExperienceText}>
-                                    {doctor.experience}
-                                  </Text>
+
+                                {/* Row 2: Qualification + Book Button */}
+                                <View style={styles.doctorCardWithInfoRow}>
+                                  {doctor.qualification && (
+                                    <Text style={styles.doctorQualification}>{doctor.qualification}</Text>
+                                  )}
+                                </View>
+
+                                {/* Row 3: Experience + Consultation Fee Card */}
+                                <View style={styles.doctorCardWithInfoRow}>
+                                  <View style={styles.doctorExperienceRow}>
+                                    <Text style={styles.doctorExperienceLabel}>Experience:</Text>
+                                    <Text style={styles.doctorExperienceText}>
+                                      {doctor.experience}
+                                    </Text>
+                                  </View>
+                                  <View style={styles.doctorRatingCard}>
+                                    <Text style={styles.doctorConsultationFeeCardLabel}>Consultation Fee</Text>
+                                    <Text style={styles.doctorConsultationFeeAmount}>₹{doctor.consultationFee}</Text>
+                                  </View>
                                 </View>
                               </View>
+
+                              {/* Book Button on Right */}
+                              <TouchableOpacity 
+                                style={styles.doctorCardBookButton}
+                                onPress={() => handleBookAppointment(doctor)}
+                              >
+                                <Text style={styles.doctorCardBookButtonText}>Book</Text>
+                              </TouchableOpacity>
                             </View>
                           </View>
 
-                          {/* Consultation Fee Card - Separate */}
-                          <View style={styles.doctorConsultationFeeCard}>
-                            <View style={styles.consultationFeeContent}>
-                              <Text style={styles.doctorConsultationFeeLabel}>Consultation Fee:</Text>
-                              <Text style={styles.doctorConsultationFeeAmount}>₹{doctor.consultationFee}</Text>
-                            </View>
-                            <TouchableOpacity 
-                              style={styles.consultationBookButton}
-                              onPress={() => handleBookAppointment(doctor)}
-                            >
-                              <Text style={styles.consultationBookButtonText}>Book</Text>
-                            </TouchableOpacity>
-                          </View>
                         </View>
                       ))}
                     </View>
@@ -1113,6 +1124,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'flex-start',
     gap: 16,
+    justifyContent: 'space-between',
   },
   doctorPhoto: {
     width: 80,
@@ -1129,8 +1141,8 @@ const styles = StyleSheet.create({
   doctorNameRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 4,
+    gap: 6,
+    marginBottom: 2,
   },
   doctorName: {
     fontSize: 15,
@@ -1146,8 +1158,66 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#1f2937',
     fontWeight: '500',
-    position: 'absolute',
-    left: 0,
+    marginBottom: 0,
+  },
+  doctorRatingCardSection: {
+    flexDirection: 'row',
+    gap: 2,
+    marginTop: 0,
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'center',
+  },
+  doctorCardWithInfoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 0,
+    justifyContent: 'flex-start',
+    width: '100%',
+  },
+  doctorInfoLeft: {
+    flex: 1,
+  },
+  doctorRatingCard: {
+    borderWidth: 1.5,
+    borderColor: colors.primary,
+    borderRadius: 8,
+    padding: 6,
+    backgroundColor: '#F0F9FF',
+    alignItems: 'center',
+    width: 130,
+    flexShrink: 0,
+    marginLeft: 'auto',
+    marginRight: 60,
+    marginBottom: 4,
+  },
+  doctorRatingCardLabel: {
+    fontSize: 9,
+    color: '#6b7280',
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  doctorRatingStarsContainer: {
+    flexDirection: 'row',
+    gap: 0.5,
+    marginBottom: 2,
+  },
+  doctorRatingValue: {
+    fontSize: 11,
+    color: '#1f2937',
+    fontWeight: '700',
+  },
+  doctorConsultationFeeCardLabel: {
+    fontSize: 9,
+    color: '#6b7280',
+    fontWeight: '600',
+    marginBottom: 1,
+  },
+  doctorConsultationFeeAmount: {
+    fontSize: 12,
+    color: '#1f2937',
+    fontWeight: '700',
   },
   specialtyWithStarsRow: {
     flexDirection: 'row',
@@ -1171,13 +1241,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#6b7280',
     fontWeight: '500',
-    marginBottom: 8,
+    marginBottom: 0,
   },
   doctorExperienceRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    marginBottom: 8,
+    marginBottom: 0,
   },
   doctorExperienceLabel: {
     fontSize: 12,
@@ -1229,11 +1299,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#6b7280',
     fontWeight: '600',
-  },
-  doctorConsultationFeeAmount: {
-    fontSize: 16,
-    color: '#1f2937',
-    fontWeight: '700',
   },
   consultationBookButton: {
     backgroundColor: colors.primary,
@@ -1378,5 +1443,36 @@ const styles = StyleSheet.create({
 
   bottomSpacer: {
     height: 0,
+  },
+  consultationFeeSeparator: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginHorizontal: 4,
+  },
+  consultationFeeInline: {
+    fontSize: 13,
+    color: '#1f2937',
+    fontWeight: '700',
+  },
+  doctorCardBookButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 8,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  doctorCardBookButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 13,
+  },
+  doctorBookButtonContainer: {
+    alignItems: 'flex-end',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderRadius: 12,
   },
 });
