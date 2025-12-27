@@ -2376,7 +2376,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
             >
               <TouchableOpacity
                 style={styles.frequentlyVisitedCard}
-                onPress={() => navigation.navigate('BookAppointment', { hospital })}
+                onPress={() => navigation.navigate('HospitalDetails', { hospital })}
                 activeOpacity={0.8}
                 {...(Platform.OS === 'web' && {
                   onMouseEnter: (e: any) => {
@@ -2504,7 +2504,7 @@ export const MyBookingsScreen: React.FC<MyBookingsScreenProps> = ({ userData, na
                 {hospitalsToShow.slice(rowIndex * 4, (rowIndex + 1) * 4).map((hospital) => (
                   <View key={hospital.id} style={styles.nearbyHospitalCard}>
                     <TouchableOpacity
-                      onPress={() => navigation.navigate('BookAppointment', { hospital })}
+                      onPress={() => navigation.navigate('HospitalDetails', { hospital })}
                       style={styles.nearbyHospitalTouchable}
                       activeOpacity={0.8}
                       {...(Platform.OS === 'web' && {
