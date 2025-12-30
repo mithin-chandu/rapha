@@ -194,7 +194,7 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                 
                 <View style={styles.consultationFeeCard}>
                   <Text style={[styles.consultationCostLabel, { fontWeight: 'bold', color: '#000' }]}>Consultation Fee</Text>
-                  <Text style={[styles.consultationCost, { fontWeight: 'bold', color: '#6b7280' }]}>₹999</Text>
+                  <Text style={[styles.consultationCost, { fontWeight: 'bold', color: '#6b7280' }]}>₹499-999</Text>
                 </View>
               </View>
             </View>
@@ -855,15 +855,16 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   consultationCostLabel: {
-    fontSize: 13,
-    color: '#6b7280',
-    fontWeight: '600',
+    fontSize: 12,
+    color: '#000',
+    fontWeight: '700',
     marginBottom: 6,
+    letterSpacing: 0.3,
   },
   consultationCost: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: '#6b7280',
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1f2937',
   },
   consultationMoreRow: {
     flexDirection: 'row',
@@ -1430,11 +1431,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   amenityName: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#1f2937',
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#000',
     textAlign: 'center',
     marginBottom: 2,
+    letterSpacing: 0.2,
   },
   amenitySubtext: {
     fontSize: 10,
