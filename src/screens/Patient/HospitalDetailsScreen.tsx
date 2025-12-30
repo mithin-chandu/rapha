@@ -375,7 +375,7 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
                               <View style={styles.doctorNameRow}>
                                 <Text style={styles.doctorName}>{doctor.name}</Text>
                                 {parseInt(doctor.experience) >= 10 && (
-                                  <Text style={styles.srTag}>(sr)</Text>
+                                  <Text style={styles.srTag}>(SR Doctor)</Text>
                                 )}
                               </View>
                               <Text style={styles.doctorSpecialty}>{doctor.specialization}</Text>
