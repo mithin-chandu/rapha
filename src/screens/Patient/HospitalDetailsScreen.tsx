@@ -201,12 +201,12 @@ export const HospitalDetailsScreen: React.FC<HospitalDetailsScreenProps> = ({
             {/* SECTION 3: Hospital Amenities */}
             <View style={styles.amenitiesSection}>
               <View style={styles.amenitiesGrid}>
-                {/* Timing */}
+                {/* Emergency 24/7 */}
                 <View style={styles.amenityItem}>
                   <View style={styles.amenityIconBox}>
-                    <Ionicons name="time-outline" size={18} color={colors.primary} />
+                    <Ionicons name="alert-circle" size={18} color={colors.primary} />
                   </View>
-                  <Text style={styles.amenityName}>Opening Hours</Text>
+                  <Text style={styles.amenityName}>Emergency 24/7</Text>
                  
                 </View>
 
@@ -1410,8 +1410,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     alignItems: 'center',
     justifyContent: 'center',
-    borderLeftWidth: 4,
-    borderLeftColor: colors.primary,
+    borderWidth: 2,
+    borderColor: colors.primary,
     elevation: 1,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
